@@ -1,0 +1,49 @@
+/* Navbar.css */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #333;
+  margin: 0 10px;
+}
+/* Hover effect for navbar links */
+.navbar a:hover {
+  color: #ff7f50;   /* any color you want for highlight */
+  transition: color 0.3s ease; /* smooth fade effect */
+}
+.about h2:hover,
+.about p:hover {
+  color: #ff7f50;
+}
+/* About section text */
+.about {
+  color: #333; /* default text color */
+  transition: color 0.3s ease; /* smooth fade effect */
+}
+
+/* Hover effect */
+.about:hover {
+  color: #ff7f50; /* same highlight color as navbar */
+}
+.nav-menu {
+  position: fixed; /* stay on top */
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: #fff;
+  transform: translateX(100%); /* hide offscreen */
+  transition: transform 0.3s ease;
+  z-index: 1000; /* above other content */
+}
+
+.nav-menu.active {
+  transform: translateX(0); /* slide in */
+}
