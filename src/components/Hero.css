@@ -1,0 +1,121 @@
+/* ===================== HERO ===================== */
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh; /* full viewport height */
+  padding: 0 20px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e0f7ff, #c6e6ff);
+}
+
+/* Animated floating circles for depth */
+.hero::before,
+.hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(30, 144, 255, 0.1);
+  animation: float 15s ease-in-out infinite;
+  z-index: 0;
+}
+
+.hero::before {
+  width: 400px;
+  height: 400px;
+  top: -80px;
+  right: -100px;
+}
+
+.hero::after {
+  width: 300px;
+  height: 300px;
+  bottom: -60px;
+  left: -80px;
+  animation-delay: 7s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(45deg); }
+}
+
+/* Hero Title */
+.hero h1 {
+  font-size: 3.5rem;
+  color: #1e90ff;
+  margin-bottom: 20px;
+  z-index: 1;
+  line-height: 1.2;
+  font-weight: 700;
+  text-shadow: 1px 1px 10px rgba(0,0,0,0.05);
+  animation: fadeUp 1s ease forwards;
+}
+
+/* Hero Subtitle */
+.hero p {
+  font-size: 1.5rem;
+  color: #333;
+  max-width: 700px;
+  margin-bottom: 40px;
+  z-index: 1;
+  animation: fadeUp 1.2s ease forwards;
+  opacity: 0;
+}
+
+/* Hero Button */
+.hero button {
+  padding: 18px 50px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #1e90ff, #00bfff);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 10px 25px rgba(30, 144, 255, 0.3);
+  cursor: pointer;
+  z-index: 1;
+  transition: all 0.4s ease;
+  animation: fadeUp 1.4s ease forwards;
+  opacity: 0;
+}
+
+.hero button:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 30px rgba(30, 144, 255, 0.4);
+  background: linear-gradient(90deg, #104e8b, #1e90ff);
+}
+
+/* Fade up animation for title, subtitle, button */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 1024px) {
+  .hero h1 { font-size: 3rem; }
+  .hero p { font-size: 1.3rem; }
+  .hero button { padding: 16px 45px; font-size: 1.2rem; }
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2.5rem; }
+  .hero p { font-size: 1.1rem; }
+  .hero button { padding: 14px 40px; font-size: 1.1rem; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 2rem; }
+  .hero p { font-size: 1rem; }
+  .hero button { padding: 12px 35px; font-size: 1rem; }
+}

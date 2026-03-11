@@ -1,32 +1,37 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from "react";
 import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Calculator from "./pages/Calculator.jsx"; // Must match the path
+import Hero from "./components/Hero";
 import About from "./pages/About";
+import Calculator from "./pages/Calculator";
+import Features from "./components/Features";
+import Testimonials from "./components/Testimonials";
+import CTA from "./components/CTA";
+
+/* Global app styles */
 import "./App.css";
-import { useState } from "react";
+
+/* Component-specific styles */
+import "./components/Navbar.css";
+import "./components/Hero.css";
+import "./components/Features.css";
+import "./components/Testimonials.css";
+import "./components/CTA.css";
+
+/* Page-specific styles */
+import "./pages/About.css";
+import "./pages/Calculator.css";
 
 function App() {
   return (
-    <Router>
-
-      <div className="app">
-
-        <Navbar />
-
-        <div className="page-container">
-
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/calculator" element={<Calculator />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
-
-        </div>
-
-      </div>
-
-    </Router>
+    <div className="App">
+      <Navbar />
+      <Hero />
+      <About />
+      <Features />
+      <Testimonials />
+      <CTA />
+      <Calculator />
+    </div>
   );
 }
 

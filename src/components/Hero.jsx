@@ -10,4 +10,4 @@ function Hero({ start }) {
   );
 }
 
-export default Hero;
+export default Hero; 

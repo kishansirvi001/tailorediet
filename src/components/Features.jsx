@@ -1,4 +1,5 @@
 import React from "react";
+import "./Features.css"; // make sure this CSS file exists
 
 function Features() {
   const features = [
@@ -29,17 +30,17 @@ function Features() {
   ];
 
   return (
-    <div className="features">
-      <h2>Features</h2>
-      <div className="feature-grid">
-        {features.map((feature, index) => (
-          <div className="feature-card" key={index}>
-            <h3>{feature.title}</h3>
-            <p>{feature.description}</p>
-          </div>
-        ))}
+    <div className="features-container">
+  <div className="feature-grid">
+    {features.map((feature, index) => (
+      <div className="feature-card" key={index}>
+        <div className="icon">{feature.icon}</div>
+        <h3>{feature.title}</h3>
+        <p>{feature.description}</p>
       </div>
-    </div>
+    ))}
+  </div>
+</div>
   );
 }
 

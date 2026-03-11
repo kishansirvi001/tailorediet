@@ -1,0 +1,110 @@
+/* Calculator Container */
+.calculator-card {
+  width: 100%;
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 40px 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.calculator-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* Headings */
+.calculator-card h2 {
+  font-size: 2rem;
+  color: #27ae60; /* TailorDiet green theme */
+  margin-bottom: 25px;
+}
+
+/* Inputs and Selects */
+.calculator-card input,
+.calculator-card select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 12px 0 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.calculator-card input:focus,
+.calculator-card select:focus {
+  border-color: #27ae60;
+}
+
+/* Buttons */
+.calculator-card button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.calculator-card button:hover {
+  background-color: #fd0000;
+  transform: scale(1.05);
+}
+
+/* Result Display */
+.result,
+.bmi-result {
+  margin-top: 25px;
+  padding: 20px;
+  background-color: #dff0d8;
+  border: 1px solid #a6d8a8;
+  border-radius: 10px;
+  color: #3c763d;
+  font-size: 1.1rem;
+  text-align: center;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calculator-card {
+    padding: 30px 20px;
+  }
+
+  .calculator-card h2 {
+    font-size: 1.8rem;
+  }
+
+  .calculator-card button {
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calculator-card {
+    padding: 25px 15px;
+  }
+
+  .calculator-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .calculator-card input,
+  .calculator-card select,
+  .calculator-card button {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+}

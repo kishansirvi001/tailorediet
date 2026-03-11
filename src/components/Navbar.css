@@ -1,49 +1,136 @@
-/* Navbar.css */
+/* ===================== NAVBAR ===================== */
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  z-index: 1000;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.navbar a {
+/* Optional: subtle shadow when scrolling */
+.navbar.scrolled {
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* Logo */
+.navbar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1e90ff;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.navbar .logo:hover {
+  color: #00bfff;
+}
+
+/* Nav Links */
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links li {
+  position: relative;
+}
+
+.nav-links a {
   text-decoration: none;
   color: #333;
-  margin: 0 10px;
-}
-/* Hover effect for navbar links */
-.navbar a:hover {
-  color: #ff7f50;   /* any color you want for highlight */
-  transition: color 0.3s ease; /* smooth fade effect */
-}
-.about h2:hover,
-.about p:hover {
-  color: #ff7f50;
-}
-/* About section text */
-.about {
-  color: #333; /* default text color */
-  transition: color 0.3s ease; /* smooth fade effect */
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0;
 }
 
-/* Hover effect */
-.about:hover {
-  color: #ff7f50; /* same highlight color as navbar */
-}
-.nav-menu {
-  position: fixed; /* stay on top */
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: 250px;
-  background-color: #fff;
-  transform: translateX(100%); /* hide offscreen */
-  transition: transform 0.3s ease;
-  z-index: 1000; /* above other content */
+/* Underline hover animation */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0%;
+  height: 2px;
+  background-color: #1e90ff;
+  transition: width 0.3s ease;
 }
 
-.nav-menu.active {
-  transform: translateX(0); /* slide in */
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* Hamburger Menu */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 20px;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.hamburger .line {
+  width: 100%;
+  height: 3px;
+  background-color: #333;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Hamburger animation when active */
+.hamburger.active .line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active .line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active .line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Responsive for Mobile */
+@media screen and (max-width: 768px) {
+  .nav-links {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    background-color: #ffffff;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    display: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  .nav-links.active {
+    display: flex;
+    animation: slideDown 0.4s ease forwards;
+  }
+
+  @keyframes slideDown {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links li {
+    margin: 0;
+    text-align: center;
+  }
 }

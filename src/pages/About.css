@@ -1,62 +1,97 @@
-/* About Section Container */
+/* ===================== ABOUT SECTION ===================== */
 .about {
-  max-width: 1100px;              /* card width */
-  margin: 80px auto;               /* vertical + horizontal centering */
-  padding: 50px 40px;              /* internal spacing */
-  background: linear-gradient(145deg, #ffffff, #f7f7f7); /* subtle gradient */
-  border-radius: 20px;             /* rounded corners */
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12); /* shadow */
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 40px 30px;
+  background: linear-gradient(145deg, #ffffff, #f0f8ff);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   text-align: center;
-  line-height: 1.8;
+  line-height: 1.7;
   transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Hover effect for the card */
+/* Hover effect with lift and shadow */
 .about:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.18);
-  background: linear-gradient(145deg, #fff0f5, #fef7f2);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  background: linear-gradient(145deg, #e0f7ff, #c6e6ff);
 }
 
-/* Heading */
+/* Heading with underline animation */
 .about h2 {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   margin-bottom: 25px;
-  color: #333;
+  color: #1e90ff;
   font-weight: 700;
+  position: relative;
+  display: inline-block;
   transition: color 0.3s ease;
 }
 
-.about h2:hover {
-  color: #ff7f50;
+.about h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 0%;
+  height: 3px;
+  background: #ff7f50;
+  transition: width 0.4s ease;
 }
 
-/* Paragraphs */
+.about h2:hover::after {
+  width: 100%;
+}
+
+/* Paragraph styling */
 .about p {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: #555;
   margin-bottom: 20px;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
+/* Optional subtle hover animation for paragraph */
 .about p:hover {
   color: #ff7f50;
+  transform: translateX(2px);
 }
 
-/* Button */
-.about button {
-  margin-top: 20px;
-  padding: 12px 30px;
-  font-size: 1.1rem;
-  color: #fff;
-  background-color: #ff7f50;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
+/* Optional decorative icon at top */
+.about::before {
+  content: "★";
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: rgba(30,144,255,0.2);
 }
 
-.about button:hover {
-  background-color: #ff6333;
-  transform: translateY(-3px);
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .about {
+    padding: 35px 25px;
+  }
+  .about h2 {
+    font-size: 2rem;
+  }
+  .about p {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about {
+    padding: 30px 20px;
+  }
+  .about h2 {
+    font-size: 1.8rem;
+  }
+  .about p {
+    font-size: 1rem;
+  }
 }
