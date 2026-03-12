@@ -1,33 +1,73 @@
 import React, { useState } from "react";
-import "./Navbar.css"; // keep your old CSS file
+import "./Navbar.css";
+import { NavLink } from "react-router-dom";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
   return (
     <nav className="navbar">
+
+      {/* Logo */}
       <div className="navbar-logo">
-        TailorDiet
+        <NavLink to="/">TailorDiet</NavLink>
       </div>
 
-      {/* Menu links */}
-      <ul className={menuOpen ? "nav-links active" : "nav-links"}>
-        <li><a href="#about" onClick={() => setMenuOpen(false)}>About</a></li>
-        <li><a href="#features" onClick={() => setMenuOpen(false)}>Features</a></li>
-        <li><a href="#testimonials" onClick={() => setMenuOpen(false)}>Testimonials</a></li>
-        <li><a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a></li>
+      {/* Menu */}
+      <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
+
+        <li>
+          <NavLink 
+            to="/" 
+            onClick={() => setMenuOpen(false)}
+            className={({ isActive }) => isActive ? "active-link" : ""}
+          >
+            Home
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink 
+            to="/about"
+            onClick={() => setMenuOpen(false)}
+            className={({ isActive }) => isActive ? "active-link" : ""}
+          >
+            About
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink 
+            to="/calculator"
+            onClick={() => setMenuOpen(false)}
+            className={({ isActive }) => isActive ? "active-link" : ""}
+          >
+            Calculator
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink 
+            to="/contact"
+            onClick={() => setMenuOpen(false)}
+            className={({ isActive }) => isActive ? "active-link" : ""}
+          >
+            Contact
+          </NavLink>
+        </li>
+
       </ul>
 
-      {/* Hamburger icon */}
-      <div className="hamburger" onClick={toggleMenu}>
-        <div className="line"></div>
-        <div className="line"></div>
-        <div className="line"></div>
+      {/* Hamburger */}
+      <div
+        className={`hamburger ${menuOpen ? "open" : ""}`}
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
+
     </nav>
   );
 }

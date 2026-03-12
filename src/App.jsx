@@ -1,37 +1,49 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+/* Components */
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
+
+/* Pages */
+import Home from "./pages/Home";
 import About from "./pages/About";
 import Calculator from "./pages/Calculator";
-import Features from "./components/Features";
-import Testimonials from "./components/Testimonials";
-import CTA from "./components/CTA";
+import Contact from "./pages/Contact";
 
-/* Global app styles */
+/* Global styles */
 import "./App.css";
 
-/* Component-specific styles */
+/* Component styles */
 import "./components/Navbar.css";
 import "./components/Hero.css";
 import "./components/Features.css";
 import "./components/Testimonials.css";
-import "./components/CTA.css";
+import "./components/Questionnaire.css";
 
-/* Page-specific styles */
+/* Page styles */
+import "./pages/Home.css";
 import "./pages/About.css";
 import "./pages/Calculator.css";
+import "./pages/Contact.css";
 
 function App() {
   return (
-    <div className="App">
-      <Navbar />
-      <Hero />
-      <About />
-      <Features />
-      <Testimonials />
-      <CTA />
-      <Calculator />
-    </div>
+    <Router>
+      <div className="App">
+
+        {/* Navbar always visible */}
+        <Navbar />
+
+        {/* Page Routes */}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/calculator" element={<Calculator />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+
+      </div>
+    </Router>
   );
 }
 

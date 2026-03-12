@@ -108,3 +108,78 @@
     padding: 10px;
   }
 }
+/* ================= CALCULATOR PAGE ================= */
+
+.calculator-page {
+  min-height: 100vh;
+  padding: 120px 40px 60px;
+  background-color: #f9f9f9;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+/* Calculator Card */
+
+.calculator-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* Title */
+.calculator-card h1 {
+  font-size: 1.4rem;
+  color: #1e90ff;
+  margin-bottom: 10px;
+}
+
+/* Inputs */
+
+.calculator-card input,
+.calculator-card select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Button */
+
+.calculator-card button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #1e90ff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.calculator-card button:hover {
+  background: #1877d6;
+}
+
+/* Result */
+
+.bmi-result {
+  margin-top: 15px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.calc-desc{
+  font-size:0.9rem;
+  color:#666;
+  margin-bottom:15px;
+}
+.calc-desc{
+  font-size:0.9rem;
+  color:#666;
+  margin-bottom:18px;
+}

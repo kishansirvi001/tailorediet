@@ -1,13 +1,22 @@
 import React from "react";
 
 function Hero({ start }) {
+  const handleStart = () => {
+    if (start) {
+      start();
+    }
+  };
+
   return (
-    <div className="hero">
+    <section className="hero">
       <h1>Welcome to TailorDiet</h1>
       <p>Personalized diet plans for your goals.</p>
-      <button onClick={start}>Get Started</button>
-    </div>
+
+      <button onClick={handleStart}>
+        Start Now
+      </button>
+    </section>
   );
 }
 
-export default Hero; 
+export default Hero;

@@ -1,46 +1,51 @@
 import React from "react";
-import "./Features.css"; // make sure this CSS file exists
+import "./Features.css";
+import { FaAppleAlt, FaChartLine, FaUserMd } from "react-icons/fa";
 
 function Features() {
   const features = [
     {
+      icon: <FaAppleAlt />,
       title: "Custom Diet Plans",
-      description: "Personalized meal plans based on your goal and preference.",
+      description:
+        "Personalized meal plans designed according to your goals and dietary preferences.",
     },
     {
+      icon: <FaChartLine />,
       title: "Nutrition Tracking",
-      description: "Easily track calories, macros, and nutrients for better results.",
+      description:
+        "Track calories, macros, and nutrients easily to stay consistent with your health goals.",
     },
     {
-      title: "Expert Tips",
-      description: "Receive guidance and tips from nutrition experts.",
-    },
-    {
-      title: "Quick & Easy",
-      description: "Simple, easy-to-follow plans that fit your daily routine.",
-    },
-    {
-      title: "Flexible Choices",
-      description: "Choose vegetarian, vegan, keto, or balanced meals.",
-    },
-    {
-      title: "Results Guaranteed",
-      description: "Follow the plan and see measurable results over time.",
+      icon: <FaUserMd />,
+      title: "Expert Guidance",
+      description:
+        "Get professional diet recommendations backed by nutrition research.",
     },
   ];
 
   return (
-    <div className="features-container">
-  <div className="feature-grid">
-    {features.map((feature, index) => (
-      <div className="feature-card" key={index}>
-        <div className="icon">{feature.icon}</div>
-        <h3>{feature.title}</h3>
-        <p>{feature.description}</p>
+    <section className="features-section">
+      <div className="features-header">
+        <h2>Powerful Features</h2>
+        <p>
+          Everything you need to build healthy eating habits and achieve your
+          fitness goals faster.
+        </p>
       </div>
-    ))}
-  </div>
-</div>
+
+      <div className="features-container">
+        <div className="feature-grid">
+          {features.map((feature, index) => (
+            <div key={index} className="feature-card">
+              <div className="icon">{feature.icon}</div>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

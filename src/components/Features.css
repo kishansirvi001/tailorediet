@@ -1,114 +1,107 @@
-/* ===================== STEPS & FEATURES GRID ===================== */
-.steps,
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  justify-items: center; /* centers cards in grid */
-  margin-top: 40px;
-}
+/* ================= FEATURES SECTION ================= */
 
-/* Individual Step / Feature Card */
-.step-card,
-.feature-card {
-  background: linear-gradient(145deg, #ffffff, #f0f8ff);
-  padding: 30px 25px;
-  border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+.features-section {
+  width: 100%;
+  padding: 90px 20px;
+  background: #f6f8fb;
   display: flex;
   flex-direction: column;
-  align-items: center; /* centers all content */
+  align-items: center;
+}
+
+/* ================= HEADER ================= */
+
+.features-header {
+  max-width: 700px;
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.features-header h2 {
+  font-size: 2.6rem;
+  color: #0a1a2f;
+  margin-bottom: 15px;
+}
+
+.features-header p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* ================= GRID ================= */
+
+.features-container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 35px;
   justify-content: center;
-  min-height: 250px; /* consistent height */
 }
 
-/* Hover Effect */
-.step-card:hover,
+/* ================= CARD ================= */
+
+.feature-card {
+  background: #ffffff;
+  padding: 40px 25px;
+  border-radius: 16px;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+
+  transition: all 0.35s ease;
+}
+
 .feature-card:hover {
-  transform: translateY(-8px) scale(1.03);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-  background: linear-gradient(145deg, #e0f7ff, #c6e6ff);
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
 }
 
-/* Optional icon placeholder */
-.step-card .icon,
-.feature-card .icon {
+/* ================= ICON ================= */
+
+.icon {
   font-size: 2.5rem;
   color: #1e90ff;
-  margin-bottom: 15px;
-  transition: transform 0.3s ease, color 0.3s ease;
+  margin-bottom: 20px;
 }
 
-.step-card:hover .icon,
-.feature-card:hover .icon {
-  color: #00bfff;
-  transform: scale(1.2);
-}
+/* ================= TEXT ================= */
 
-/* Card Title */
-.step-card h3,
 .feature-card h3 {
-  color: #1e90ff;
-  margin-bottom: 15px;
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: 1.35rem;
+  color: #0a1a2f;
+  margin-bottom: 10px;
 }
 
-/* Card Text */
-.step-card p,
 .feature-card p {
-  color: #555;
   font-size: 1rem;
+  color: #555;
   line-height: 1.6;
-  text-align: center; /* ensures text is centered */
+  max-width: 280px;
 }
 
-/* ===================== RESPONSIVE ===================== */
+/* ================= RESPONSIVE ================= */
+
 @media (max-width: 1024px) {
-  .steps,
   .feature-grid {
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .step-card,
-  .feature-card {
-    padding: 25px 20px;
+  .feature-grid {
+    grid-template-columns: 1fr;
   }
-  .step-card h3,
-  .feature-card h3 {
-    font-size: 1.2rem;
-  }
-  .step-card p,
-  .feature-card p {
-    font-size: 0.95rem;
-  }
-}
-.feature-grid,
-.steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  justify-items: center;
-  margin: 0 auto;
-  max-width: 1200px;
-  padding: 0 15px; /* optional padding for small screens */
-}
-.features-container {
-  display: flex;
-  justify-content: center; /* centers the grid horizontally */
-  padding: 0 20px;         /* keeps some space from screen edges */
-  width: 100%;
-  box-sizing: border-box;
-}
 
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  max-width: 1200px;       /* keeps the content from stretching too far */
-  width: 100%;
+  .features-header h2 {
+    font-size: 2rem;
+  }
 }

@@ -1,0 +1,35 @@
+/* ================= CONTACT PAGE ================= */
+
+.contact-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 120px 20px 40px; /* space for fixed navbar */
+}
+
+/* Contact Card */
+.contact-card {
+  background: #ffffff;
+  max-width: 500px;
+  width: 100%;
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* Title */
+.contact-card h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #1e90ff;
+}
+
+/* Text */
+.contact-card p {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 10px 0;
+}
