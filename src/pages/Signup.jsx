@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import "./auth.css";
+import React, { useState } from "react"
 
 function Signup() {
 
