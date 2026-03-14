@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import "./Navbar.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
+
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <nav className="navbar">
@@ -17,44 +26,54 @@ function Navbar() {
       <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
 
         <li>
-          <NavLink 
-            to="/" 
-            onClick={() => setMenuOpen(false)}
-            className={({ isActive }) => isActive ? "active-link" : ""}
-          >
+          <NavLink to="/" onClick={() => setMenuOpen(false)}>
             Home
           </NavLink>
         </li>
 
         <li>
-          <NavLink 
-            to="/about"
-            onClick={() => setMenuOpen(false)}
-            className={({ isActive }) => isActive ? "active-link" : ""}
-          >
+          <NavLink to="/about" onClick={() => setMenuOpen(false)}>
             About
           </NavLink>
         </li>
 
         <li>
-          <NavLink 
-            to="/calculator"
-            onClick={() => setMenuOpen(false)}
-            className={({ isActive }) => isActive ? "active-link" : ""}
-          >
+          <NavLink to="/calculator" onClick={() => setMenuOpen(false)}>
             Calculator
           </NavLink>
         </li>
 
         <li>
-          <NavLink 
-            to="/contact"
-            onClick={() => setMenuOpen(false)}
-            className={({ isActive }) => isActive ? "active-link" : ""}
-          >
+          <NavLink to="/contact" onClick={() => setMenuOpen(false)}>
             Contact
           </NavLink>
         </li>
+
+        {/* If NOT logged in */}
+        {!token && (
+          <>
+            <li>
+              <NavLink to="/login" onClick={() => setMenuOpen(false)}>
+                Login
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/signup" onClick={() => setMenuOpen(false)}>
+                Signup
+              </NavLink>
+            </li>
+          </>
+        )}
+
+        {/* If logged in */}
+        {token && (
+          <li>
+            <button className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          </li>
+        )}
 
       </ul>
 
