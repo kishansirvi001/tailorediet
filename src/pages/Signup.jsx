@@ -1,64 +1,74 @@
-import React, { useState } from "react"
-import "./auth.css";
-function Signup() {
+// src/pages/Signup.jsx
+import React, { useState } from "react";
 
-  const [name,setName] = useState("");
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
+function Signup() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setLoading(true);
 
-    const res = await fetch("http://localhost:5000/api/auth/signup",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({name,email,password})
-    });
+    if (!email || !password) {
+      setMessage("All fields are required");
+      setLoading(false);
+      return;
+    }
 
-    const data = await res.json();
+    try {
+      const res = await fetch("http://127.0.0.1:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    alert("Signup successful");
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage("Signup successful! You can now log in.");
+        setEmail("");
+        setPassword("");
+      } else {
+        setMessage(data.error || "Signup failed");
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setMessage("Cannot connect to server. Make sure backend is running.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="auth-container">
-
-      <div className="auth-card">
-
-        <h2>Create Account</h2>
-        <p>Join TailorDiet and get your custom diet plan</p>
-
-        <form onSubmit={handleSignup}>
-
-          <input
-            type="text"
-            placeholder="Name"
-            onChange={(e)=>setName(e.target.value)}
-            required
-          />
-
+    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
+      <h2>Signup</h2>
+      {message && <p style={{ color: "red" }}>{message}</p>}
+      <form onSubmit={handleSignup}>
+        <div style={{ marginBottom: "10px" }}>
           <input
             type="email"
             placeholder="Email"
-            onChange={(e)=>setEmail(e.target.value)}
-            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: "100%", padding: "8px" }}
           />
-
+        </div>
+        <div style={{ marginBottom: "10px" }}>
           <input
             type="password"
             placeholder="Password"
-            onChange={(e)=>setPassword(e.target.value)}
-            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: "100%", padding: "8px" }}
           />
-
-          <button type="submit">Signup</button>
-
-        </form>
-
-      </div>
-
+        </div>
+        <button type="submit" disabled={loading} style={{ padding: "10px 20px" }}>
+          {loading ? "Signing up..." : "Signup"}
+        </button>
+      </form>
     </div>
   );
 }
