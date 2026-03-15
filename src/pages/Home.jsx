@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import Hero from "../components/Hero";
 import Features from "../components/Features";
 import Testimonials from "../components/Testimonials";
@@ -12,22 +11,24 @@ function Home() {
 
   const [start, setStart] = useState(false);
 
+  const handleStart = () => {
+    setStart(true);
+  };
+
   return (
     <div className="home">
 
-      {!start && (
+      {!start ? (
         <>
-          <Hero start={() => setStart(true)} />
+          <Hero start={handleStart} />
 
           <Features />
 
           <Testimonials />
 
-          <CTA start={() => setStart(true)} />
+          <CTA start={handleStart} />
         </>
-      )}
-
-      {start && (
+      ) : (
         <Questionnaire />
       )}
 

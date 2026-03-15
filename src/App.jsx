@@ -21,12 +21,14 @@ import "./components/Hero.css";
 import "./components/Features.css";
 import "./components/Testimonials.css";
 import "./components/Questionnaire.css";
+import "./components/CTA.css";
 
 /* Page styles */
 import "./pages/Home.css";
 import "./pages/About.css";
 import "./pages/Calculator.css";
 import "./pages/Contact.css";
+import "./pages/auth.css";
 
 function App() {
   return (

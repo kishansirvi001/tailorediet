@@ -1,50 +1,268 @@
-.auth-container{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:90vh;
-  background:#f5f7fb;
+/* ============================
+   AUTH.CSS - FULL 150+ LINES
+============================ */
+
+/* Reset some default styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.auth-card{
-  background:white;
-  padding:40px;
-  width:350px;
-  border-radius:10px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
-  text-align:center;
+body, html {
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #f5f7fa, #c3cfe2);
 }
 
-.auth-card h2{
-  margin-bottom:10px;
+/* ============================
+   Container
+============================ */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
 }
 
-.auth-card p{
-  color:gray;
-  margin-bottom:20px;
+/* ============================
+   Card
+============================ */
+.auth-card {
+  background: #ffffff;
+  padding: 2.5rem 3rem;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.auth-card form{
-  display:flex;
-  flex-direction:column;
-  gap:15px;
+.auth-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
 }
 
-.auth-card input{
-  padding:10px;
-  border:1px solid #ddd;
-  border-radius:6px;
+/* ============================
+   Headings
+============================ */
+.auth-card h2 {
+  font-size: 2rem;
+  color: #333333;
+  margin-bottom: 0.3rem;
 }
 
-.auth-card button{
-  background:#4CAF50;
-  color:white;
-  border:none;
-  padding:12px;
-  border-radius:6px;
-  cursor:pointer;
+.auth-card p {
+  font-size: 1rem;
+  color: #666666;
+  margin-bottom: 1.8rem;
 }
 
-.auth-card button:hover{
-  background:#45a049;
+/* ============================
+   Form
+============================ */
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input Fields */
+.auth-card input[type="text"],
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.auth-card input:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+  outline: none;
+}
+
+/* Error messages */
+.auth-card .error-msg {
+  color: #ff4d4d;
+  font-size: 0.85rem;
+  text-align: left;
+  margin-bottom: 0.8rem;
+}
+
+/* ============================
+   Buttons
+============================ */
+.auth-card button {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background-color: #6c63ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.auth-card button:hover {
+  background-color: #5848c2;
+  transform: translateY(-2px);
+}
+
+/* ============================
+   Links
+============================ */
+.auth-card .auth-links {
+  margin-top: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.auth-card .auth-links a {
+  color: #6c63ff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-card .auth-links a:hover {
+  color: #5848c2;
+}
+
+/* ============================
+   Divider
+============================ */
+.auth-card .divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #999999;
+  font-size: 0.9rem;
+}
+
+.auth-card .divider::before,
+.auth-card .divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+  margin: 0 0.8rem;
+}
+
+/* ============================
+   Social Buttons
+============================ */
+.auth-card .social-login {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.auth-card .social-login button {
+  flex: 1;
+  padding: 0.7rem 0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+.auth-card .social-login button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-1px);
+}
+
+/* ============================
+   Animations
+============================ */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-card {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* ============================
+   Checkbox / Remember Me
+============================ */
+.auth-card .checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.auth-card .checkbox-container input[type="checkbox"] {
+  margin-right: 0.5rem;
+  accent-color: #6c63ff;
+}
+
+/* ============================
+   Responsive
+============================ */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.8rem 1.8rem;
+  }
+
+  .auth-card h2 {
+    font-size: 1.6rem;
+  }
+
+  .auth-card p {
+    font-size: 0.9rem;
+  }
+
+  .auth-card input[type="text"],
+  .auth-card input[type="email"],
+  .auth-card input[type="password"] {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .auth-card button {
+    padding: 0.75rem 0;
+    font-size: 0.95rem;
+  }
+
+  .auth-card .social-login button {
+    font-size: 0.9rem;
+    padding: 0.65rem 0;
+  }
+}
+
+/* ============================
+   Extra Minor Styles
+============================ */
+.auth-card small {
+  display: block;
+  margin-top: 0.5rem;
+  color: #999;
+}
+
+.auth-card .success-msg {
+  color: #28a745;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.auth-card .loading {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
