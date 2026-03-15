@@ -28,7 +28,6 @@ import "./pages/Home.css";
 import "./pages/About.css";
 import "./pages/Calculator.css";
 import "./pages/Contact.css";
-import "./pages/auth.css";
 
 function App() {
   return (
