@@ -1,99 +1,47 @@
-/* ================= CTA SECTION ================= */
-
-.cta {
-  width: 100%;
-  max-width: 1200px;
-  margin: 80px auto;
-  padding: 70px 30px;
-
-  background: linear-gradient(135deg, #e6f2ff, #cce7ff);
-  border-radius: 16px;
-
+/* ========================
+   Call To Action Section
+======================== */
+.cta-section {
+  background: linear-gradient(135deg, #26a69a, #004d40);
+  color: #ffffff;
   text-align: center;
-
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  position: relative;
-  overflow: hidden;
+  padding: 80px 20px;
+  border-radius: 20px;
 }
 
-/* Heading */
-.cta h2 {
-  font-size: 2.4rem;
-  color: #0a1a2f;
+.cta-section h2 {
+  font-size: 2.5rem;
   margin-bottom: 25px;
-  line-height: 1.3;
 }
 
-/* Optional small text */
-.cta p {
-  font-size: 1.1rem;
-  color: #444;
+.cta-section p {
+  font-size: 1.2rem;
   margin-bottom: 35px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  color: #b2dfdb;
 }
 
-/* Button */
-.cta button {
-  padding: 15px 40px;
-  font-size: 1.15rem;
-
-  background: linear-gradient(135deg, #ff6347, #ff7a59);
-  color: white;
-
-  border: none;
+/* CTA Button */
+.cta-section .btn-primary {
+  background-color: #004d40;
+  color: #ffffff;
+  padding: 12px 30px;
+  font-size: 1.1rem;
   border-radius: 10px;
-
-  cursor: pointer;
-
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 15px rgba(255,99,71,0.35);
 }
 
-/* Hover effect */
-.cta button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 10px 25px rgba(255,99,71,0.45);
+.cta-section .btn-primary:hover {
+  background-color: #002f2b;
 }
 
-/* Click effect */
-.cta button:active {
-  transform: scale(0.98);
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 768px) {
-
-  .cta {
-    padding: 50px 20px;
-    margin: 60px 20px;
-  }
-
-  .cta h2 {
+/* ========================
+   Responsive
+======================== */
+@media (max-width: 576px) {
+  .cta-section h2 {
     font-size: 2rem;
   }
 
-  .cta p {
+  .cta-section p {
     font-size: 1rem;
   }
-
-  .cta button {
-    width: 100%;
-    max-width: 300px;
-  }
-
-}
-
-@media (max-width: 480px) {
-
-  .cta h2 {
-    font-size: 1.7rem;
-  }
-
-  .cta {
-    padding: 40px 15px;
-  }
-
 }

@@ -1,29 +1,39 @@
-
 import React from "react";
+import { useNavigate } from "react-router-dom"; // ✅ add this
 import "./Hero.css";
 
-function Hero({ start }) {
-
-  const handleStart = () => {
-    if (start) {
-      start();
-    }
-  };
+function Hero() {
+  const navigate = useNavigate(); // ✅ add this
 
   return (
     <section className="hero">
-      <div className="hero-content">
+      <div className="container hero-container">
 
-        <h1>Build Your Perfect Diet Plan</h1>
+        {/* LEFT CONTENT */}
+        <div className="hero-left">
+          <h1>Smart Diet & Health Calculator</h1>
 
-        <p>
-          TailorDiet creates personalized diet plans based on your
-          body, lifestyle, and fitness goals.
-        </p>
+          <p>
+            Generate personalized diet plans and calculate your health metrics instantly.
+          </p>
 
-        <button className="hero-btn" onClick={handleStart}>
-          Start Now
-        </button>
+          <div className="hero-buttons">
+            <button
+              className="btn-primary"
+              onClick={() => navigate("/questionnaire")} // ✅ add this
+            >
+              Get Started
+            </button>
+
+            <button className="btn-secondary">Learn More</button>
+            <button className="btn-outline">Try Demo</button>
+          </div>
+        </div>
+
+        {/* RIGHT IMAGE */}
+        <div className="hero-right">
+          <img src="/images/diet-hero.jpg" alt="Healthy Diet" />
+        </div>
 
       </div>
     </section>

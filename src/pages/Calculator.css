@@ -1,185 +1,127 @@
-/* Calculator Container */
-.calculator-card {
-  width: 100%;
-  max-width: 500px;
-  margin: 40px auto;
-  padding: 40px 30px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.calculator-page{
+  padding:90px 20px;
+  background:#f6fffd;
+  min-height:100vh;
+
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:35px;
+
+  max-width:1200px;
+  margin:auto;
 }
 
-.calculator-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+/* calculator card */
+
+.calculator-card{
+  background:white;
+  padding:32px;
+  border-radius:14px;
+  box-shadow:0 15px 35px rgba(0,0,0,0.08);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  transition:all 0.3s ease;
 }
 
-/* Headings */
-.calculator-card h2 {
-  font-size: 2rem;
-  color: #27ae60; /* TailorDiet green theme */
-  margin-bottom: 25px;
+.calculator-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 20px 45px rgba(20,184,166,0.15);
 }
 
-/* Inputs and Selects */
+/* titles */
+
+.calculator-card h1{
+  font-size:24px;
+  color:#0f766e;
+  font-weight:700;
+}
+
+.calc-desc{
+  font-size:14px;
+  color:#64748b;
+  margin-bottom:12px;
+}
+
+/* inputs */
+
 .calculator-card input,
-.calculator-card select {
-  width: 100%;
-  padding: 12px 15px;
-  margin: 12px 0 20px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  outline: none;
-  transition: border-color 0.3s;
+.calculator-card select{
+  padding:12px;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  font-size:14px;
+  outline:none;
+  background:#f9fafb;
+  transition:0.25s;
 }
 
 .calculator-card input:focus,
-.calculator-card select:focus {
-  border-color: #27ae60;
+.calculator-card select:focus{
+  border-color:#14b8a6;
+  box-shadow:0 0 0 2px rgba(20,184,166,0.2);
 }
 
-/* Buttons */
-.calculator-card button {
-  width: 100%;
-  padding: 15px;
-  font-size: 1.1rem;
-  background-color: #27ae60;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+/* button */
+
+.calculator-card button{
+  margin-top:12px;
+  padding:13px;
+  background:#14b8a6;
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 6px 15px rgba(20,184,166,0.3);
 }
 
-.calculator-card button:hover {
-  background-color: #fd0000;
-  transform: scale(1.05);
+.calculator-card button:hover{
+  background:#0f766e;
+  transform:translateY(-2px);
+  box-shadow:0 10px 25px rgba(20,184,166,0.4);
 }
 
-/* Result Display */
-.result,
-.bmi-result {
-  margin-top: 25px;
-  padding: 20px;
-  background-color: #dff0d8;
-  border: 1px solid #a6d8a8;
-  border-radius: 10px;
-  color: #3c763d;
-  font-size: 1.1rem;
-  text-align: center;
-  min-height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* result box */
+
+.bmi-result{
+  margin-top:18px;
+  padding:18px;
+  background:#ecfdf5;
+  border-radius:10px;
+  text-align:center;
+  border:1px solid #ccfbf1;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .calculator-card {
-    padding: 30px 20px;
+.bmi-result h2{
+  font-size:20px;
+  color:#0f766e;
+}
+
+/* responsive */
+
+@media (max-width:600px){
+
+  .calculator-page{
+    padding:55px 15px;
+    gap:22px;
   }
 
-  .calculator-card h2 {
-    font-size: 1.8rem;
+  .calculator-card{
+    padding:24px;
   }
 
-  .calculator-card button {
-    padding: 12px;
-    font-size: 1rem;
-  }
 }
-
-@media (max-width: 480px) {
-  .calculator-card {
-    padding: 25px 15px;
-  }
-
-  .calculator-card h2 {
-    font-size: 1.5rem;
-  }
-
-  .calculator-card input,
-  .calculator-card select,
-  .calculator-card button {
-    font-size: 0.95rem;
-    padding: 10px;
-  }
-}
-/* ================= CALCULATOR PAGE ================= */
-
-.calculator-page {
-  min-height: 100vh;
-  padding: 120px 40px 60px;
-  background-color: #f9f9f9;
-
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-}
-
-/* Calculator Card */
-
-.calculator-card {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-  text-align: center;
-}
-
-/* Title */
-.calculator-card h1 {
-  font-size: 1.4rem;
-  color: #1e90ff;
-  margin-bottom: 10px;
-}
-
-/* Inputs */
-
 .calculator-card input,
 .calculator-card select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-}
-
-/* Button */
-
-.calculator-card button {
-  width: 100%;
   padding: 12px;
-  border: none;
-  background: #1e90ff;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  margin-top: 10px;
-}
-
-.calculator-card button:hover {
-  background: #1877d6;
-}
-
-/* Result */
-
-.bmi-result {
-  margin-top: 15px;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-.calc-desc{
-  font-size:0.9rem;
-  color:#666;
-  margin-bottom:15px;
-}
-.calc-desc{
-  font-size:0.9rem;
-  color:#666;
-  margin-bottom:18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #f9fafb;
+  color: #111;   /* 🔥 FIX: make text visible */
 }

@@ -1,80 +1,57 @@
 import React from "react";
 import "./Features.css";
 
+/* Import icons from react-icons */
+import { FaAppleAlt, FaRunning, FaHeartbeat } from "react-icons/fa";
+
 function Features() {
+  const featuresData = [
+    {
+      icon: <FaAppleAlt />,
+      title: "Healthy Nutrition",
+      description: "Personalized meal plans tailored to your body type and goals.",
+    },
+    {
+      icon: <FaRunning />,
+      title: "Fitness Tracking",
+      description: "Track your workouts and monitor progress over time.",
+    },
+    {
+      icon: <FaHeartbeat />,
+      title: "Health Metrics",
+      description: "Calculate BMI, BMR, calories, and ideal weight easily.",
+    },
+    {
+      icon: <FaAppleAlt />,
+      title: "Diet Tips",
+      description: "Expert-backed tips to improve your diet and lifestyle.",
+    },
+    {
+      icon: <FaRunning />,
+      title: "Exercise Plans",
+      description: "Customized routines for beginners and advanced users.",
+    },
+    {
+      icon: <FaHeartbeat />,
+      title: "Wellness Insights",
+      description: "Understand your body and health trends over time.",
+    },
+  ];
+
   return (
     <section className="features-section">
-
-      <div className="features-container">
-
-        <div className="features-header">
-          <h2>Why Choose TailorDiet</h2>
-          <p>
-            Smart tools that help you build the perfect diet plan
-            based on your lifestyle and health goals.
-          </p>
+      <div className="container">
+        <h2>Our Key Features</h2>
+        <div className="features-container">
+          {featuresData.map((feature, index) => (
+            <div className="feature-card" key={index}>
+              <div className="icon">{feature.icon}</div>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </div>
+          ))}
         </div>
-
-        <div className="feature-grid">
-
-          <div className="feature-card">
-            <div className="icon-circle">🥗</div>
-            <h3>Personalized Diet Plans</h3>
-            <p>
-              Get diet recommendations tailored to your body,
-              goals, and daily routine.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="icon-circle">⚡</div>
-            <h3>Instant Calculations</h3>
-            <p>
-              Calculate calories, BMI, and nutritional needs
-              instantly using our smart tools.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="icon-circle">📊</div>
-            <h3>Track Your Progress</h3>
-            <p>
-              Monitor your diet performance and improve your
-              health step by step.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="icon-circle">📱</div>
-            <h3>Mobile Friendly</h3>
-            <p>
-              Use TailorDiet easily on any device with a
-              fully responsive design.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="icon-circle">🧠</div>
-            <h3>Smart Recommendations</h3>
-            <p>
-              Advanced algorithms help suggest the best
-              nutrition strategy for you.
-            </p>
-          </div>
-
-          <div className="feature-card">
-            <div className="icon-circle">🚀</div>
-            <h3>Reach Your Goals Faster</h3>
-            <p>
-              Stay consistent with structured plans that
-              help you achieve results quickly.
-            </p>
-          </div>
-
-        </div>
-
       </div>
-
     </section>
   );
 }

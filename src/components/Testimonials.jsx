@@ -1,5 +1,5 @@
 import React from "react";
-
+import "./Testimonials.css";
 function Testimonials() {
  const testimonials = [
   {
@@ -29,17 +29,32 @@ function Testimonials() {
 ];
 
   return (
-    <div className="testimonials">
-      <h2>What Our Users Say</h2>
-      <div className="testimonial-grid">
-        {testimonials.map((item, index) => (
-          <div className="testimonial-card" key={index}>
-            <p>"{item.feedback}"</p>
-            <h4>- {item.name}</h4>
-          </div>
-        ))}
-      </div>
+    <section className="testimonials">
+
+<h2>What Our Users Say</h2>
+
+<div className="testimonial-slider">
+  <div className="testimonial-track">
+
+    <div className="testimonial-card">
+      <p>"This diet calculator helped me plan my meals perfectly!"</p>
+      <h4>Rahul Sharma</h4>
     </div>
+
+    <div className="testimonial-card">
+      <p>"Very easy to use and the results are accurate."</p>
+      <h4>Priya Patel</h4>
+    </div>
+
+    <div className="testimonial-card">
+      <p>"Amazing tool for tracking calories and diet plans."</p>
+      <h4>Amit Verma</h4>
+    </div>
+
+  </div>
+</div>
+
+</section>
   );
 }
 

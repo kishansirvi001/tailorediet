@@ -1,59 +1,112 @@
-/* Main page container */
-.page-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
+/* ========================
+   Home Page Sections
+======================== */
+.home {
   width: 100%;
-  overflow-x: hidden;
 }
 
-/* General spacing for all sections */
-.page-container > * {
-  margin-bottom: 80px;
+/* ========================
+   Hero Section Override
+======================== */
+.hero-section {
+  margin-top: 70px; /* space below fixed navbar */
 }
 
-/* Hero section spacing override */
-.page-container > .hero {
-  margin-bottom: 100px;
+/* ========================
+   About Section
+======================== */
+.about-section {
+  background-color: #e0f7f5; /* light teal */
+  color: #004d40; /* dark teal text */
+  padding: 80px 0;
 }
 
-/* HowItWorks section */
-.page-container > .how-it-works {
-  padding: 60px 20px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  max-width: 1000px;
-  margin: 0 auto;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+.about-section h2 {
+  color: #00796b; /* medium teal headings */
+  margin-bottom: 20px;
 }
 
-/* Features section */
-.page-container > .features {
-  padding: 60px 20px;
-  max-width: 1000px;
-  margin: 0 auto;
+.about-section p {
+  color: #00695c;
+  margin-bottom: 15px;
+  line-height: 1.6;
 }
 
-/* Testimonials section spacing */
-.page-container > .testimonials {
-  padding: 60px 20px;
-  background-color: #f9f9f9;
-}
-
-/* CTA section */
-.page-container > .cta {
-  padding: 60px 20px;
-  background-color: #007bff;
+/* ========================
+   Testimonials Section
+======================== */
+.testimonials-section {
+  background-color: #004d40; /* dark teal */
   color: #ffffff;
-  text-align: center;
-  border-radius: 12px;
+  padding: 80px 0;
 }
 
-/* Questionnaire override when active */
-.page-container > .questionnaire {
-  padding: 80px 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 80vh;
+.testimonials-section h2 {
+  color: #26a69a; /* light teal heading */
+  margin-bottom: 30px;
+}
+
+.testimonials-section .testimonial {
+  background-color: #00796b; /* medium teal cards */
+  color: #ffffff;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.testimonials-section .testimonial p {
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.testimonials-section .testimonial h4 {
+  font-weight: 700;
+  color: #e0f7f5;
+}
+
+/* ========================
+   CTA Section
+======================== */
+.cta-section {
+  background: linear-gradient(135deg, #26a69a, #00796b); /* gradient teal */
+  color: #ffffff;
+  padding: 80px 0;
+  text-align: center;
+  border-radius: 20px;
+}
+
+.cta-section h2 {
+  margin-bottom: 25px;
+  font-size: 2.5rem;
+}
+
+.cta-section p {
+  margin-bottom: 30px;
+  font-size: 1.2rem;
+  color: #e0f7f5;
+}
+
+.cta-section .btn {
+  padding: 12px 28px;
+  font-size: 1rem;
+}
+
+/* ========================
+   Responsive Adjustments
+======================== */
+@media (max-width: 992px) {
+  .about-section, 
+  .testimonials-section, 
+  .cta-section {
+    padding: 60px 0;
+  }
+
+  .cta-section h2 {
+    font-size: 2rem;
+  }
+
+  .cta-section p {
+    font-size: 1rem;
+  }
 }

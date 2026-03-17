@@ -1,70 +1,153 @@
+
+/* ========================
+   Hero Section - Modernized
+======================== */
 .hero {
-  height: 80vh;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  /* Softer, more professional teal gradient */
+  background: linear-gradient(135deg, #006d77 0%, #229a9a 100%); 
+  color: #ffffff;
+  padding: 100px 0; /* Slightly more breathing room */
+  position: relative;
+  overflow: hidden;
+  margin-top: 60px;
+}
+
+.hero-container {
   display: flex;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 20px;
-  color: white;
+  justify-content: space-between;
+  gap: 60px; /* Increased gap for a premium feel */
+  flex-wrap: wrap;
+  max-width: 1200px; /* Adjust based on your layout */
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.hero-content {
-  max-width: 700px;
+/* ========================
+   Hero Left (Content)
+======================== */
+.hero-left {
+  flex: 1.2; /* Give text a bit more space */
 }
 
-.hero h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
-  font-weight: 700;
+.hero-left h1 {
+  font-size: 3.5rem; /* Larger for better hierarchy */
+  font-weight: 800;
+  margin-bottom: 24px;
+  line-height: 1.1;
+  letter-spacing: -1px;
 }
 
-.hero p {
-  font-size: 18px;
-  margin-bottom: 30px;
+.hero-left p {
+  font-size: 1.25rem;
+  margin-bottom: 40px;
+  color: rgba(255, 255, 255, 0.9); /* Slightly transparent white for elegance */
+  max-width: 520px; /* Prevents long text lines */
   line-height: 1.6;
 }
 
-.hero-btn {
-  background: white;
-  color: #16a34a;
-  border: none;
-  padding: 14px 32px;
-  font-size: 16px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.hero-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-/* Responsive */
-
-@media (max-width:768px) {
-
-  .hero h1 {
-    font-size: 36px;
-  }
-
-  .hero p {
-    font-size: 16px;
-  }
-
-}
-.hero {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+/* ========================
+   Hero Buttons - High Contrast
+======================== */
+.hero-buttons {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-  color: white;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-.hero{
-margin-top:-1px;
+
+.hero-buttons .btn {
+  padding: 14px 28px;
+  border-radius: 12px; /* Softer corners */
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* PRIMARY CTA: The "Eye-Catcher" */
+.hero-buttons .btn-primary {
+  background-color: #ff7e5f; /* Sunset Coral */
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(255, 126, 95, 0.3);
+  border: none;
+}
+
+.hero-buttons .btn-primary:hover {
+  background-color: #ff6b4a;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 25px rgba(255, 126, 95, 0.4);
+}
+
+/* SECONDARY: Glass Style */
+.hero-buttons .btn-secondary {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.hero-buttons .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+}
+
+/* OUTLINE / DEMO */
+.hero-buttons .btn-outline {
+  background-color: transparent;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.hero-buttons .btn-outline:hover {
+  border-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+}
+
+/* ========================
+   Hero Right (Image)
+======================== */
+.hero-right {
+  flex: 1;
+  position: relative;
+}
+
+.hero-right img {
+  width: 100%;
+  max-width: 540px;
+  border-radius: 30px; /* More modern rounding */
+  /* Tinted shadow feels more natural than black */
+  box-shadow: 0 30px 60px rgba(0, 77, 64, 0.4); 
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.hero-right img:hover {
+  transform: scale(1.02) rotate(1deg);
+}
+
+/* ========================
+   Responsive Hero
+======================== */
+@media (max-width: 992px) {
+  .hero {
+    padding: 60px 0;
+  }
+  
+  .hero-container {
+    flex-direction: column; /* Normal stack is usually better for reading */
+    text-align: center;
+  }
+
+  .hero-left h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-left p {
+    margin: 0 auto 30px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
 }

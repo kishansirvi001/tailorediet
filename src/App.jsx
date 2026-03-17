@@ -1,8 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+/* Global styles */
+import "./App.css";
+
 /* Components */
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar"; // ✅ Navbar import
+import Questionnaire from "./components/Questionnaire";
 
 /* Pages */
 import Home from "./pages/Home";
@@ -12,12 +16,7 @@ import Contact from "./pages/Contact";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 
-/* Global styles */
-import "./App.css";
-
 /* Component styles */
-import "./components/Navbar.css";
-import "./components/Hero.css";
 import "./components/Features.css";
 import "./components/Testimonials.css";
 import "./components/Questionnaire.css";
@@ -43,11 +42,14 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/questionnaire" element={<Questionnaire />} />
 
-          {/* Auth Routes */}
+          {/* Authentication Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
+          {/* 404 Page fallback */}
+          <Route path="*" element={<h1 style={{ textAlign: "center", marginTop: "50px", color: "#004d40" }}>404 - Page Not Found</h1>} />
         </Routes>
 
       </div>

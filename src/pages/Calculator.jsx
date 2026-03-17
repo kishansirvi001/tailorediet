@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Calculator.css"; // Correct way to import CSS
 
 function Calculator() {
 

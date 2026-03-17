@@ -1,113 +1,169 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import "./Questionnaire.css";
 
 function Questionnaire() {
-  const [goal, setGoal] = useState("");
-  const [diet, setDiet] = useState("");
-  const [activity, setActivity] = useState("");
-  const [targetWeight, setTargetWeight] = useState("");
+  const [step, setStep] = useState(1);
+
+  const [form, setForm] = useState({
+    age: "",
+    gender: "",
+    height: "",
+    weight: "",
+    goal: "",
+    activity: "",
+    diet: ""
+  });
+
   const [plan, setPlan] = useState("");
 
-  // Auto-fetch diet plan whenever inputs change
-  useEffect(() => {
-    const fetchPlan = async () => {
-      if (!goal || !diet || !activity) return;
+  const handleChange = (key, value) => {
+    setForm({ ...form, [key]: value });
+  };
 
-      try {
-        const response = await fetch(
-          `http://localhost:5000/diet?goal=${goal}&diet=${diet}&activity=${activity}&weight=${targetWeight}`
-        );
-        const data = await response.json();
-        setPlan(data.plan);
-      } catch (err) {
-        console.error(err);
-        setPlan("Unable to fetch diet plan.");
-      }
-    };
+  const next = () => setStep(step + 1);
+  const back = () => setStep(step - 1);
 
-    fetchPlan();
-  }, [goal, diet, activity, targetWeight]);
+  const generatePlan = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/diet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(form)
+      });
+
+      const data = await res.json();
+      setPlan(data.plan);
+      setStep(5);
+    } catch (err) {
+      setPlan("Error generating plan");
+      setStep(5);
+    }
+  };
 
   return (
-    <div className="page" style={{ maxWidth: "800px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "30px" }}>TailorDiet Planner</h1>
+    <div className="q-container">
 
-      <div className="form" style={{ display: "grid", gap: "20px" }}>
-        <div>
-          <label>Your Goal</label>
-          <select onChange={e => setGoal(e.target.value)} value={goal} style={{ width: "100%", padding: "8px" }}>
-            <option value="">Select Goal</option>
-            <option value="weight-loss">Weight Loss</option>
-            <option value="muscle">Muscle Gain</option>
-            <option value="maintain">Maintain Weight</option>
-          </select>
-        </div>
+      {/* Progress */}
+      <div className="progress">
+        Step {step} of 5
+      </div>
 
-        <div>
-          <label>Target Weight Change (kg)</label>
+      {/* STEP 1 */}
+      {step === 1 && (
+        <div className="card">
+          <h2>Basic Info</h2>
+
           <input
+            placeholder="Age"
             type="number"
-            value={targetWeight}
-            onChange={e => setTargetWeight(e.target.value)}
-            placeholder="e.g., 5"
-            style={{ width: "100%", padding: "8px" }}
+            value={form.age}
+            onChange={(e) => handleChange("age", e.target.value)}
           />
-        </div>
 
-        <div>
-          <label>Activity Level</label>
-          <select onChange={e => setActivity(e.target.value)} value={activity} style={{ width: "100%", padding: "8px" }}>
-            <option value="">Select Activity</option>
-            <option value="Sedentary">Sedentary</option>
-            <option value="Light">Light</option>
-            <option value="Moderate">Moderate</option>
-            <option value="Active">Active</option>
+          <select onChange={(e) => handleChange("gender", e.target.value)}>
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
           </select>
-        </div>
 
-        <div>
-          <label>Diet Preference</label>
-          <select onChange={e => setDiet(e.target.value)} value={diet} style={{ width: "100%", padding: "8px" }}>
+          <button onClick={next}>Next</button>
+        </div>
+      )}
+
+      {/* STEP 2 */}
+      {step === 2 && (
+        <div className="card">
+          <h2>Body Details</h2>
+
+          <input
+            placeholder="Height (cm)"
+            type="number"
+            value={form.height}
+            onChange={(e) => handleChange("height", e.target.value)}
+          />
+
+          <input
+            placeholder="Weight (kg)"
+            type="number"
+            value={form.weight}
+            onChange={(e) => handleChange("weight", e.target.value)}
+          />
+
+          <div className="btns">
+            <button onClick={back}>Back</button>
+            <button onClick={next}>Next</button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 3 */}
+      {step === 3 && (
+        <div className="card">
+          <h2>Your Goal</h2>
+
+          <select onChange={(e) => handleChange("goal", e.target.value)}>
+            <option value="">Select Goal</option>
+            <option value="loss">Weight Loss</option>
+            <option value="gain">Muscle Gain</option>
+            <option value="maintain">Maintain</option>
+          </select>
+
+          <select onChange={(e) => handleChange("activity", e.target.value)}>
+            <option value="">Activity Level</option>
+            <option>Sedentary</option>
+            <option>Light</option>
+            <option>Moderate</option>
+            <option>Active</option>
+          </select>
+
+          <div className="btns">
+            <button onClick={back}>Back</button>
+            <button onClick={next}>Next</button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 4 */}
+      {step === 4 && (
+        <div className="card">
+          <h2>Diet Preference</h2>
+
+          <select onChange={(e) => handleChange("diet", e.target.value)}>
             <option value="">Select Diet</option>
-            <option value="Vegetarian">Vegetarian</option>
-            <option value="Vegan">Vegan</option>
-            <option value="Keto">Keto</option>
-            <option value="None">None</option>
+            <option>Vegetarian</option>
+            <option>Non-Vegetarian</option>
+            <option>Vegan</option>
+            <option>Keto</option>
           </select>
-        </div>
-      </div>
-<div className="result" style={{ marginTop: "40px" }}>
-  <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Your Personalized Indian Diet Plan</h2>
 
-  <div
-    style={{
-      display: "flex",
-      flexWrap: "wrap",      // wrap cards to next line if space is not enough
-      gap: "15px",
-      justifyContent: "center",
-      background: "#e6f3d9",
-      padding: "20px",
-      borderRadius: "12px",
-    }}
-  >
-    {plan.split("\n").filter(line => line.trim() !== "").map((line, index) => (
-      <div
-        key={index}
-        style={{
-          background: "#ffffff",
-          padding: "15px 20px",
-          borderRadius: "10px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-          minWidth: "150px",     // ensures cards have reasonable width
-          flex: "1 1 150px",     // allows cards to shrink/grow
-          textAlign: "center",
-        }}
-      >
-        {line}
-      </div>
-    ))}
-  </div>
-</div>
-      
+          <div className="btns">
+            <button onClick={back}>Back</button>
+            <button onClick={generatePlan}>Generate Plan</button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 5 RESULT */}
+      {step === 5 && (
+        <div className="card result">
+          <h2>Your Indian Diet Plan 🇮🇳</h2>
+
+          {plan ? (
+            <div className="plan">
+              {plan.split("\n").map((item, i) => (
+                <div key={i} className="plan-card">
+                  {item}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>Generating...</p>
+          )}
+        </div>
+      )}
+
     </div>
   );
 }
