@@ -1,147 +1,129 @@
-/* Page Container */
-.page {
-  max-width: 800px;
-  margin: 0 auto;
-  font-family: Arial, sans-serif;
-  padding: 40px 20px;
-  color: #000;
-  background: #fff;
+/* Page Background */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #f6f9fc, #eef2f7);
 }
 
-/* Heading */
-.page h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 34px;
-  border-bottom: 2px solid #000;
-  display: inline-block;
-  padding-bottom: 8px;
-}
-
-/* Form Layout */
-.form {
-  display: grid;
-  gap: 20px;
-}
-
-/* Labels */
-.form label {
-  font-weight: 600;
-  margin-bottom: 5px;
-  display: block;
-}
-
-/* Inputs & Selects */
-.form input,
-.form select {
-  width: 100%;
+/* Container */
+.q-container {
+  max-width: 520px;
+  margin: 80px auto;
   padding: 10px;
-  border: 2px solid #000;
-  border-radius: 6px;
-  background: #fff;
-  color: #000;
-  font-size: 15px;
 }
 
-/* Focus effect */
-.form input:focus,
-.form select:focus {
+/* Progress */
+.progress {
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Card */
+.card {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Headings */
+.card h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #222;
+}
+
+/* Inputs */
+input, select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  transition: 0.2s ease;
+}
+
+input:focus, select:focus {
   outline: none;
-  background: #000;
-  color: #fff;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+}
+
+/* Buttons */
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4caf50, #43a047);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* Back button style */
+.btns button:first-child {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btns button:first-child:hover {
+  background: #d6d6d6;
+}
+
+/* Button group */
+.btns {
+  display: flex;
+  gap: 10px;
 }
 
 /* Result Section */
 .result {
-  margin-top: 40px;
-}
-
-/* Result Heading */
-.result h2 {
   text-align: center;
-  margin-bottom: 20px;
 }
 
-/* Diet Cards Container */
-.diet-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
-  padding: 20px;
-  border: 2px solid #000;
-  border-radius: 12px;
-}
-
-/* Diet Cards */
-.diet-card {
-  background: #fff;
-  padding: 15px 20px;
-  border-radius: 10px;
-  border: 2px solid #000;
-  min-width: 150px;
-  flex: 1 1 150px;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-/* Hover */
-.diet-card:hover {
-  background: #000;
-  color: #fff;
-  transform: translateY(-3px);
-
-}
-.q-container {
-  max-width: 500px;
-  margin: 100px auto;
-  font-family: Arial;
-}
-
-.card {
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-input, select {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-button {
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #ff7043;
-  color: white;
-  cursor: pointer;
-}
-
-.btns {
-  display: flex;
-  justify-content: space-between;
-}
-
-.progress {
-  text-align: center;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
+/* Plan container */
 .plan {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 15px;
 }
 
+/* Plan Cards */
 .plan-card {
-  background: #e8f5e9;
-  padding: 10px;
-  border-radius: 8px;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: 0.25s;
+}
+
+.plan-card:hover {
+  background: #4caf50;
+  color: white;
+  transform: scale(1.03);
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .plan {
+    grid-template-columns: 1fr;
+  }
 }
