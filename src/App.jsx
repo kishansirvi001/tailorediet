@@ -7,7 +7,7 @@ import "./App.css";
 /* Components */
 import Navbar from "./components/Navbar"; // ✅ Navbar import
 import Questionnaire from "./components/Questionnaire";
-import Footer from "./components/footer";
+import footer from "./components/footer";
 
 /* Pages */
 import Home from "./pages/Home";
