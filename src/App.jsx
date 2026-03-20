@@ -7,6 +7,7 @@ import "./App.css";
 /* Components */
 import Navbar from "./components/Navbar"; // ✅ Navbar import
 import Questionnaire from "./components/Questionnaire";
+import Footer from "./components/footer";
 
 /* Pages */
 import Home from "./pages/Home";
@@ -20,7 +21,6 @@ import Login from "./pages/Login";
 import "./components/Features.css";
 import "./components/Testimonials.css";
 import "./components/Questionnaire.css";
-import "./components/CTA.css";
 
 /* Page styles */
 import "./pages/Home.css";
@@ -33,28 +33,23 @@ function App() {
     <Router>
       <div className="App">
 
-        {/* Navbar always visible */}
         <Navbar />
 
-        {/* Page Routes */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/questionnaire" element={<Questionnaire />} />
-
-          {/* Authentication Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-
-          {/* 404 Page fallback */}
-          <Route path="*" element={<h1 style={{ textAlign: "center", marginTop: "50px", color: "#004d40" }}>404 - Page Not Found</h1>} />
         </Routes>
+
+        {/* ✅ ADD THIS */}
+        <Footer />
 
       </div>
     </Router>
   );
 }
-
 export default App;

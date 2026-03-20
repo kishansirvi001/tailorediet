@@ -1,49 +1,66 @@
-/* Page Background */
+/* ========================
+   PAGE BACKGROUND
+======================== */
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #f6f9fc, #eef2f7);
+  background: linear-gradient(120deg, #e0f7f5, #ffffff);
 }
 
-/* Container */
+/* ========================
+   CONTAINER
+======================== */
 .q-container {
   max-width: 520px;
-  margin: 80px auto;
+  margin: 100px auto; /* 👇 space for navbar */
   padding: 10px;
 }
 
-/* Progress */
+/* ========================
+   PROGRESS
+======================== */
 .progress {
   text-align: center;
   margin-bottom: 25px;
   font-weight: 600;
-  color: #555;
+  color: #004d40;
 }
 
-/* Card */
+/* ========================
+   CARD (GLASS STYLE)
+======================== */
 .card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+
   padding: 30px;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  border-radius: 20px;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+
   display: flex;
   flex-direction: column;
   gap: 18px;
+
   transition: 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
 }
 
-/* Headings */
+/* ========================
+   HEADINGS
+======================== */
 .card h2 {
   margin: 0;
   font-size: 22px;
-  color: #222;
+  color: #004d40;
 }
 
-/* Inputs */
+/* ========================
+   INPUTS
+======================== */
 input, select {
   padding: 12px;
   border-radius: 10px;
@@ -54,35 +71,40 @@ input, select {
 
 input:focus, select:focus {
   outline: none;
-  border-color: #4caf50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+  border-color: #00bfa5;
+  box-shadow: 0 0 0 2px rgba(0, 191, 165, 0.2);
 }
 
-/* Buttons */
+/* ========================
+   BUTTONS (THEME MATCH)
+======================== */
 button {
   padding: 12px;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #4caf50, #43a047);
+  border-radius: 25px;
+
+  background: linear-gradient(135deg, #00bfa5, #00796b);
   color: white;
+
   font-weight: 600;
   cursor: pointer;
-  transition: 0.25s ease;
+
+  transition: 0.3s ease;
 }
 
 button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 121, 107, 0.3);
 }
 
-/* Back button style */
+/* Back button */
 .btns button:first-child {
-  background: #e0e0e0;
-  color: #333;
+  background: #e0f2f1;
+  color: #004d40;
 }
 
 .btns button:first-child:hover {
-  background: #d6d6d6;
+  background: #b2dfdb;
 }
 
 /* Button group */
@@ -91,12 +113,16 @@ button:hover {
   gap: 10px;
 }
 
-/* Result Section */
+/* ========================
+   RESULT
+======================== */
 .result {
   text-align: center;
 }
 
-/* Plan container */
+/* ========================
+   PLAN GRID
+======================== */
 .plan {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -104,26 +130,39 @@ button:hover {
   margin-top: 15px;
 }
 
-/* Plan Cards */
+/* ========================
+   PLAN CARD
+======================== */
 .plan-card {
-  background: #ffffff;
-  padding: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 14px;
   border-radius: 12px;
-  border: 1px solid #eee;
+
+  border: 1px solid #e0f2f1;
+
   font-size: 14px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  transition: 0.25s;
+
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+
+  transition: 0.3s ease;
 }
 
+/* Hover */
 .plan-card:hover {
-  background: #4caf50;
+  background: linear-gradient(135deg, #00bfa5, #00796b);
   color: white;
-  transform: scale(1.03);
+  transform: scale(1.05);
 }
 
-/* Mobile */
+/* ========================
+   MOBILE
+======================== */
 @media (max-width: 500px) {
   .plan {
     grid-template-columns: 1fr;
+  }
+
+  .q-container {
+    margin: 90px 15px;
   }
 }

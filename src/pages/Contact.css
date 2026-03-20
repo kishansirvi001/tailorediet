@@ -1,43 +1,87 @@
-.contact-page{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#f7f7f7;
-  padding:40px 20px;
+/* ========================
+   Contact Page Container
+======================== */
+.contact-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(to right, #e0f7f5, #ffffff);
+  padding: 60px 20px;
 }
 
-/* contact card */
+/* ========================
+   Contact Card
+======================== */
+.contact-card {
+  background: white;
+  padding: 45px 35px;
+  border-radius: 18px;
 
-.contact-card{
-  background:white;
-  padding:40px;
-  border-radius:12px;
-  max-width:500px;
-  width:100%;
-  text-align:center;
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+
+  box-shadow: 0 15px 40px rgba(0, 77, 64, 0.12);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-/* title */
-
-.contact-card h1{
-  font-size:32px;
-  margin-bottom:20px;
-  color:#111;
+/* subtle top border accent */
+.contact-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(to right, #004d40, #00bfa5);
 }
 
-/* text */
-
-.contact-card p{
-  font-size:16px;
-  color:#444;
-  margin-bottom:10px;
+/* ========================
+   Title
+======================== */
+.contact-card h1 {
+  font-size: 32px;
+  margin-bottom: 15px;
+  color: #004d40;
 }
 
-/* subtle hover */
+/* ========================
+   Text
+======================== */
+.contact-card p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 12px;
+}
 
-.contact-card:hover{
-  transform:translateY(-3px);
-  transition:0.3s;
+/* ========================
+   Highlight Info (optional)
+======================== */
+.contact-card p strong {
+  color: #004d40;
+}
+
+/* ========================
+   Hover Effect
+======================== */
+.contact-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 50px rgba(0, 77, 64, 0.18);
+}
+
+/* ========================
+   Responsive
+======================== */
+@media (max-width: 500px) {
+  .contact-card {
+    padding: 30px 20px;
+  }
+
+  .contact-card h1 {
+    font-size: 26px;
+  }
 }

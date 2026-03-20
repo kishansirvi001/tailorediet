@@ -1,107 +1,141 @@
 /* ========================
-   Home Page Sections
+   Home Page Base
 ======================== */
 .home {
   width: 100%;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* ========================
-   Hero Section Override
+   Hero Section
 ======================== */
 .hero-section {
-  margin-top: 70px; /* space below fixed navbar */
+  padding-top: 120px;
 }
 
 /* ========================
-   About Section
+   About Section (Modern Soft UI)
 ======================== */
 .about-section {
-  background-color: #e0f7f5; /* light teal */
-  color: #004d40; /* dark teal text */
-  padding: 80px 0;
+  background: linear-gradient(135deg, #e0f7f5, #ffffff);
+  color: #004d40;
+  padding: 100px 20px;
+  text-align: center;
 }
 
 .about-section h2 {
-  color: #00796b; /* medium teal headings */
-  margin-bottom: 20px;
+  font-size: 2.5rem;
+  color: #00796b;
+  margin-bottom: 25px;
 }
 
 .about-section p {
+  max-width: 800px;
+  margin: auto;
   color: #00695c;
-  margin-bottom: 15px;
-  line-height: 1.6;
+  font-size: 1.1rem;
+  line-height: 1.8;
 }
 
 /* ========================
-   Testimonials Section
+   Testimonials Section (Glassmorphism)
 ======================== */
 .testimonials-section {
-  background-color: #004d40; /* dark teal */
+  background: linear-gradient(135deg, #004d40, #002f2a);
   color: #ffffff;
-  padding: 80px 0;
+  padding: 100px 20px;
+  text-align: center;
 }
 
 .testimonials-section h2 {
-  color: #26a69a; /* light teal heading */
-  margin-bottom: 30px;
+  color: #4dd0e1;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
 }
 
 .testimonials-section .testimonial {
-  background-color: #00796b; /* medium teal cards */
-  color: #ffffff;
-  padding: 20px;
-  margin: 15px 0;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 25px;
+  margin: 20px auto;
+  max-width: 500px;
+  transition: 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.testimonials-section .testimonial:hover {
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .testimonials-section .testimonial p {
   font-style: italic;
-  margin-bottom: 10px;
+  font-size: 1rem;
+  margin-bottom: 15px;
 }
 
 .testimonials-section .testimonial h4 {
-  font-weight: 700;
+  font-weight: 600;
   color: #e0f7f5;
 }
 
 /* ========================
-   CTA Section
+   CTA Section (Premium Gradient + Glow)
 ======================== */
 .cta-section {
-  background: linear-gradient(135deg, #26a69a, #00796b); /* gradient teal */
+  background: linear-gradient(135deg, #26a69a, #004d40);
   color: #ffffff;
-  padding: 80px 0;
+  padding: 100px 20px;
   text-align: center;
-  border-radius: 20px;
+  border-radius: 25px;
+  margin: 50px auto;
+  max-width: 1100px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
 }
 
 .cta-section h2 {
-  margin-bottom: 25px;
-  font-size: 2.5rem;
+  font-size: 2.8rem;
+  margin-bottom: 20px;
 }
 
 .cta-section p {
-  margin-bottom: 30px;
   font-size: 1.2rem;
+  margin-bottom: 30px;
   color: #e0f7f5;
 }
 
+/* Button Upgrade */
 .cta-section .btn {
-  padding: 12px 28px;
+  background: #ffffff;
+  color: #004d40;
+  padding: 14px 32px;
   font-size: 1rem;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-weight: 600;
+}
+
+.cta-section .btn:hover {
+  background: #e0f7f5;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
 /* ========================
-   Responsive Adjustments
+   Responsive
 ======================== */
 @media (max-width: 992px) {
-  .about-section, 
-  .testimonials-section, 
+  .about-section,
+  .testimonials-section,
   .cta-section {
-    padding: 60px 0;
+    padding: 70px 20px;
   }
 
+  .about-section h2,
+  .testimonials-section h2,
   .cta-section h2 {
     font-size: 2rem;
   }

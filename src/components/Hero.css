@@ -1,153 +1,242 @@
-
 /* ========================
-   Hero Section - Modernized
+   GLOBAL RESET
 ======================== */
-.hero {
-  /* Softer, more professional teal gradient */
-  background: linear-gradient(135deg, #006d77 0%, #229a9a 100%); 
-  color: #ffffff;
-  padding: 100px 0; /* Slightly more breathing room */
-  position: relative;
-  overflow: hidden;
-  margin-top: 60px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+html, body, #root {
+  height: 100%;
+}
+
+/* ========================
+   ROOT VARIABLES
+======================== */
+:root {
+  --navbar-height: 70px;
+}
+
+/* ========================
+   HERO SECTION (FINAL)
+======================== */
+.hero {
+  min-height: 100vh;
+
+  /* ✅ FIX: push content below navbar */
+  padding-top: 90px;
+
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 60px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(120deg, #e0f7f5, #ffffff);
+}
+
+/* ========================
+   BACKGROUND EFFECTS
+======================== */
+.hero::before,
+.hero::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+}
+
+.hero::before {
+  width: 300px;
+  height: 300px;
+  background: rgba(0, 191, 165, 0.25);
+  top: -50px;
+  left: -50px;
+}
+
+.hero::after {
+  width: 400px;
+  height: 400px;
+  background: rgba(0, 150, 136, 0.2);
+  bottom: -100px;
+  right: -100px;
+}
+
+/* ========================
+   HERO CONTAINER
+======================== */
 .hero-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 60px; /* Increased gap for a premium feel */
+  gap: 50px;
   flex-wrap: wrap;
-  max-width: 1200px; /* Adjust based on your layout */
-  margin: 0 auto;
-  padding: 0 20px;
+
+  position: relative;
+  z-index: 1;
 }
 
 /* ========================
-   Hero Left (Content)
+   LEFT CARD
 ======================== */
 .hero-left {
-  flex: 1.2; /* Give text a bit more space */
+  flex: 1;
+  min-width: 280px;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+
+  padding: 50px;
+  border-radius: 24px;
+
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
 }
 
 .hero-left h1 {
-  font-size: 3.5rem; /* Larger for better hierarchy */
+  font-size: 44px;
+  color: #004d40;
+  margin-bottom: 20px;
   font-weight: 800;
-  margin-bottom: 24px;
-  line-height: 1.1;
-  letter-spacing: -1px;
+  line-height: 1.2;
 }
 
 .hero-left p {
-  font-size: 1.25rem;
-  margin-bottom: 40px;
-  color: rgba(255, 255, 255, 0.9); /* Slightly transparent white for elegance */
-  max-width: 520px; /* Prevents long text lines */
-  line-height: 1.6;
+  font-size: 17px;
+  color: #555;
+  margin-bottom: 30px;
+  max-width: 500px;
 }
 
 /* ========================
-   Hero Buttons - High Contrast
+   BUTTONS
 ======================== */
 .hero-buttons {
   display: flex;
-  gap: 16px;
+  gap: 15px;
   flex-wrap: wrap;
 }
 
-.hero-buttons .btn {
-  padding: 14px 28px;
-  border-radius: 12px; /* Softer corners */
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  display: inline-block;
-}
-
-/* PRIMARY CTA: The "Eye-Catcher" */
-.hero-buttons .btn-primary {
-  background-color: #ff7e5f; /* Sunset Coral */
-  color: #ffffff;
-  box-shadow: 0 10px 20px rgba(255, 126, 95, 0.3);
+.btn-primary {
+  background: linear-gradient(135deg, #00bfa5, #00796b);
+  color: #fff;
   border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 6px 20px rgba(0, 121, 107, 0.3);
 }
 
-.hero-buttons .btn-primary:hover {
-  background-color: #ff6b4a;
+.btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 25px rgba(255, 126, 95, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 121, 107, 0.4);
 }
 
-/* SECONDARY: Glass Style */
-.hero-buttons .btn-secondary {
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+.btn-secondary {
+  background: #004d40;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.hero-buttons .btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.25);
+.btn-secondary:hover {
+  background: #002f28;
   transform: translateY(-3px);
 }
 
-/* OUTLINE / DEMO */
-.hero-buttons .btn-outline {
-  background-color: transparent;
-  color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+.btn-outline {
+  background: transparent;
+  color: #004d40;
+  border: 2px solid #004d40;
+  padding: 12px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.hero-buttons .btn-outline:hover {
-  border-color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: translateY(-3px);
+.btn-outline:hover {
+  background: #004d40;
+  color: #fff;
 }
 
 /* ========================
-   Hero Right (Image)
+   RIGHT IMAGE
 ======================== */
 .hero-right {
   flex: 1;
-  position: relative;
+  min-width: 280px;
+  text-align: center;
 }
 
 .hero-right img {
   width: 100%;
-  max-width: 540px;
-  border-radius: 30px; /* More modern rounding */
-  /* Tinted shadow feels more natural than black */
-  box-shadow: 0 30px 60px rgba(0, 77, 64, 0.4); 
-  object-fit: cover;
-  transition: transform 0.5s ease;
+  max-width: 480px;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+
+  animation: float 5s ease-in-out infinite;
 }
 
-.hero-right img:hover {
-  transform: scale(1.02) rotate(1deg);
+/* FLOAT ANIMATION */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
 }
 
 /* ========================
-   Responsive Hero
+   RESPONSIVE
 ======================== */
-@media (max-width: 992px) {
-  .hero {
-    padding: 60px 0;
-  }
-  
+@media (max-width: 900px) {
   .hero-container {
-    flex-direction: column; /* Normal stack is usually better for reading */
+    flex-direction: column;
     text-align: center;
   }
 
+  .hero-left {
+    padding: 30px;
+  }
+
   .hero-left h1 {
-    font-size: 2.5rem;
+    font-size: 34px;
   }
 
   .hero-left p {
-    margin: 0 auto 30px;
+    margin: auto;
   }
 
   .hero-buttons {
     justify-content: center;
   }
+}
+
+@media (max-width: 500px) {
+  .hero-left h1 {
+    font-size: 28px;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline {
+    width: 100%;
+  }
+}
+
+/* ========================
+   SMOOTH SCROLL
+======================== */
+html {
+  scroll-behavior: smooth;
 }

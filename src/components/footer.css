@@ -1,0 +1,77 @@
+/* ========================
+   FOOTER
+======================== */
+.footer {
+  background: #004d40;
+  color: #fff;
+  padding-top: 60px;
+}
+
+/* Container */
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 20px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+}
+
+/* Columns */
+.footer-col h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.footer-logo {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+/* Text */
+.footer-col p {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+/* Links */
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col ul li {
+  margin-bottom: 10px;
+}
+
+.footer-col ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.footer-col ul li a:hover {
+  color: #00bfa5;
+  padding-left: 5px;
+}
+
+/* Bottom */
+.footer-bottom {
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* ========================
+   RESPONSIVE
+======================== */
+@media (max-width: 768px) {
+  .footer {
+    text-align: center;
+  }
+}

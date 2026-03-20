@@ -77,12 +77,25 @@ function Questionnaire() {
         <div className="card">
           <h2>Body Details</h2>
 
-          <input
-            placeholder="Height (cm)"
-            type="number"
-            value={form.height}
-            onChange={(e) => handleChange("height", e.target.value)}
-          />
+       <div className="height-group">
+  <input
+    type="number"
+    placeholder="height in Feet"
+    value={form.feet || ""}
+    onChange={(e) =>
+      setForm({ ...form, feet: e.target.value })
+    }
+  />
+
+  <input
+    type="number"
+    placeholder="height in Inches"
+    value={form.inches || ""}
+    onChange={(e) =>
+      setForm({ ...form, inches: e.target.value })
+    }
+  />
+</div>
 
           <input
             placeholder="Weight (kg)"

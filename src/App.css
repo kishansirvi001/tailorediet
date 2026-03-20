@@ -1,5 +1,5 @@
 /* ========================
-   Reset & Box-sizing
+   RESET & BASE
 ======================== */
 *,
 *::before,
@@ -9,17 +9,62 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Inter', 'Arial', sans-serif;
-  background-color: #e0f7f5; /* light teal background */
-  color: #004d40; /* dark teal text */
-  line-height: 1.6;
+html, body {
+  width: 100%;
+  min-height: 100vh;
   overflow-x: hidden;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f4fffd;
+  color: #00332c;
+  line-height: 1.6;
 }
 
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ========================
+   GLOBAL CONTAINER
+======================== */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 15px;
+}
+
+/* ========================
+   TYPOGRAPHY
+======================== */
+h1, h2, h3, h4, h5, h6 {
+  color: #004d40;
+  margin-bottom: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+p {
+  color: #00695c;
+  margin-bottom: 15px;
+}
+
+/* ========================
+   LINKS & LISTS
+======================== */
 a {
   text-decoration: none;
   color: inherit;
+  transition: 0.3s;
+}
+
+a:hover {
+  color: #00796b;
 }
 
 ul, ol {
@@ -27,125 +72,165 @@ ul, ol {
 }
 
 /* ========================
-   Scrollbar Styling
+   SCROLLBAR (Modern)
 ======================== */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #b2dfdb;
-  border-radius: 10px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #00796b;
+  background: #009688;
   border-radius: 10px;
 }
 
 /* ========================
-   App Container
-======================== */
-.App {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ========================
-   Section Styling
-======================== */
-section {
-  padding: 80px 0;
-}
-
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* ========================
-   Headings
-======================== */
-h1, h2, h3, h4, h5, h6 {
-  color: #004d40; /* dark teal */
-  margin-bottom: 15px;
-  font-weight: 700;
-}
-
-p {
-  margin-bottom: 15px;
-  color: #00695c; /* medium teal */
-}
-
-/* ========================
-   Buttons Global
+   BUTTON SYSTEM (UPGRADED)
 ======================== */
 .btn {
-  padding: 10px 25px;
-  font-size: 1rem;
-  border-radius: 8px;
+  padding: 12px 26px;
+  font-size: 15px;
+  border-radius: 30px; /* pill style */
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 600;
 }
 
+/* Primary */
 .btn-primary {
-  background-color: #00796b;
+  background: linear-gradient(135deg, #00bfa5, #00796b);
   color: #fff;
+  box-shadow: 0 6px 15px rgba(0, 121, 107, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: #004d40;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 121, 107, 0.4);
 }
 
+/* Secondary */
 .btn-secondary {
-  background-color: #26a69a;
+  background: #004d40;
   color: #fff;
 }
 
 .btn-secondary:hover {
-  background-color: #00796b;
+  background: #002f28;
+  transform: translateY(-2px);
 }
 
+/* Outline */
 .btn-outline {
-  background-color: transparent;
-  color: #00796b;
+  background: transparent;
   border: 2px solid #00796b;
+  color: #00796b;
 }
 
 .btn-outline:hover {
-  background-color: #00796b;
+  background: #00796b;
   color: #fff;
 }
 
 /* ========================
-   Images
+   IMAGES
 ======================== */
 img {
   max-width: 100%;
   display: block;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 /* ========================
-   Responsive
+   HERO SECTION (UPGRADED)
+======================== */
+.hero-section {
+  padding: 120px 20px;
+  background: linear-gradient(135deg, #26a69a, #00796b);
+  color: #fff;
+  text-align: center;
+}
+
+.hero-section h1 {
+  font-size: 48px;
+}
+
+.hero-section p {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+/* ========================
+   CALCULATOR PAGE
+======================== */
+.calculator-page {
+  padding: 80px 20px;
+  background: #f6fffd;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Card */
+.calculator-card {
+  background: #fff;
+  padding: 30px 25px;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.calculator-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* Inputs */
+.calculator-card input,
+.calculator-card select {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: 0.3s;
+}
+
+.calculator-card input:focus,
+.calculator-card select:focus {
+  border-color: #00bfa5;
+  box-shadow: 0 0 8px rgba(0,191,165,0.3);
+  outline: none;
+}
+
+/* Button inside card */
+.calculator-card button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: #00796b;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.calculator-card button:hover {
+  background: #004d40;
+}
+
+/* ========================
+   RESPONSIVE
 ======================== */
 @media (max-width: 992px) {
-  body {
-    font-size: 14px;
+  .hero-section {
+    padding: 90px 15px;
   }
 
-  section {
-    padding: 60px 0;
-  }
-
-  .btn {
-    padding: 8px 20px;
-    font-size: 0.9rem;
+  .hero-section h1 {
+    font-size: 36px;
   }
 }
 
@@ -153,60 +238,29 @@ img {
   .container {
     width: 95%;
   }
+
+  .hero-section h1 {
+    font-size: 28px;
+  }
+
+  .hero-section p {
+    font-size: 16px;
+  }
+
+  .btn {
+    width: 100%;
+  }
 }
-/* Remove default browser gaps */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ========================
+   SCROLL ANIMATION
+======================== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
 }
 
-html, body {
-  width: 100%;
-  overflow-x: hidden; /* Prevents accidental side-scrolling */
-}
-
-/* Ensure the home container takes full width */
-.home {
-  width: 100%;
-}
-
-/* Ensure sections stretch to edges */
-.hero-section {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-/* 1. Kill all default browser spacing */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* 2. Ensure the base layers are 100% width with NO padding */
-html, body, #root {
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow-x: hidden; /* Prevents the side-scroll bar from causing a gap */
-}
-
-/* 3. Fix the 'home' and 'section' containers */
-.home, 
-.hero-section, 
-.features-section {
-  width: 100% !important;
-  max-width: 100vw;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* 4. Check your "container" class */
-/* If your .container has a max-width, it will center content and leave gaps */
-.container {
-  width: 100%;
-  margin: 0 auto;
-  /* If you want content centered but background full-width, 
-     keep the padding here but remove it from the parent section */
+.fade-up.show {
+  opacity: 1;
+  transform: translateY(0);
 }

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import "./Calculator.css"; // Correct way to import CSS
+import "./Calculator.css";
 
 function Calculator() {
-
   /* Common States */
   const [weight, setWeight] = useState("");
   const [feet, setFeet] = useState("");
@@ -13,6 +12,7 @@ function Calculator() {
 
   /* Results */
   const [bmi, setBmi] = useState("");
+  const [bmiMessage, setBmiMessage] = useState("");
   const [calories, setCalories] = useState("");
   const [bmrResult, setBmrResult] = useState("");
   const [idealWeight, setIdealWeight] = useState("");
@@ -22,26 +22,40 @@ function Calculator() {
     return (feet * 30.48) + (inches * 2.54);
   };
 
-  /* BMI Calculation */
+  /* ========================
+     BMI Calculation
+  ======================== */
   const calcBMI = () => {
-
     if (!weight || !feet) return;
 
     const heightCm = getHeightCm();
     const h = heightCm / 100;
 
     const bmiValue = weight / (h * h);
-
     setBmi(bmiValue.toFixed(2));
+
+    // Calculate healthy weight range
+    const minWeight = 18.5 * h * h;
+    const maxWeight = 24.9 * h * h;
+
+    let message = "";
+    if (bmiValue < 18.5) {
+      message = `You are underweight. You can gain approx ${(minWeight - weight).toFixed(1)} kg to reach a healthy weight.`;
+    } else if (bmiValue > 24.9) {
+      message = `You are overweight. You can lose approx ${(weight - maxWeight).toFixed(1)} kg to reach a healthy weight.`;
+    } else {
+      message = "Your weight is within a healthy range.";
+    }
+    setBmiMessage(message);
   };
 
-  /* Calorie Calculation (TDEE) */
+  /* ========================
+     Calorie (TDEE) Calculation
+  ======================== */
   const calcCalories = () => {
-
     if (!weight || !age || !gender || !activity || !feet) return;
 
     const heightCm = getHeightCm();
-
     let bmr;
 
     if (gender === "male") {
@@ -50,18 +64,17 @@ function Calculator() {
       bmr = 10 * weight + 6.25 * heightCm - 5 * age - 161;
     }
 
-    const tdee = bmr * activity;
-
+    const tdee = bmr * parseFloat(activity);
     setCalories(Math.round(tdee));
   };
 
-  /* BMR Calculation */
+  /* ========================
+     BMR Calculation
+  ======================== */
   const calcBMR = () => {
-
     if (!weight || !age || !gender || !feet) return;
 
     const heightCm = getHeightCm();
-
     let bmr;
 
     if (gender === "male") {
@@ -73,16 +86,16 @@ function Calculator() {
     setBmrResult(Math.round(bmr));
   };
 
-  /* Ideal Weight */
+  /* ========================
+     Ideal Weight Calculation
+  ======================== */
   const calcIdealWeight = () => {
-
     if (!gender || !feet) return;
 
     const heightCm = getHeightCm();
     const heightInches = heightCm / 2.54;
 
     let result;
-
     if (gender === "male") {
       result = 50 + 2.3 * (heightInches - 60);
     } else {
@@ -95,70 +108,42 @@ function Calculator() {
   return (
     <div className="calculator-page">
 
-      {/* BMI */}
+      {/* ========================
+         BMI Calculator
+      ======================== */}
       <div className="calculator-card">
         <h1>BMI Calculator</h1>
         <p className="calc-desc">
-          Quickly check if your weight is in a healthy range.
+          Body Mass Index (BMI) helps determine if your weight is healthy relative to your height.
         </p>
 
-        <input
-          type="number"
-          placeholder="Weight (kg)"
-          onChange={(e) => setWeight(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Height (feet)"
-          onChange={(e) => setFeet(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Height (inches)"
-          onChange={(e) => setInches(e.target.value)}
-        />
+        <input type="number" placeholder="Weight (kg)" onChange={(e) => setWeight(e.target.value)} />
+        <input type="number" placeholder="Height (feet)" onChange={(e) => setFeet(e.target.value)} />
+        <input type="number" placeholder="Height (inches)" onChange={(e) => setInches(e.target.value)} />
 
         <button onClick={calcBMI}>Calculate BMI</button>
 
         {bmi && (
           <div className="bmi-result">
             <h2>Your BMI: {bmi}</h2>
+            <p>{bmiMessage}</p>
           </div>
         )}
       </div>
 
-      {/* Calories */}
+      {/* ========================
+         Calorie Calculator
+      ======================== */}
       <div className="calculator-card">
         <h1>Calorie Calculator</h1>
         <p className="calc-desc">
-          Find how many calories your body needs each day based on your lifestyle.
+          Estimate how many calories you need daily based on your age, weight, height, gender, and activity level.
         </p>
 
-        <input
-          type="number"
-          placeholder="Age"
-          onChange={(e) => setAge(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Weight (kg)"
-          onChange={(e) => setWeight(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Height (feet)"
-          onChange={(e) => setFeet(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Height (inches)"
-          onChange={(e) => setInches(e.target.value)}
-        />
+        <input type="number" placeholder="Age" onChange={(e) => setAge(e.target.value)} />
+        <input type="number" placeholder="Weight (kg)" onChange={(e) => setWeight(e.target.value)} />
+        <input type="number" placeholder="Height (feet)" onChange={(e) => setFeet(e.target.value)} />
+        <input type="number" placeholder="Height (inches)" onChange={(e) => setInches(e.target.value)} />
 
         <select onChange={(e) => setGender(e.target.value)}>
           <option value="">Select Gender</option>
@@ -184,36 +169,19 @@ function Calculator() {
         )}
       </div>
 
-      {/* BMR */}
+      {/* ========================
+         BMR Calculator
+      ======================== */}
       <div className="calculator-card">
         <h1>BMR Calculator</h1>
         <p className="calc-desc">
-          See how many calories your body burns at rest.
+          Basal Metabolic Rate (BMR) is the number of calories your body burns at rest to maintain vital functions.
         </p>
 
-        <input
-          type="number"
-          placeholder="Age"
-          onChange={(e) => setAge(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Weight (kg)"
-          onChange={(e) => setWeight(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Height (feet)"
-          onChange={(e) => setFeet(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Height (inches)"
-          onChange={(e) => setInches(e.target.value)}
-        />
+        <input type="number" placeholder="Age" onChange={(e) => setAge(e.target.value)} />
+        <input type="number" placeholder="Weight (kg)" onChange={(e) => setWeight(e.target.value)} />
+        <input type="number" placeholder="Height (feet)" onChange={(e) => setFeet(e.target.value)} />
+        <input type="number" placeholder="Height (inches)" onChange={(e) => setInches(e.target.value)} />
 
         <select onChange={(e) => setGender(e.target.value)}>
           <option value="">Select Gender</option>
@@ -230,24 +198,17 @@ function Calculator() {
         )}
       </div>
 
-      {/* Ideal Weight */}
+      {/* ========================
+         Ideal Weight Calculator
+      ======================== */}
       <div className="calculator-card">
         <h1>Ideal Weight Calculator</h1>
         <p className="calc-desc">
-          Estimate a healthy weight range for your height.
+          Calculate a healthy weight range based on your height and gender using the Devine formula.
         </p>
 
-        <input
-          type="number"
-          placeholder="Height (feet)"
-          onChange={(e) => setFeet(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Height (inches)"
-          onChange={(e) => setInches(e.target.value)}
-        />
+        <input type="number" placeholder="Height (feet)" onChange={(e) => setFeet(e.target.value)} />
+        <input type="number" placeholder="Height (inches)" onChange={(e) => setInches(e.target.value)} />
 
         <select onChange={(e) => setGender(e.target.value)}>
           <option value="">Select Gender</option>

@@ -34,12 +34,10 @@ a:hover {
 ======================== */
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #e0f7f5; /* light teal background */
-  color: #004d40; /* dark teal text */
+  background-color: #e0f7f5;
+  color: #004d40;
 }
 
 /* ========================

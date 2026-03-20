@@ -20,35 +20,44 @@ function Login() {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-page">
+  <div className="auth-left">
+    <h1>TailorDiet</h1>
+    <p>Personalized nutrition for your body</p>
+  </div>
 
-      <h2>Login</h2>
+  <div className="auth-right">
+    <h2>Login</h2>
 
-      <form onSubmit={handleLogin}>
-
+    <form onSubmit={handleLogin}>
+      <div className="form-group">
+        <label>Email</label>
         <input
           type="email"
           placeholder="Email"
-          onChange={(e)=>setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
+      </div>
 
+      <div className="form-group">
+        <label>Password</label>
         <input
           type="password"
           placeholder="Password"
-          onChange={(e)=>setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
+      </div>
 
-        <button type="submit">Login</button>
+      <button className="auth-btn" type="submit">Login</button>
+    </form>
 
-      </form>
-
-      <p className="switch-text">
-        Don't have an account? <a href="/signup">Signup</a>
-      </p>
-
-    </div>
+    <p className="switch-text">
+      Don't have an account? <a href="/signup">Signup</a>
+    </p>
+  </div>
+</div>
   );
 }
 

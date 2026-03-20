@@ -2,112 +2,97 @@
    Features Section
 ======================== */
 .features-section {
-  background-color: #e0f7f5; /* light teal background */
-  padding: 100px 20px;
+  padding: 80px 20px;
+  background: linear-gradient(to right, #e0f7f5, #ffffff);
   text-align: center;
 }
 
 .features-section h2 {
-  font-size: 2.5rem;
-  margin-bottom: 60px;
-  color: #004d40; /* dark teal heading */
+  font-size: 36px;
+  color: #004d40;
+  margin-bottom: 50px;
   font-weight: 700;
 }
 
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
 /* ========================
-   Features Container
+   Features Grid
 ======================== */
-.features-section .container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
+.features-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 300px)); /* fixed width */
+  justify-content: center;  /* ✅ centers all cards */
+  gap: 25px;
 }
 
 /* ========================
    Feature Card
 ======================== */
 .feature-card {
-  flex: 1 1 calc(33% - 30px);
-  max-width: 320px;
-  background-color: #00796b; /* medium teal */
-  color: #ffffff;
-  padding: 40px 25px;
-  border-radius: 20px;
-  text-align: center;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  background: #ffffff;
+  padding: 30px 20px;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-/* Add subtle hover gradient effect */
-.feature-card::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
-  transform: rotate(25deg);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.feature-card:hover::before {
-  opacity: 1;
-}
-
+/* Hover Effect */
 .feature-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-  background-color: #27b59d; /* dark teal on hover */
-}
-
-.feature-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  font-weight: 700;
-}
-
-.feature-card p {
-  color: #b2dfdb; /* light teal text */
-  font-size: 1rem;
-  line-height: 1.6;
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 77, 64, 0.2);
 }
 
 /* ========================
-   Feature Icon (optional)
+   Icon Styling
 ======================== */
 .feature-card .icon {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #eae1e1;
-  transition: transform 0.4s ease;
+  font-size: 40px;
+  color: #00bfa5;
+  margin-bottom: 15px;
+  transition: 0.3s;
 }
 
 .feature-card:hover .icon {
-  transform: scale(1.2);
+  color: #004d40;
+  transform: rotate(8deg) scale(1.1);
+}
+
+/* ========================
+   Text Styling
+======================== */
+.feature-card h3 {
+  font-size: 20px;
+  color: #004d40;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
 }
 
 /* ========================
    Responsive
 ======================== */
-@media (max-width: 992px) {
-  .feature-card {
-    flex: 1 1 calc(50% - 30px);
+@media (max-width: 768px) {
+  .features-section h2 {
+    font-size: 28px;
   }
-}
 
-@media (max-width: 576px) {
   .feature-card {
-    flex: 1 1 100%;
-    padding: 30px 20px;
+    padding: 25px 15px;
   }
 }
-.features-container {
+.feature-card {
+  text-align: center;   /* ✅ centers text */
   display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;  /* ✅ centers icon + text horizontally */
 }
