@@ -64,7 +64,7 @@ function HealthCalculatorsPage() {
 
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-7xl gap-12 px-6 pb-16 pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-24 lg:pt-20">
+      <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-14 pt-8 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-24 lg:pt-20">
         <div>
           <div className="inline-flex items-center gap-3 rounded-full border border-stone-900/10 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
@@ -73,11 +73,11 @@ function HealthCalculatorsPage() {
             </span>
           </div>
 
-          <h1 className="mt-8 max-w-4xl font-['Georgia'] text-5xl font-bold leading-[0.92] tracking-tight text-stone-950 md:text-7xl">
+          <h1 className="mt-6 max-w-4xl font-['Georgia'] text-4xl font-bold leading-[0.95] tracking-tight text-stone-950 sm:text-5xl md:text-7xl">
             Working health calculators that lead naturally into the right diet plan.
           </h1>
 
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-700 md:text-xl">
+          <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg md:text-xl md:leading-8">
             This page now gives TailorDiet functional calculator modules for
             calories, BMI, macros, and goal planning so the product feels useful,
             not just descriptive.
@@ -99,8 +99,8 @@ function HealthCalculatorsPage() {
           </div>
         </div>
 
-        <div className="rounded-[2.2rem] border border-stone-900/10 bg-stone-950 p-6 text-stone-100 shadow-[0_40px_90px_rgba(28,25,23,0.22)]">
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-4 text-stone-100 shadow-[0_40px_90px_rgba(28,25,23,0.22)] sm:rounded-[2.2rem] sm:p-6">
+          <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4 sm:p-5">
             <p className="text-xs uppercase tracking-[0.2em] text-amber-200/70">
               Calculator flow
             </p>
@@ -122,13 +122,13 @@ function HealthCalculatorsPage() {
         </div>
       </section>
 
-      <section className="border-y border-stone-900/10 bg-white/70 py-20 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="border-y border-stone-900/10 bg-white/70 py-16 backdrop-blur sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
               Calculator suite
             </p>
-            <h2 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 md:text-5xl">
+            <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl md:text-5xl">
               Four working calculators built from shared profile data.
             </h2>
           </div>
@@ -327,12 +327,12 @@ function HealthCalculatorsPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
-        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,239,226,0.92))] p-8 shadow-sm">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-20">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,239,226,0.92))] p-6 shadow-sm sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
             Why it matters
           </p>
-          <h2 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950">
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
             Functional calculators make the product feel useful before users ever create an account.
           </h2>
           <p className="mt-6 text-lg leading-8 text-stone-700">
@@ -340,11 +340,11 @@ function HealthCalculatorsPage() {
           </p>
         </div>
 
-        <div className="rounded-[2rem] border border-stone-900/10 bg-stone-900 p-8 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.18)]">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-stone-900 p-6 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.18)] sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-200/70">
             Connected experience
           </p>
-          <h2 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-white">
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Every calculator should hand off to planning and clearer nutrition direction.
           </h2>
           <div className="mt-8 grid gap-4">

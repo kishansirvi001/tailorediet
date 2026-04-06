@@ -47,7 +47,7 @@ function metricCardTone(index) {
 function HomePage() {
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-7xl gap-14 px-6 pb-16 pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-24 lg:pt-20">
+      <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-14 pt-8 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-24 lg:pt-20">
         <div className="relative">
           <div className="inline-flex items-center gap-3 rounded-full border border-stone-900/10 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
@@ -56,17 +56,17 @@ function HomePage() {
             </span>
           </div>
 
-          <h1 className="mt-8 max-w-4xl font-['Georgia'] text-5xl font-bold leading-[0.92] tracking-tight text-stone-950 md:text-7xl">
+          <h1 className="mt-6 max-w-4xl font-['Georgia'] text-4xl font-bold leading-[0.95] tracking-tight text-stone-950 sm:text-5xl md:text-7xl">
             A focused nutrition platform built around health calculators and personalized diet planning.
           </h1>
 
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-700 md:text-xl">
+          <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg md:text-xl md:leading-8">
             TailorDiet is positioned as a clean diet planning product where users
             discover calorie and BMI tools, explore macro guidance, and move into
             tailored meal plans designed for their specific goals and food styles.
           </p>
 
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               to="/signup"
               className="rounded-full bg-stone-900 px-7 py-4 text-center text-sm font-semibold uppercase tracking-[0.14em] text-amber-100 transition hover:bg-stone-700"
@@ -96,8 +96,8 @@ function HomePage() {
 
         <div className="relative">
           <div className="absolute -left-8 top-10 hidden h-36 w-36 rounded-full bg-amber-200/40 blur-3xl lg:block" />
-          <div className="relative overflow-hidden rounded-[2.2rem] border border-stone-900/10 bg-stone-950 p-6 text-stone-100 shadow-[0_40px_90px_rgba(28,25,23,0.22)]">
-            <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+          <div className="relative overflow-hidden rounded-[2rem] border border-stone-900/10 bg-stone-950 p-4 text-stone-100 shadow-[0_40px_90px_rgba(28,25,23,0.22)] sm:rounded-[2.2rem] sm:p-6">
+            <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4 sm:p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-amber-200/70">
@@ -148,13 +148,13 @@ function HomePage() {
         </div>
       </section>
 
-      <section id="features" className="border-y border-stone-900/10 bg-white/70 py-20 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section id="features" className="border-y border-stone-900/10 bg-white/70 py-16 backdrop-blur sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
               Product sections
             </p>
-            <h2 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 md:text-5xl">
+            <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl md:text-5xl">
               The homepage now clearly frames TailorDiet as a planning product, not a generic wellness site.
             </h2>
           </div>
@@ -163,7 +163,7 @@ function HomePage() {
             {features.map((feature, index) => (
               <article
                 key={feature.title}
-                className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-8 shadow-sm"
+                className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-6 shadow-sm sm:p-8"
               >
                 <span className="inline-flex rounded-full bg-stone-900 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-amber-100">
                   0{index + 1}
@@ -176,14 +176,14 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:px-10">
-        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,239,226,0.92))] p-8 shadow-sm">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:px-10 lg:py-20">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,239,226,0.92))] p-6 shadow-sm sm:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
                 Personalized planning
               </p>
-              <h2 className="mt-3 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950">
+              <h2 className="mt-3 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
                 Diet plans should feel tailored from the very first recommendation.
               </h2>
             </div>
@@ -208,11 +208,11 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-stone-900/10 bg-stone-900 p-8 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.18)]">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-stone-900 p-6 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.18)] sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-200/70">
             Plan outcomes
           </p>
-          <h2 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-white">
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Help users understand what each nutrition path is designed to support.
           </h2>
 
@@ -235,13 +235,13 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto px-6 pb-20 lg:max-w-7xl lg:px-10">
-        <div className="rounded-[2.25rem] border border-stone-900/10 bg-[linear-gradient(120deg,rgba(28,25,23,0.98),rgba(68,64,60,0.96))] px-8 py-10 text-white shadow-[0_40px_90px_rgba(28,25,23,0.18)] lg:flex lg:items-center lg:justify-between">
+      <section className="mx-auto px-4 pb-16 sm:px-6 lg:max-w-7xl lg:px-10 lg:pb-20">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(120deg,rgba(28,25,23,0.98),rgba(68,64,60,0.96))] px-5 py-8 text-white shadow-[0_40px_90px_rgba(28,25,23,0.18)] sm:rounded-[2.25rem] sm:px-8 sm:py-10 lg:flex lg:items-center lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-200/70">
               Ready for the next step
             </p>
-            <h2 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight">
+            <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight sm:text-4xl">
               Turn TailorDiet into a trusted destination for health calculators and personalized diet guidance.
             </h2>
           </div>

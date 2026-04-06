@@ -149,15 +149,15 @@ function SignupPage() {
 
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:py-24">
-        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(245,239,226,0.92))] p-8 shadow-sm backdrop-blur">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-16 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:py-24">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(245,239,226,0.92))] p-6 shadow-sm backdrop-blur sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
             Join TailorDiet
           </p>
-          <h1 className="mt-4 font-['Georgia'] text-5xl font-bold tracking-tight text-stone-950">
+          <h1 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 sm:text-5xl">
             Create an account with your details confirmed by email.
           </h1>
-          <p className="mt-6 text-lg leading-8 text-stone-700">
+          <p className="mt-5 text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
             Signup now collects your email and mobile number, with account creation confirmed
             through a quick email OTP.
           </p>
@@ -174,11 +174,11 @@ function SignupPage() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-stone-900/10 bg-stone-900 p-8 text-stone-100 shadow-[0_30px_70px_rgba(28,25,23,0.15)]">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-stone-900 p-6 text-stone-100 shadow-[0_30px_70px_rgba(28,25,23,0.15)] sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-200/70">
             Sign up
           </p>
-          <h2 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-white">
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Start your nutrition profile.
           </h2>
 

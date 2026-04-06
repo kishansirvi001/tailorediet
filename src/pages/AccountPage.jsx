@@ -13,11 +13,11 @@ function AccountPage() {
     <SiteShell>
       <section className="mx-auto max-w-6xl px-6 py-16 lg:px-10 lg:py-24">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,239,226,0.92))] p-8 shadow-sm">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,239,226,0.92))] p-6 shadow-sm sm:p-8">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
               Your account
             </p>
-            <h1 className="mt-4 font-['Georgia'] text-5xl font-bold tracking-tight text-stone-950">
+          <h1 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 sm:text-5xl">
               Welcome back, {user?.name || 'TailorDiet member'}.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-700">
@@ -56,7 +56,7 @@ function AccountPage() {
             </div>
           </div>
 
-          <aside className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-8 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.18)]">
+          <aside className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-6 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.18)] sm:p-8">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-200/70">
               Profile details
             </p>

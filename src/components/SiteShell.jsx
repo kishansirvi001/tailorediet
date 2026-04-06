@@ -1,4 +1,5 @@
-import { Link, NavLink } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
 function InstagramIcon(props) {
@@ -24,15 +25,32 @@ function MailIcon(props) {
   )
 }
 
-function NavItem({ label, to }) {
+function MenuIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function CloseIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function NavItem({ label, to, onClick }) {
   return (
     <NavLink
       to={to}
+      onClick={onClick}
       className={({ isActive }) =>
         `rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] transition ${
           isActive
-            ? 'bg-stone-90 text-amber-100 shadow-[0_10px_25px_rgba(28,25,23,0.12)]'
-            : 'text-stone-70 hover:bg-stone-900/5 hover:text-stone-950'
+            ? 'bg-stone-900 text-amber-100 shadow-[0_10px_25px_rgba(28,25,23,0.12)]'
+            : 'text-stone-700 hover:bg-stone-900/5 hover:text-stone-950'
         }`
       }
     >
@@ -43,17 +61,22 @@ function NavItem({ label, to }) {
 
 function SiteShell({ children }) {
   const { isAuthenticated, user, logout } = useAuth()
+  const location = useLocation()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
   const navLinks = [
     { label: 'Home', to: '/' },
     { label: 'Calculators', to: '/calculators' },
     { label: 'Diet Plans', to: '/diet-plans' },
     ...(isAuthenticated ? [{ label: 'Account', to: '/account' }] : []),
   ]
+
   const quickLinks = [
     { label: 'Home', to: '/' },
     { label: 'Health Calculators', to: '/calculators' },
     { label: 'Diet Plans', to: '/diet-plans' },
   ]
+
   const socialLinks = [
     {
       label: 'Instagram',
@@ -69,6 +92,10 @@ function SiteShell({ children }) {
     },
   ]
 
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [location.pathname])
+
   return (
     <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.16),_transparent_24%),radial-gradient(circle_at_88%_12%,_rgba(34,197,94,0.15),_transparent_26%),linear-gradient(180deg,_#f4efe2_0%,_#fffaf0_38%,_#f7f4ec_100%)] text-stone-900">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[linear-gradient(135deg,rgba(120,53,15,0.09),rgba(22,101,52,0.07))]" />
@@ -76,88 +103,136 @@ function SiteShell({ children }) {
       <div className="pointer-events-none absolute right-0 top-20 h-80 w-80 rounded-full bg-lime-300/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-200/20 blur-3xl" />
 
-      <header className="sticky top-0 z-20 border-b border-stone-200/60 bg-white/70 backdrop-blur-xl">
-  <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
+      <header className="sticky top-0 z-30 border-b border-stone-200/60 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
+          <Link to="/" className="flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-stone-900 text-base font-bold text-amber-200 shadow-[0_10px_30px_rgba(28,25,23,0.18)] sm:h-11 sm:w-11 sm:text-lg">
+              TD
+            </span>
+            <span className="font-['Georgia'] text-xl font-bold tracking-tight text-stone-950 sm:text-2xl">
+              TailorDiet
+            </span>
+          </Link>
 
-    {/* Logo */}
-    <Link to="/" className="flex items-center gap-3 group">
-      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-emerald-400 text-lg font-bold text-stone-900 shadow-md group-hover:scale-105 transition">
-        TD
-      </span>
-      <span className="font-['Georgia'] text-2xl font-bold text-stone-900">
-        TailorDiet
-      </span>
-    </Link>
+          <nav className="hidden items-center rounded-full border border-stone-900/10 bg-white/70 p-2 shadow-[0_12px_28px_rgba(28,25,23,0.07)] md:flex">
+            {navLinks.map((link) => (
+              <NavItem key={link.label} label={link.label} to={link.to} />
+            ))}
+          </nav>
 
-    {/* Nav Links */}
-    <nav className="hidden md:flex items-center gap-2 rounded-full border border-stone-200 bg-white/60 p-2 shadow-sm">
-      {navLinks.map((link) => (
-        <NavLink
-          key={link.label}
-          to={link.to}
-          className={({ isActive }) =>
-            `px-4 py-2 rounded-full text-sm font-semibold transition ${
-              isActive
-                ? "bg-stone-150 text-white shadow"
-                : "text-stone-600 hover:bg-stone-100 hover:text-stone-500"
-            }`
-          }
-        >
-          {link.label}
-        </NavLink>
-      ))}
-    </nav>
-
-    {/* Right Side */}
-    <div className="hidden md:flex items-center gap-3">
-      {isAuthenticated ? (
-        <>
-          <span className="px-4 py-2 rounded-full bg-stone-100 text-sm font-semibold text-stone-700">
-            {user?.name?.split(" ")[0]}
-          </span>
+          <div className="hidden items-center gap-3 md:flex">
+            {isAuthenticated ? (
+              <>
+                <span className="rounded-full border border-stone-900/10 bg-white/60 px-4 py-2 text-sm font-semibold text-stone-700">
+                  {user?.name?.split(' ')[0]}
+                </span>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="rounded-full border border-stone-300 px-5 py-2 text-sm font-semibold text-stone-800 transition hover:border-stone-500 hover:bg-stone-100"
+                >
+                  Log out
+                </button>
+                <Link
+                  to="/account"
+                  className="rounded-full bg-stone-900 px-5 py-2 text-sm font-semibold text-amber-100 transition hover:bg-stone-700"
+                >
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="rounded-full border border-stone-300 px-5 py-2 text-sm font-semibold text-stone-800 transition hover:border-stone-500 hover:bg-stone-100"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  className="rounded-full bg-stone-900 px-5 py-2 text-sm font-semibold text-amber-100 transition hover:bg-stone-700"
+                >
+                  Start free
+                </Link>
+              </>
+            )}
+          </div>
 
           <button
-            onClick={logout}
-            className="px-4 py-2 text-sm font-semibold text-stone-600 hover:text-stone-900 transition"
+            type="button"
+            onClick={() => setIsMobileMenuOpen((current) => !current)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-stone-900/10 bg-white/75 text-stone-900 shadow-sm transition hover:bg-white md:hidden"
+            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={isMobileMenuOpen}
           >
-            Logout
+            {isMobileMenuOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
           </button>
+        </div>
 
-          <Link
-            to="/account"
-            className="rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 px-5 py-2 text-sm font-semibold text-stone-900 shadow-md hover:scale-105 active:scale-95 transition"
-          >
-            Dashboard
-          </Link>
-        </>
-      ) : (
-        <>
-          <Link
-            to="/login"
-            className="px-4 py-2 text-sm font-semibold text-stone-600 hover:text-stone-900 transition"
-          >
-            Log in
-          </Link>
+        {isMobileMenuOpen ? (
+          <div className="border-t border-stone-900/10 bg-white/92 px-4 py-4 shadow-[0_18px_45px_rgba(28,25,23,0.08)] backdrop-blur md:hidden">
+            <div className="mx-auto max-w-7xl space-y-3">
+              <div className="grid gap-2">
+                {navLinks.map((link) => (
+                  <NavItem
+                    key={link.label}
+                    label={link.label}
+                    to={link.to}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  />
+                ))}
+              </div>
 
-          {/* 🔥 Premium Signup Button */}
-          <Link
-            to="/signup"
-            className="rounded-full bg-gradient-to-r from-amber-400 to-lime-400 px-6 py-2 text-sm font-semibold text-stone-90 shadow-lg hover:scale-105 hover:opacity-90 active:scale-95 transition"
-          >
-            Start Free
-          </Link>
-        </>
-      )}
-    </div>
-
-  </div>
-</header>
+              <div className="border-t border-stone-900/10 pt-3">
+                {isAuthenticated ? (
+                  <div className="grid gap-2">
+                    <Link
+                      to="/account"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="rounded-2xl bg-stone-900 px-5 py-3 text-center text-sm font-semibold uppercase tracking-[0.16em] text-amber-100 transition hover:bg-stone-700"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        logout()
+                      }}
+                      className="rounded-2xl border border-stone-300 px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-stone-800 transition hover:border-stone-500 hover:bg-stone-100"
+                    >
+                      Log out
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid gap-2">
+                    <Link
+                      to="/signup"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="rounded-2xl bg-stone-900 px-5 py-3 text-center text-sm font-semibold uppercase tracking-[0.16em] text-amber-100 transition hover:bg-stone-700"
+                    >
+                      Start free
+                    </Link>
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="rounded-2xl border border-stone-300 px-5 py-3 text-center text-sm font-semibold uppercase tracking-[0.16em] text-stone-800 transition hover:border-stone-500 hover:bg-stone-100"
+                    >
+                      Log in
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </header>
 
       <main>{children}</main>
 
       <footer className="relative border-t border-stone-900/10 bg-[linear-gradient(180deg,_#120f0b_0%,_#1a140f_100%)] text-stone-300">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(252,211,77,0.7),transparent)]" />
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1.15fr_0.75fr_0.95fr] lg:px-10">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-14 lg:grid-cols-[1.15fr_0.75fr_0.95fr] lg:px-10">
           <div>
             <div className="inline-flex items-center gap-3 rounded-full border border-amber-200/15 bg-white/5 px-4 py-2">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-300 text-sm font-bold text-stone-950">
@@ -180,17 +255,11 @@ function SiteShell({ children }) {
               Explore
             </p>
             <div className="mt-4 space-y-3 text-sm">
-              {quickLinks.map((link) =>
-                link.to.includes('#') ? (
-                  <a key={link.label} href={link.to} className="block transition hover:text-white">
-                    {link.label}
-                  </a>
-                ) : (
-                  <Link key={link.label} to={link.to} className="block transition hover:text-white">
-                    {link.label}
-                  </Link>
-                ),
-              )}
+              {quickLinks.map((link) => (
+                <Link key={link.label} to={link.to} className="block transition hover:text-white">
+                  {link.label}
+                </Link>
+              ))}
               {isAuthenticated ? (
                 <Link to="/account" className="block transition hover:text-white">
                   Account
@@ -245,7 +314,7 @@ function SiteShell({ children }) {
         </div>
 
         <div className="border-t border-white/10">
-          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-5 text-sm text-stone-500 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 text-sm text-stone-500 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-10">
             <p>&copy; 2026 TailorDiet. Personalized nutrition starts with consistency.</p>
             <p>Made for everyday fitness goals and sustainable diet planning.</p>
           </div>

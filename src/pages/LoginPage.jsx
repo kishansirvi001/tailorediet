@@ -78,15 +78,15 @@ function LoginPage() {
 
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-24">
-        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(245,239,226,0.92))] p-8 shadow-sm backdrop-blur">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-24">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(245,239,226,0.92))] p-6 shadow-sm backdrop-blur sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
             Welcome back
           </p>
-          <h1 className="mt-4 font-['Georgia'] text-5xl font-bold tracking-tight text-stone-950">
+          <h1 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 sm:text-5xl">
             Step back into your dashboard and continue the plan you started.
           </h1>
-          <p className="mt-6 text-lg leading-8 text-stone-700">
+          <p className="mt-5 text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
             Returning users can jump straight into their saved nutrition profile,
             planning tools, and next action without rebuilding everything from scratch.
           </p>
@@ -103,11 +103,11 @@ function LoginPage() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-stone-900/10 bg-white/80 p-8 shadow-sm backdrop-blur">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
             Login
           </p>
-          <h2 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950">
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
             Log in to your planner.
           </h2>
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>

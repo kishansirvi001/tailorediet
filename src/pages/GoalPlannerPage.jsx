@@ -22,12 +22,12 @@ function GoalPlannerPage() {
 
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-12 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:pb-24 lg:pt-20">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-14 pt-8 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:pb-24 lg:pt-20">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
             Calculator detail
           </p>
-          <h1 className="mt-4 font-['Georgia'] text-5xl font-bold tracking-tight text-stone-950 md:text-7xl">
+          <h1 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 sm:text-5xl md:text-7xl">
             Goal planner
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-700">
@@ -44,7 +44,7 @@ function GoalPlannerPage() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-8 shadow-sm">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-5 shadow-sm sm:p-8">
           <label className="rounded-2xl border border-stone-900/10 bg-white/75 p-4 block">
             <span className="text-xs uppercase tracking-[0.16em] text-stone-500">Goal</span>
             <select value={goal} onChange={(event) => setGoal(event.target.value)} className="mt-2 w-full bg-transparent text-lg font-semibold text-stone-950 outline-none">
