@@ -1,16 +1,36 @@
-# React + Vite
+# TailorDiet
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TailorDiet uses a Vite frontend and an Express backend. Signup requires email OTP delivery before the account is created.
 
-Currently, two official plugins are available:
+## Backend email configuration
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+OTP emails support SMTP first, with Brevo API fallback for older deployments.
 
-## React Compiler
+Set these variables in [backend/.env](C:/Users/kisha/tailordiet/backend/.env) or in your deployment service:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```env
+PORT=5000
+OTP_EMAIL_FROM=your-sender@example.com
+OTP_EMAIL_FROM_NAME=TailorDiet
 
-## Expanding the ESLint configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password-or-app-password
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Optional legacy fallback:
+
+```env
+BREVO_API_KEY=your-brevo-api-key
+```
+
+## Install backend dependencies
+
+Install backend packages so SMTP delivery can load `nodemailer`:
+
+```bash
+cd backend
+npm install
+```
