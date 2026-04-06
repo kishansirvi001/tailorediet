@@ -1,0 +1,258 @@
+import { Link, NavLink } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext.jsx'
+
+function InstagramIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5.25" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="12" r="4.25" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="17.35" cy="6.65" r="1.1" fill="currentColor" />
+    </svg>
+  )
+}
+
+function MailIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M4 6.75h16a1.25 1.25 0 0 1 1.25 1.25v8A1.25 1.25 0 0 1 20 17.25H4A1.25 1.25 0 0 1 2.75 16V8A1.25 1.25 0 0 1 4 6.75Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path d="m4 8 8 5 8-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function NavItem({ label, to }) {
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] transition ${
+          isActive
+            ? 'bg-stone-90 text-amber-100 shadow-[0_10px_25px_rgba(28,25,23,0.12)]'
+            : 'text-stone-70 hover:bg-stone-900/5 hover:text-stone-950'
+        }`
+      }
+    >
+      {label}
+    </NavLink>
+  )
+}
+
+function SiteShell({ children }) {
+  const { isAuthenticated, user, logout } = useAuth()
+  const navLinks = [
+    { label: 'Home', to: '/' },
+    { label: 'Calculators', to: '/calculators' },
+    { label: 'Diet Plans', to: '/diet-plans' },
+    ...(isAuthenticated ? [{ label: 'Account', to: '/account' }] : []),
+  ]
+  const quickLinks = [
+    { label: 'Home', to: '/' },
+    { label: 'Health Calculators', to: '/calculators' },
+    { label: 'Diet Plans', to: '/diet-plans' },
+  ]
+  const socialLinks = [
+    {
+      label: 'Instagram',
+      value: '@kishansirvi_',
+      href: 'https://www.instagram.com/kishansirvi_/',
+      icon: InstagramIcon,
+    },
+    {
+      label: 'Email',
+      value: 'kishansirvi001@gmail.com',
+      href: 'mailto:kishansirvi001@gmail.com',
+      icon: MailIcon,
+    },
+  ]
+
+  return (
+    <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.16),_transparent_24%),radial-gradient(circle_at_88%_12%,_rgba(34,197,94,0.15),_transparent_26%),linear-gradient(180deg,_#f4efe2_0%,_#fffaf0_38%,_#f7f4ec_100%)] text-stone-900">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[linear-gradient(135deg,rgba(120,53,15,0.09),rgba(22,101,52,0.07))]" />
+      <div className="pointer-events-none absolute -left-20 top-28 h-72 w-72 rounded-full bg-amber-300/25 blur-3xl" />
+      <div className="pointer-events-none absolute right-0 top-20 h-80 w-80 rounded-full bg-lime-300/20 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-200/20 blur-3xl" />
+
+      <header className="sticky top-0 z-20 border-b border-stone-200/60 bg-white/70 backdrop-blur-xl">
+  <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
+
+    {/* Logo */}
+    <Link to="/" className="flex items-center gap-3 group">
+      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-emerald-400 text-lg font-bold text-stone-900 shadow-md group-hover:scale-105 transition">
+        TD
+      </span>
+      <span className="font-['Georgia'] text-2xl font-bold text-stone-900">
+        TailorDiet
+      </span>
+    </Link>
+
+    {/* Nav Links */}
+    <nav className="hidden md:flex items-center gap-2 rounded-full border border-stone-200 bg-white/60 p-2 shadow-sm">
+      {navLinks.map((link) => (
+        <NavLink
+          key={link.label}
+          to={link.to}
+          className={({ isActive }) =>
+            `px-4 py-2 rounded-full text-sm font-semibold transition ${
+              isActive
+                ? "bg-stone-150 text-white shadow"
+                : "text-stone-600 hover:bg-stone-100 hover:text-stone-500"
+            }`
+          }
+        >
+          {link.label}
+        </NavLink>
+      ))}
+    </nav>
+
+    {/* Right Side */}
+    <div className="hidden md:flex items-center gap-3">
+      {isAuthenticated ? (
+        <>
+          <span className="px-4 py-2 rounded-full bg-stone-100 text-sm font-semibold text-stone-700">
+            {user?.name?.split(" ")[0]}
+          </span>
+
+          <button
+            onClick={logout}
+            className="px-4 py-2 text-sm font-semibold text-stone-600 hover:text-stone-900 transition"
+          >
+            Logout
+          </button>
+
+          <Link
+            to="/account"
+            className="rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 px-5 py-2 text-sm font-semibold text-stone-900 shadow-md hover:scale-105 active:scale-95 transition"
+          >
+            Dashboard
+          </Link>
+        </>
+      ) : (
+        <>
+          <Link
+            to="/login"
+            className="px-4 py-2 text-sm font-semibold text-stone-600 hover:text-stone-900 transition"
+          >
+            Log in
+          </Link>
+
+          {/* 🔥 Premium Signup Button */}
+          <Link
+            to="/signup"
+            className="rounded-full bg-gradient-to-r from-amber-400 to-lime-400 px-6 py-2 text-sm font-semibold text-stone-90 shadow-lg hover:scale-105 hover:opacity-90 active:scale-95 transition"
+          >
+            Start Free
+          </Link>
+        </>
+      )}
+    </div>
+
+  </div>
+</header>
+
+      <main>{children}</main>
+
+      <footer className="relative border-t border-stone-900/10 bg-[linear-gradient(180deg,_#120f0b_0%,_#1a140f_100%)] text-stone-300">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(252,211,77,0.7),transparent)]" />
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1.15fr_0.75fr_0.95fr] lg:px-10">
+          <div>
+            <div className="inline-flex items-center gap-3 rounded-full border border-amber-200/15 bg-white/5 px-4 py-2">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-300 text-sm font-bold text-stone-950">
+                TD
+              </span>
+              <span className="font-['Georgia'] text-2xl font-bold text-amber-100">TailorDiet</span>
+            </div>
+            <p className="mt-5 max-w-md text-sm leading-7 text-stone-400">
+              Smart calorie planning, practical health calculators, and diet guidance built to help people move from confusion to a clear daily routine.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+              <span className="rounded-full border border-white/10 px-3 py-2">Calorie Goals</span>
+              <span className="rounded-full border border-white/10 px-3 py-2">Diet Plans</span>
+              <span className="rounded-full border border-white/10 px-3 py-2">Health Tools</span>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500">
+              Explore
+            </p>
+            <div className="mt-4 space-y-3 text-sm">
+              {quickLinks.map((link) =>
+                link.to.includes('#') ? (
+                  <a key={link.label} href={link.to} className="block transition hover:text-white">
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link key={link.label} to={link.to} className="block transition hover:text-white">
+                    {link.label}
+                  </Link>
+                ),
+              )}
+              {isAuthenticated ? (
+                <Link to="/account" className="block transition hover:text-white">
+                  Account
+                </Link>
+              ) : (
+                <>
+                  <Link to="/signup" className="block transition hover:text-white">
+                    Sign Up
+                  </Link>
+                  <Link to="/login" className="block transition hover:text-white">
+                    Login
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500">
+              Connect
+            </p>
+            <div className="mt-4 space-y-3">
+              {socialLinks.map((link) => {
+                const Icon = link.icon
+
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target={link.href.startsWith('http') ? '_blank' : undefined}
+                    rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-amber-200/40 hover:bg-white/8 hover:text-white"
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/8 text-amber-200">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <span>
+                        <span className="block text-sm font-semibold text-stone-100">{link.label}</span>
+                        <span className="block text-xs text-stone-400">{link.value}</span>
+                      </span>
+                    </span>
+                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Open</span>
+                  </a>
+                )
+              })}
+            </div>
+            <p className="mt-5 text-sm leading-7 text-stone-400">
+              Built for calorie planning, health calculators, and diet guidance.
+            </p>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10">
+          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-5 text-sm text-stone-500 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+            <p>&copy; 2026 TailorDiet. Personalized nutrition starts with consistency.</p>
+            <p>Made for everyday fitness goals and sustainable diet planning.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+export default SiteShell

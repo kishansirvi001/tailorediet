@@ -1,0 +1,25 @@
+# 🔐 Environment variables (VERY IMPORTANT)
+.env
+backend/.env
+
+# 📦 Dependencies
+node_modules/
+
+# 🏗 Build output
+dist/
+dist-ssr/
+
+# 📝 Logs
+*.log
+
+# ⚙️ Local config
+*.local
+
+# 💻 Editor files
+.vscode/
+.idea/
+.DS_Store
+
+# 📂 Your local data (important)
+backend/data/users.json
+backend/data/signup-verifications.json
