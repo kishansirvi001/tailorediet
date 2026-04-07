@@ -10,8 +10,7 @@ import {
   fetchCurrentUser,
   loginRequest,
   logoutRequest,
-  requestSignupOtp,
-  verifySignupOtpRequest,
+  signupRequest,
 } from '../services/authApi.js'
 
 const AUTH_STORAGE_KEY = 'tailordiet.auth'
@@ -90,12 +89,8 @@ export function AuthProvider({ children }) {
     }
   }, [token])
 
-  const beginSignupVerification = useCallback(async (formData) => {
-    return requestSignupOtp(formData)
-  }, [])
-
-  const completeSignupVerification = useCallback(async (formData) => {
-    const nextSession = await verifySignupOtpRequest(formData)
+  const signup = useCallback(async (formData) => {
+    const nextSession = await signupRequest(formData)
     setSession(nextSession)
     persistSession(nextSession)
     return nextSession.user
@@ -128,12 +123,11 @@ export function AuthProvider({ children }) {
       token,
       isAuthenticated: Boolean(token && session?.user),
       isLoading,
-      beginSignupVerification,
-      completeSignupVerification,
+      signup,
       login,
       logout,
     }),
-    [beginSignupVerification, completeSignupVerification, isLoading, login, logout, session, token],
+    [isLoading, login, logout, session, signup, token],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

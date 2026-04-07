@@ -26,17 +26,8 @@ function createAuthHeaders(token) {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-export async function requestSignupOtp(formData) {
-  const payload = await apiRequest('/api/auth/signup/request-otp', {
-    method: 'POST',
-    body: JSON.stringify(formData),
-  })
-
-  return payload
-}
-
-export async function verifySignupOtpRequest(formData) {
-  const payload = await apiRequest('/api/auth/signup/verify-otp', {
+export async function signupRequest(formData) {
+  const payload = await apiRequest('/api/auth/signup', {
     method: 'POST',
     body: JSON.stringify(formData),
   })

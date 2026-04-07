@@ -1,15 +1,8 @@
 import crypto from "crypto";
-import {
-  deliverSignupOtps,
-  validateMessageCentralMobileOtp,
-} from "../lib/otpDelivery.js";
-import { readSignupVerifications, writeSignupVerifications } from "../lib/signupVerificationStore.js";
 import { readUsers, writeUsers } from "../lib/userStore.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const INDIAN_MOBILE_PATTERN = /^(?:\+91|91)?[6-9]\d{9}$/;
-const OTP_PATTERN = /^\d{6}$/;
-const OTP_TTL_MS = 10 * 60 * 1000;
 
 function sanitizeUser(user) {
   return {
@@ -17,6 +10,7 @@ function sanitizeUser(user) {
     name: user.name,
     email: user.email,
     mobileNumber: user.mobileNumber || null,
+    dateOfBirth: user.dateOfBirth || null,
     goal: user.goal,
     dietStyle: user.dietStyle,
     createdAt: user.createdAt,
@@ -47,6 +41,20 @@ function isValidEmail(email) {
 
 function isValidIndianMobileNumber(mobileNumber) {
   return INDIAN_MOBILE_PATTERN.test(String(mobileNumber || "").replace(/\s+/g, ""));
+}
+
+function isValidDateOfBirth(value) {
+  if (!String(value || "").trim()) {
+    return false;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return false;
+  }
+
+  return date <= new Date();
 }
 
 function resolveLoginIdentity({ email, mobileNumber, identifier }) {
@@ -85,15 +93,7 @@ function createSessionToken() {
   return crypto.randomBytes(32).toString("hex");
 }
 
-function createOtpCode() {
-  return String(crypto.randomInt(100000, 1000000));
-}
-
-function isValidOtp(value) {
-  return OTP_PATTERN.test(String(value || "").trim());
-}
-
-function validateSignupPayload({ name, email, mobileNumber, password, goal, dietStyle }) {
+function validateSignupPayload({ name, email, mobileNumber, dateOfBirth, password, goal, dietStyle }) {
   if (!name?.trim()) {
     return "Full name is required.";
   }
@@ -106,12 +106,20 @@ function validateSignupPayload({ name, email, mobileNumber, password, goal, diet
     return "Mobile number is required.";
   }
 
+  if (!dateOfBirth?.trim()) {
+    return "Date of birth is required.";
+  }
+
   if (!isValidEmail(normalizeEmail(email))) {
     return "Enter a valid email address.";
   }
 
   if (!isValidIndianMobileNumber(mobileNumber)) {
     return "Enter a valid Indian mobile number.";
+  }
+
+  if (!isValidDateOfBirth(dateOfBirth)) {
+    return "Enter a valid date of birth.";
   }
 
   if (!password || password.length < 8) {
@@ -124,22 +132,6 @@ function validateSignupPayload({ name, email, mobileNumber, password, goal, diet
 
   if (!dietStyle?.trim()) {
     return "Diet style is required.";
-  }
-
-  return null;
-}
-
-function validateOtpVerificationPayload({ verificationId, emailOtp, mobileOtp }) {
-  if (!String(verificationId || "").trim()) {
-    return "Verification session is missing.";
-  }
-
-  if (!isValidOtp(emailOtp)) {
-    return "Enter a valid 6-digit email OTP.";
-  }
-
-  if (!isValidOtp(mobileOtp)) {
-    return "Enter a valid 6-digit mobile OTP.";
   }
 
   return null;
@@ -173,39 +165,7 @@ function findExistingUser(users, { email, mobileNumber }) {
   );
 }
 
-function buildPendingVerificationPayload(body, email, mobileNumber) {
-  return {
-    id: crypto.randomUUID(),
-    name: body.name.trim(),
-    email,
-    mobileNumber,
-    passwordHash: hashPassword(body.password),
-    goal: body.goal.trim(),
-    dietStyle: body.dietStyle.trim(),
-    emailOtp: createOtpCode(),
-    deliveryStatus: {
-      email: { configured: false, sent: false },
-      mobile: { configured: false, sent: false, verificationId: null },
-    },
-    createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + OTP_TTL_MS).toISOString(),
-  };
-}
-
-function sanitizeVerification(verification) {
-  return {
-    verificationId: verification.id,
-    expiresAt: verification.expiresAt,
-    deliveryStatus: verification.deliveryStatus,
-    deliveryIssues: verification.deliveryIssues || [],
-    canVerify:
-      Boolean(verification.deliveryStatus?.email?.sent) &&
-      Boolean(verification.deliveryStatus?.mobile?.sent) &&
-      Boolean(verification.deliveryStatus?.mobile?.verificationId),
-  };
-}
-
-export async function requestSignupOtp(req, res) {
+export async function signup(req, res) {
   const error = validateSignupPayload(req.body);
 
   if (error) {
@@ -219,105 +179,8 @@ export async function requestSignupOtp(req, res) {
 
   if (existingUser) {
     return res.status(409).json({
-      message: existingUser.email === email
-        ? "An account with this email already exists."
-        : "An account with this mobile number already exists.",
-    });
-  }
-
-  const verifications = await readSignupVerifications();
-  const activeVerifications = verifications.filter(
-    (entry) =>
-      new Date(entry.expiresAt).getTime() > Date.now() &&
-      entry.email !== email &&
-      entry.mobileNumber !== mobileNumber
-  );
-
-  const verification = buildPendingVerificationPayload(req.body, email, mobileNumber);
-  verification.deliveryIssues = [];
-
-  try {
-    const delivery = await deliverSignupOtps({
-      email,
-      emailOtp: verification.emailOtp,
-      mobileNumber,
-      name: verification.name,
-    });
-
-    verification.deliveryStatus = delivery.deliveryStatus;
-    verification.deliveryIssues = delivery.deliveryIssues;
-  } catch (error) {
-    return res.status(502).json({
       message:
-        error instanceof Error
-          ? `Failed to deliver OTP: ${error.message}`
-          : "Failed to deliver OTP codes.",
-    });
-  }
-
-  activeVerifications.push(verification);
-  await writeSignupVerifications(activeVerifications);
-
-  return res.status(201).json({
-    message:
-      verification.deliveryIssues.length > 0
-        ? "Verification started, but one or more OTP channels could not be delivered."
-        : "Email and mobile OTP generated successfully.",
-    verification: sanitizeVerification(verification),
-  });
-}
-
-export async function verifySignupOtp(req, res) {
-  const error = validateOtpVerificationPayload(req.body);
-
-  if (error) {
-    return res.status(400).json({ message: error });
-  }
-
-  const verifications = await readSignupVerifications();
-  const verification = verifications.find((entry) => entry.id === req.body.verificationId);
-
-  if (!verification) {
-    return res.status(404).json({ message: "Verification session not found. Request OTP again." });
-  }
-
-  if (new Date(verification.expiresAt).getTime() <= Date.now()) {
-    const remainingEntries = verifications.filter((entry) => entry.id !== verification.id);
-    await writeSignupVerifications(remainingEntries);
-    return res.status(410).json({ message: "OTP expired. Request a new verification code." });
-  }
-
-  if (verification.emailOtp !== String(req.body.emailOtp).trim()) {
-    return res.status(400).json({ message: "Incorrect email OTP." });
-  }
-
-  const mobileVerificationId = verification.deliveryStatus?.mobile?.verificationId;
-
-  if (!mobileVerificationId) {
-    return res.status(400).json({
-      message: "Mobile OTP was not sent successfully yet. Request OTP again.",
-    });
-  }
-
-  try {
-    await validateMessageCentralMobileOtp({
-      verificationId: mobileVerificationId,
-      mobileOtp: req.body.mobileOtp,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      message:
-        error instanceof Error ? error.message : "Incorrect mobile OTP.",
-    });
-  }
-
-  const users = await readUsers();
-  const existingUser = findExistingUser(users, verification);
-
-  if (existingUser) {
-    return res.status(409).json({
-      message:
-        existingUser.email === verification.email
+        existingUser.email === email
           ? "An account with this email already exists."
           : "An account with this mobile number already exists.",
     });
@@ -326,21 +189,19 @@ export async function verifySignupOtp(req, res) {
   const token = createSessionToken();
   const user = {
     id: crypto.randomUUID(),
-    name: verification.name,
-    email: verification.email,
-    mobileNumber: verification.mobileNumber,
-    passwordHash: verification.passwordHash,
-    goal: verification.goal,
-    dietStyle: verification.dietStyle,
+    name: req.body.name.trim(),
+    email,
+    mobileNumber,
+    dateOfBirth: req.body.dateOfBirth,
+    passwordHash: hashPassword(req.body.password),
+    goal: req.body.goal.trim(),
+    dietStyle: req.body.dietStyle.trim(),
     sessionToken: token,
     createdAt: new Date().toISOString(),
   };
 
   users.push(user);
   await writeUsers(users);
-
-  const remainingEntries = verifications.filter((entry) => entry.id !== verification.id);
-  await writeSignupVerifications(remainingEntries);
 
   return res.status(201).json({
     message: "Account created successfully.",

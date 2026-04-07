@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 
 function AccountPage() {
   const { isLoading, isAuthenticated, logout, user } = useAuth()
+  const birthDateLabel = user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Not added'
 
   if (!isLoading && !isAuthenticated) {
     return <Navigate to="/login" replace />
@@ -43,7 +44,7 @@ function AccountPage() {
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
                 to="/calculators"
-                className="rounded-full bg-stone-900 px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-amber-100 transition hover:bg-stone-700"
+                className="rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_45px_rgba(249,115,22,0.28)]"
               >
                 Open calculators
               </Link>
@@ -78,6 +79,10 @@ function AccountPage() {
                 </p>
               </div>
               <div className="rounded-[1.5rem] bg-white/5 p-5">
+                <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Date of birth</p>
+                <p className="mt-2 text-lg font-semibold text-white">{birthDateLabel}</p>
+              </div>
+              <div className="rounded-[1.5rem] bg-white/5 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Joined</p>
                 <p className="mt-2 text-lg font-semibold text-white">
                   {user?.createdAt
@@ -90,7 +95,7 @@ function AccountPage() {
             <button
               type="button"
               onClick={logout}
-              className="mt-8 w-full rounded-full border border-white/15 px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white transition hover:bg-white/10"
+              className="mt-8 w-full rounded-full border border-amber-200/30 bg-amber-300/10 px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-amber-100 transition hover:bg-amber-300/20"
             >
               Log out
             </button>

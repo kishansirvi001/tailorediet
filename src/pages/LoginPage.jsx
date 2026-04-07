@@ -103,7 +103,7 @@ function LoginPage() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-stone-900/10 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(250,246,237,0.92))] p-6 shadow-[0_30px_70px_rgba(28,25,23,0.1)] backdrop-blur sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
             Login
           </p>
@@ -118,7 +118,7 @@ function LoginPage() {
               onChange={handleChange}
               placeholder="Email or mobile number"
               autoComplete="username"
-              className="w-full rounded-2xl border border-stone-300 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-stone-600 focus:outline-none"
+              className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none"
             />
             <input
               name="password"
@@ -127,9 +127,9 @@ function LoginPage() {
               onChange={handleChange}
               placeholder="Password"
               autoComplete="current-password"
-              className="w-full rounded-2xl border border-stone-300 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-stone-600 focus:outline-none"
+              className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none"
             />
-            <div className="rounded-[1.5rem] border border-stone-900/10 bg-stone-50 p-4">
+            <div className="rounded-[1.5rem] border border-amber-200/70 bg-amber-50/80 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
                 After login
               </p>
@@ -148,7 +148,7 @@ function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-full bg-stone-900 px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-amber-100 transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full rounded-full bg-[linear-gradient(135deg,#d97706,#ea580c)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(234,88,12,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_45px_rgba(234,88,12,0.28)] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isSubmitting ? 'Logging in...' : 'Log in'}
             </button>
