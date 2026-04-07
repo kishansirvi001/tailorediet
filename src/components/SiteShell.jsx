@@ -68,6 +68,7 @@ function SiteShell({ children }) {
     { label: 'Home', to: '/' },
     { label: 'Calculators', to: '/calculators' },
     { label: 'Diet Plans', to: '/diet-plans' },
+    ...(isAuthenticated ? [{ label: 'Workout Plans', to: '/workout-plans' }] : []),
     ...(isAuthenticated ? [{ label: 'Meal Scanner', to: '/meal-scanner' }] : []),
     ...(isAuthenticated ? [{ label: 'Account', to: '/account' }] : []),
   ]
@@ -264,6 +265,11 @@ function SiteShell({ children }) {
               <Link to="/diet-plans" className="block transition hover:text-white">
                 Diet Plans
               </Link>
+              {isAuthenticated ? (
+                <Link to="/workout-plans" className="block transition hover:text-white">
+                  Workout Plans
+                </Link>
+              ) : null}
               {isAuthenticated ? (
                 <Link to="/account" className="block transition hover:text-white">
                   Account

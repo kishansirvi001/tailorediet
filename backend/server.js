@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/authRoutes.js";
 import dietPlanRoutes from "./routes/dietPlanRoutes.js";
 import mealScanRoutes from "./routes/mealScanRoutes.js";
+import workoutPlanRoutes from "./routes/workoutPlanRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +27,7 @@ app.get("/", (req, res) => res.send("API running"));
 app.use("/api/auth", authRoutes);
 app.use("/api/diet-plans", dietPlanRoutes);
 app.use("/api/meal-scan", mealScanRoutes);
+app.use("/api/workout-plans", workoutPlanRoutes);
 
 async function startServer() {
   const mongoUri = process.env.MONGODB_URI;
