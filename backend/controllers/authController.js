@@ -231,12 +231,25 @@ export async function requestSignupOtp(req, res) {
   const verification = buildPendingVerificationPayload(req.body, email, mobileNumber);
 
   try {
+    await SignupVerification.create(verification);
+  } catch (persistenceError) {
+    return res.status(500).json({
+      message:
+        persistenceError instanceof Error
+          ? `Failed to save verification session: ${persistenceError.message}`
+          : "Failed to save verification session.",
+    });
+  }
+
+  try {
     await deliverSignupEmailOtp({
       email,
       emailOtp: verification.emailOtp,
       name: verification.name,
     });
   } catch (deliveryError) {
+    await SignupVerification.deleteOne({ verificationId: verification.verificationId }).catch(() => null);
+
     return res.status(502).json({
       message:
         deliveryError instanceof Error
@@ -244,8 +257,6 @@ export async function requestSignupOtp(req, res) {
           : "Failed to deliver email OTP.",
     });
   }
-
-  await SignupVerification.create(verification);
 
   return res.status(201).json({
     message: "Email OTP sent successfully.",
