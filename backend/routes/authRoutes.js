@@ -3,12 +3,14 @@ import {
   getCurrentUser,
   login,
   logout,
-  signup,
+  requestSignupOtp,
+  verifySignupOtp,
 } from "../controllers/authController.js";
 
 const router = Router();
 
-router.post("/signup", signup);
+router.post("/signup/request-otp", requestSignupOtp);
+router.post("/signup/verify-otp", verifySignupOtp);
 router.post("/login", login);
 router.get("/me", getCurrentUser);
 router.post("/logout", logout);

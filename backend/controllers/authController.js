@@ -1,8 +1,12 @@
 import crypto from "crypto";
+import { deliverSignupEmailOtp } from "../lib/otpDelivery.js";
+import { readSignupVerifications, writeSignupVerifications } from "../lib/signupVerificationStore.js";
 import { readUsers, writeUsers } from "../lib/userStore.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const INDIAN_MOBILE_PATTERN = /^(?:\+91|91)?[6-9]\d{9}$/;
+const OTP_PATTERN = /^\d{6}$/;
+const OTP_TTL_MS = 10 * 60 * 1000;
 
 function sanitizeUser(user) {
   return {
@@ -93,6 +97,10 @@ function createSessionToken() {
   return crypto.randomBytes(32).toString("hex");
 }
 
+function createOtpCode() {
+  return String(crypto.randomInt(100000, 1000000));
+}
+
 function validateSignupPayload({ name, email, mobileNumber, dateOfBirth, password, goal, dietStyle }) {
   if (!name?.trim()) {
     return "Full name is required.";
@@ -137,6 +145,18 @@ function validateSignupPayload({ name, email, mobileNumber, dateOfBirth, passwor
   return null;
 }
 
+function validateOtpVerificationPayload({ verificationId, emailOtp }) {
+  if (!String(verificationId || "").trim()) {
+    return "Verification session is missing.";
+  }
+
+  if (!OTP_PATTERN.test(String(emailOtp || "").trim())) {
+    return "Enter a valid 6-digit email OTP.";
+  }
+
+  return null;
+}
+
 function validateLoginPayload({ email, mobileNumber, identifier, password }) {
   const identity = resolveLoginIdentity({ email, mobileNumber, identifier });
 
@@ -165,7 +185,23 @@ function findExistingUser(users, { email, mobileNumber }) {
   );
 }
 
-export async function signup(req, res) {
+function buildPendingVerificationPayload(body, email, mobileNumber) {
+  return {
+    id: crypto.randomUUID(),
+    name: body.name.trim(),
+    email,
+    mobileNumber,
+    dateOfBirth: body.dateOfBirth,
+    passwordHash: hashPassword(body.password),
+    goal: body.goal.trim(),
+    dietStyle: body.dietStyle.trim(),
+    emailOtp: createOtpCode(),
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + OTP_TTL_MS).toISOString(),
+  };
+}
+
+export async function requestSignupOtp(req, res) {
   const error = validateSignupPayload(req.body);
 
   if (error) {
@@ -186,22 +222,99 @@ export async function signup(req, res) {
     });
   }
 
+  const verifications = await readSignupVerifications();
+  const activeVerifications = verifications.filter(
+    (entry) =>
+      new Date(entry.expiresAt).getTime() > Date.now() &&
+      entry.email !== email &&
+      entry.mobileNumber !== mobileNumber
+  );
+
+  const verification = buildPendingVerificationPayload(req.body, email, mobileNumber);
+
+  try {
+    await deliverSignupEmailOtp({
+      email,
+      emailOtp: verification.emailOtp,
+      name: verification.name,
+    });
+  } catch (deliveryError) {
+    return res.status(502).json({
+      message:
+        deliveryError instanceof Error
+          ? `Failed to deliver email OTP: ${deliveryError.message}`
+          : "Failed to deliver email OTP.",
+    });
+  }
+
+  activeVerifications.push(verification);
+  await writeSignupVerifications(activeVerifications);
+
+  return res.status(201).json({
+    message: "Email OTP sent successfully.",
+    verification: {
+      verificationId: verification.id,
+      email: verification.email,
+      expiresAt: verification.expiresAt,
+    },
+  });
+}
+
+export async function verifySignupOtp(req, res) {
+  const error = validateOtpVerificationPayload(req.body);
+
+  if (error) {
+    return res.status(400).json({ message: error });
+  }
+
+  const verifications = await readSignupVerifications();
+  const verification = verifications.find((entry) => entry.id === req.body.verificationId);
+
+  if (!verification) {
+    return res.status(404).json({ message: "Verification session not found. Request OTP again." });
+  }
+
+  if (new Date(verification.expiresAt).getTime() <= Date.now()) {
+    const remainingEntries = verifications.filter((entry) => entry.id !== verification.id);
+    await writeSignupVerifications(remainingEntries);
+    return res.status(410).json({ message: "OTP expired. Request a new verification code." });
+  }
+
+  if (verification.emailOtp !== String(req.body.emailOtp).trim()) {
+    return res.status(400).json({ message: "Incorrect email OTP." });
+  }
+
+  const users = await readUsers();
+  const existingUser = findExistingUser(users, verification);
+
+  if (existingUser) {
+    return res.status(409).json({
+      message:
+        existingUser.email === verification.email
+          ? "An account with this email already exists."
+          : "An account with this mobile number already exists.",
+    });
+  }
+
   const token = createSessionToken();
   const user = {
     id: crypto.randomUUID(),
-    name: req.body.name.trim(),
-    email,
-    mobileNumber,
-    dateOfBirth: req.body.dateOfBirth,
-    passwordHash: hashPassword(req.body.password),
-    goal: req.body.goal.trim(),
-    dietStyle: req.body.dietStyle.trim(),
+    name: verification.name,
+    email: verification.email,
+    mobileNumber: verification.mobileNumber,
+    dateOfBirth: verification.dateOfBirth,
+    passwordHash: verification.passwordHash,
+    goal: verification.goal,
+    dietStyle: verification.dietStyle,
     sessionToken: token,
     createdAt: new Date().toISOString(),
   };
 
   users.push(user);
   await writeUsers(users);
+
+  const remainingEntries = verifications.filter((entry) => entry.id !== verification.id);
+  await writeSignupVerifications(remainingEntries);
 
   return res.status(201).json({
     message: "Account created successfully.",
