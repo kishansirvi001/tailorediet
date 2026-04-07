@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/authRoutes.js";
@@ -24,10 +25,25 @@ app.get("/", (req, res) => res.send("API running"));
 app.use("/api/auth", authRoutes);
 app.use("/api/diet-plans", dietPlanRoutes);
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log(
-    `Server running on port ${process.env.PORT || 5000}. Env loaded from: ${
-      loadedEnvPath || "not found"
-    }. GEMINI_API_KEY present: ${process.env.GEMINI_API_KEY ? "yes" : "no"}`
-  );
+async function startServer() {
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    throw new Error("MONGODB_URI is missing. Add it to backend/.env before starting the server.");
+  }
+
+  await mongoose.connect(mongoUri);
+
+  app.listen(process.env.PORT || 5000, () => {
+    console.log(
+      `Server running on port ${process.env.PORT || 5000}. Env loaded from: ${
+        loadedEnvPath || "not found"
+      }. MongoDB connected: yes. GEMINI_API_KEY present: ${process.env.GEMINI_API_KEY ? "yes" : "no"}`
+    );
+  });
+}
+
+startServer().catch((error) => {
+  console.error("Failed to start server:", error.message);
+  process.exit(1);
 });

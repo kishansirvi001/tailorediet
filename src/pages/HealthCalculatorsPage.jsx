@@ -20,6 +20,8 @@ const steps = [
 
 const calculatorLinks = {
   'Calorie calculator': '/calculators/calorie',
+  'Calorie deficit calculator': '/calculators/calorie-deficit',
+  'Calorie surplus calculator': '/calculators/calorie-surplus',
   'BMI calculator': '/calculators/bmi',
   'Macro calculator': '/calculators/macro',
   'Goal planner': '/calculators/goal',
@@ -182,6 +184,58 @@ function HealthCalculatorsPage() {
                 </div>
               </div>
               <Link to={calculatorLinks['Calorie calculator']} className="mt-6 inline-flex rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:border-stone-500 hover:bg-stone-100">
+                Open dedicated page
+              </Link>
+            </article>
+
+            <article className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-8 shadow-sm">
+              <div className="inline-flex rounded-full bg-rose-200 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-stone-900">
+                Calorie deficit calculator
+              </div>
+              <p className="mt-6 text-base leading-7 text-stone-700">
+                Build a fat-loss calorie target by subtracting a custom daily deficit from estimated maintenance calories.
+              </p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl bg-stone-900 p-4 text-white">
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-400">Maintenance</p>
+                  <p className="mt-2 text-2xl font-semibold">{calorieResult.maintenance}</p>
+                </div>
+                <div className="rounded-2xl bg-rose-200 p-4 text-stone-950">
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Suggested deficit</p>
+                  <p className="mt-2 text-2xl font-semibold">450 kcal</p>
+                </div>
+                <div className="rounded-2xl bg-white p-4 text-stone-950 border border-stone-900/10">
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Example target</p>
+                  <p className="mt-2 text-base font-semibold">{Math.max(1200, calorieResult.maintenance - 450)} kcal</p>
+                </div>
+              </div>
+              <Link to={calculatorLinks['Calorie deficit calculator']} className="mt-6 inline-flex rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:border-stone-500 hover:bg-stone-100">
+                Open dedicated page
+              </Link>
+            </article>
+
+            <article className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-8 shadow-sm">
+              <div className="inline-flex rounded-full bg-emerald-200 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-stone-900">
+                Calorie surplus calculator
+              </div>
+              <p className="mt-6 text-base leading-7 text-stone-700">
+                Build a muscle-gain calorie target by adding a measured surplus on top of maintenance intake.
+              </p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl bg-stone-900 p-4 text-white">
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-400">Maintenance</p>
+                  <p className="mt-2 text-2xl font-semibold">{calorieResult.maintenance}</p>
+                </div>
+                <div className="rounded-2xl bg-emerald-200 p-4 text-stone-950">
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Suggested surplus</p>
+                  <p className="mt-2 text-2xl font-semibold">280 kcal</p>
+                </div>
+                <div className="rounded-2xl bg-white p-4 text-stone-950 border border-stone-900/10">
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Example target</p>
+                  <p className="mt-2 text-base font-semibold">{calorieResult.maintenance + 280} kcal</p>
+                </div>
+              </div>
+              <Link to={calculatorLinks['Calorie surplus calculator']} className="mt-6 inline-flex rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:border-stone-500 hover:bg-stone-100">
                 Open dedicated page
               </Link>
             </article>

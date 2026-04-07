@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { deliverSignupEmailOtp } from "../lib/otpDelivery.js";
-import { readSignupVerifications, writeSignupVerifications } from "../lib/signupVerificationStore.js";
-import { readUsers, writeUsers } from "../lib/userStore.js";
+import SignupVerification from "../models/SignupVerification.js";
+import User from "../models/User.js";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const INDIAN_MOBILE_PATTERN = /^(?:\+91|91)?[6-9]\d{9}$/;
@@ -10,14 +10,14 @@ const OTP_TTL_MS = 10 * 60 * 1000;
 
 function sanitizeUser(user) {
   return {
-    id: user.id,
+    id: user._id.toString(),
     name: user.name,
     email: user.email,
     mobileNumber: user.mobileNumber || null,
-    dateOfBirth: user.dateOfBirth || null,
+    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
     goal: user.goal,
     dietStyle: user.dietStyle,
-    createdAt: user.createdAt,
+    createdAt: user.createdAt ? user.createdAt.toISOString() : null,
   };
 }
 
@@ -179,25 +179,24 @@ function validateLoginPayload({ email, mobileNumber, identifier, password }) {
   return null;
 }
 
-function findExistingUser(users, { email, mobileNumber }) {
-  return users.find(
-    (user) => user.email === email || user.mobileNumber === mobileNumber
-  );
+async function findExistingUser({ email, mobileNumber }) {
+  return User.findOne({
+    $or: [{ email }, { mobileNumber }],
+  });
 }
 
 function buildPendingVerificationPayload(body, email, mobileNumber) {
   return {
-    id: crypto.randomUUID(),
+    verificationId: crypto.randomUUID(),
     name: body.name.trim(),
     email,
     mobileNumber,
-    dateOfBirth: body.dateOfBirth,
+    dateOfBirth: new Date(body.dateOfBirth),
     passwordHash: hashPassword(body.password),
     goal: body.goal.trim(),
     dietStyle: body.dietStyle.trim(),
     emailOtp: createOtpCode(),
-    createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + OTP_TTL_MS).toISOString(),
+    expiresAt: new Date(Date.now() + OTP_TTL_MS),
   };
 }
 
@@ -208,10 +207,9 @@ export async function requestSignupOtp(req, res) {
     return res.status(400).json({ message: error });
   }
 
-  const users = await readUsers();
   const email = normalizeEmail(req.body.email);
   const mobileNumber = normalizeMobileNumber(req.body.mobileNumber);
-  const existingUser = findExistingUser(users, { email, mobileNumber });
+  const existingUser = await findExistingUser({ email, mobileNumber });
 
   if (existingUser) {
     return res.status(409).json({
@@ -222,13 +220,13 @@ export async function requestSignupOtp(req, res) {
     });
   }
 
-  const verifications = await readSignupVerifications();
-  const activeVerifications = verifications.filter(
-    (entry) =>
-      new Date(entry.expiresAt).getTime() > Date.now() &&
-      entry.email !== email &&
-      entry.mobileNumber !== mobileNumber
-  );
+  await SignupVerification.deleteMany({
+    $or: [
+      { expiresAt: { $lte: new Date() } },
+      { email },
+      { mobileNumber },
+    ],
+  });
 
   const verification = buildPendingVerificationPayload(req.body, email, mobileNumber);
 
@@ -247,15 +245,14 @@ export async function requestSignupOtp(req, res) {
     });
   }
 
-  activeVerifications.push(verification);
-  await writeSignupVerifications(activeVerifications);
+  await SignupVerification.create(verification);
 
   return res.status(201).json({
     message: "Email OTP sent successfully.",
     verification: {
-      verificationId: verification.id,
+      verificationId: verification.verificationId,
       email: verification.email,
-      expiresAt: verification.expiresAt,
+      expiresAt: verification.expiresAt.toISOString(),
     },
   });
 }
@@ -267,16 +264,16 @@ export async function verifySignupOtp(req, res) {
     return res.status(400).json({ message: error });
   }
 
-  const verifications = await readSignupVerifications();
-  const verification = verifications.find((entry) => entry.id === req.body.verificationId);
+  const verification = await SignupVerification.findOne({
+    verificationId: req.body.verificationId,
+  });
 
   if (!verification) {
     return res.status(404).json({ message: "Verification session not found. Request OTP again." });
   }
 
-  if (new Date(verification.expiresAt).getTime() <= Date.now()) {
-    const remainingEntries = verifications.filter((entry) => entry.id !== verification.id);
-    await writeSignupVerifications(remainingEntries);
+  if (verification.expiresAt.getTime() <= Date.now()) {
+    await SignupVerification.deleteOne({ _id: verification._id });
     return res.status(410).json({ message: "OTP expired. Request a new verification code." });
   }
 
@@ -284,8 +281,10 @@ export async function verifySignupOtp(req, res) {
     return res.status(400).json({ message: "Incorrect email OTP." });
   }
 
-  const users = await readUsers();
-  const existingUser = findExistingUser(users, verification);
+  const existingUser = await findExistingUser({
+    email: verification.email,
+    mobileNumber: verification.mobileNumber,
+  });
 
   if (existingUser) {
     return res.status(409).json({
@@ -297,8 +296,7 @@ export async function verifySignupOtp(req, res) {
   }
 
   const token = createSessionToken();
-  const user = {
-    id: crypto.randomUUID(),
+  const user = await User.create({
     name: verification.name,
     email: verification.email,
     mobileNumber: verification.mobileNumber,
@@ -307,14 +305,9 @@ export async function verifySignupOtp(req, res) {
     goal: verification.goal,
     dietStyle: verification.dietStyle,
     sessionToken: token,
-    createdAt: new Date().toISOString(),
-  };
+  });
 
-  users.push(user);
-  await writeUsers(users);
-
-  const remainingEntries = verifications.filter((entry) => entry.id !== verification.id);
-  await writeSignupVerifications(remainingEntries);
+  await SignupVerification.deleteOne({ _id: verification._id });
 
   return res.status(201).json({
     message: "Account created successfully.",
@@ -330,12 +323,11 @@ export async function login(req, res) {
     return res.status(400).json({ message: error });
   }
 
-  const users = await readUsers();
   const identity = resolveLoginIdentity(req.body);
-  const user = users.find((entry) =>
+  const user = await User.findOne(
     identity.type === "email"
-      ? entry.email === identity.value
-      : entry.mobileNumber === identity.value
+      ? { email: identity.value }
+      : { mobileNumber: identity.value }
   );
 
   if (!user || !verifyPassword(req.body.password, user.passwordHash)) {
@@ -343,7 +335,7 @@ export async function login(req, res) {
   }
 
   user.sessionToken = createSessionToken();
-  await writeUsers(users);
+  await user.save();
 
   return res.json({
     message: "Logged in successfully.",
@@ -360,8 +352,7 @@ export async function getCurrentUser(req, res) {
     return res.status(401).json({ message: "Missing authorization token." });
   }
 
-  const users = await readUsers();
-  const user = users.find((entry) => entry.sessionToken === token);
+  const user = await User.findOne({ sessionToken: token });
 
   if (!user) {
     return res.status(401).json({ message: "Session expired. Please log in again." });
@@ -378,13 +369,7 @@ export async function logout(req, res) {
     return res.status(204).send();
   }
 
-  const users = await readUsers();
-  const user = users.find((entry) => entry.sessionToken === token);
-
-  if (user) {
-    user.sessionToken = null;
-    await writeUsers(users);
-  }
+  await User.updateOne({ sessionToken: token }, { $set: { sessionToken: null } });
 
   return res.status(204).send();
 }

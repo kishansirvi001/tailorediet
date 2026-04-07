@@ -5,6 +5,8 @@ import HomePage from './pages/HomePage.jsx'
 import BmiCalculatorPage from './pages/BmiCalculatorPage.jsx'
 import BodyFatCalculatorPage from './pages/BodyFatCalculatorPage.jsx'
 import CalorieCalculatorPage from './pages/CalorieCalculatorPage.jsx'
+import CalorieDeficitCalculatorPage from './pages/CalorieDeficitCalculatorPage.jsx'
+import CalorieSurplusCalculatorPage from './pages/CalorieSurplusCalculatorPage.jsx'
 import DietPlansPage from './pages/DietPlansPage.jsx'
 import GoalPlannerPage from './pages/GoalPlannerPage.jsx'
 import HealthCalculatorsPage from './pages/HealthCalculatorsPage.jsx'
@@ -20,6 +22,8 @@ function RouterApp() {
       <Route path="/" element={<HomePage />} />
       <Route path="/calculators" element={<HealthCalculatorsPage />} />
       <Route path="/calculators/calorie" element={<CalorieCalculatorPage />} />
+      <Route path="/calculators/calorie-deficit" element={<CalorieDeficitCalculatorPage />} />
+      <Route path="/calculators/calorie-surplus" element={<CalorieSurplusCalculatorPage />} />
       <Route path="/calculators/bmi" element={<BmiCalculatorPage />} />
       <Route path="/calculators/body-fat" element={<BodyFatCalculatorPage />} />
       <Route path="/calculators/ideal-weight" element={<IdealWeightCalculatorPage />} />

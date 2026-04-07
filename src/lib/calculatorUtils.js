@@ -56,6 +56,34 @@ export function calculateCalories({ age, weight, height, activity, goal }) {
   }
 }
 
+export function calculateCalorieDeficit({ age, weight, height, activity, deficit = 450 }) {
+  const base = calculateCalories({ age, weight, height, activity, goal: 'maintain' })
+  const normalizedDeficit = Math.max(100, Math.min(1000, toNumber(deficit)))
+  const target = Math.max(1200, base.maintenance - normalizedDeficit)
+
+  return {
+    maintenance: base.maintenance,
+    deficit: normalizedDeficit,
+    target,
+    weeklyChange: `${(normalizedDeficit * 7 / 7700).toFixed(2)} kg / week`,
+    range: `${Math.max(1200, target - 100)} to ${target + 100} kcal`,
+  }
+}
+
+export function calculateCalorieSurplus({ age, weight, height, activity, surplus = 280 }) {
+  const base = calculateCalories({ age, weight, height, activity, goal: 'maintain' })
+  const normalizedSurplus = Math.max(100, Math.min(1000, toNumber(surplus)))
+  const target = base.maintenance + normalizedSurplus
+
+  return {
+    maintenance: base.maintenance,
+    surplus: normalizedSurplus,
+    target,
+    weeklyChange: `${(normalizedSurplus * 7 / 7700).toFixed(2)} kg / week`,
+    range: `${Math.max(1400, target - 100)} to ${target + 100} kcal`,
+  }
+}
+
 export function calculateBmi({ weight, height }) {
   const normalizedWeight = toNumber(weight)
   const normalizedHeight = Math.max(1, toNumber(height))
