@@ -16,7 +16,19 @@ function normalizeEnvValue(value) {
 }
 
 function isProbablyBase64(value) {
-  return /^[A-Za-z0-9+/=_-]+$/.test(value);
+  return /^[A-Za-z0-9+/=]+$/.test(value) && value.length % 4 === 0;
+}
+
+function shouldRetryMessageCentralKeyAsBase64(errorMessage, rawKey) {
+  const normalizedMessage = String(errorMessage || "").toLowerCase();
+
+  return (
+    Boolean(rawKey) &&
+    !isProbablyBase64(rawKey) &&
+    (normalizedMessage.includes("base64") ||
+      normalizedMessage.includes("illegal") ||
+      normalizedMessage.includes("invalid key"))
+  );
 }
 
 function formatDeliveryError(error) {
@@ -41,33 +53,9 @@ function getSenderConfig() {
   };
 }
 
-function getSmtpConfig() {
-  const sender = getSenderConfig();
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || 587);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  const secure =
-    String(process.env.SMTP_SECURE || "").toLowerCase() === "true" ||
-    port === 465;
-
-  if (!sender || !host || !user || !pass) {
-    return null;
-  }
-
-  return {
-    ...sender,
-    host,
-    port,
-    user,
-    pass,
-    secure,
-  };
-}
-
 function getBrevoConfig() {
   const sender = getSenderConfig();
-  const apiKey = process.env.BREVO_API_KEY;
+  const apiKey = normalizeEnvValue(process.env.BREVO_API_KEY);
 
   if (!sender || !apiKey) {
     return null;
@@ -83,6 +71,7 @@ function getMessageCentralConfig() {
   const customerId = normalizeEnvValue(process.env.MESSAGE_CENTRAL_CUSTOMER_ID);
   const key = normalizeEnvValue(process.env.MESSAGE_CENTRAL_KEY);
   const countryCode = normalizeEnvValue(process.env.MESSAGE_CENTRAL_COUNTRY_CODE || "91");
+  const email = normalizeEnvValue(process.env.MESSAGE_CENTRAL_EMAIL);
 
   if (!customerId || !key) {
     return null;
@@ -92,6 +81,7 @@ function getMessageCentralConfig() {
     customerId,
     key,
     countryCode,
+    email: email || null,
   };
 }
 
@@ -100,12 +90,8 @@ function validateMessageCentralConfig(config) {
     return "Message Central mobile OTP is not configured. Set MESSAGE_CENTRAL_CUSTOMER_ID and MESSAGE_CENTRAL_KEY.";
   }
 
-  if (!/^\d+$/.test(config.customerId)) {
-    return "Message Central customer ID must contain only digits.";
-  }
-
-  if (!isProbablyBase64(config.key)) {
-    return "Message Central key looks malformed. It should be the raw Base64 key from Message Central without quotes, spaces, or extra punctuation.";
+  if (!config.key) {
+    return "Message Central key is missing.";
   }
 
   if (!/^\d+$/.test(config.countryCode)) {
@@ -183,7 +169,12 @@ async function sendBrevoEmail({
   }
 }
 
-async function requestMessageCentralAuthToken({ customerId, key, countryCode }) {
+async function requestMessageCentralAuthTokenWithKey({
+  customerId,
+  key,
+  countryCode,
+  email,
+}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   const params = new URLSearchParams({
@@ -192,6 +183,10 @@ async function requestMessageCentralAuthToken({ customerId, key, countryCode }) 
     scope: "NEW",
     country: countryCode,
   });
+
+  if (email) {
+    params.set("email", email);
+  }
 
   try {
     const response = await fetch(
@@ -226,6 +221,30 @@ async function requestMessageCentralAuthToken({ customerId, key, countryCode }) 
     throw error;
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+async function requestMessageCentralAuthToken({ customerId, key, countryCode, email }) {
+  try {
+    return await requestMessageCentralAuthTokenWithKey({
+      customerId,
+      key,
+      countryCode,
+      email,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    if (!shouldRetryMessageCentralKeyAsBase64(errorMessage, key)) {
+      throw error;
+    }
+
+    return requestMessageCentralAuthTokenWithKey({
+      customerId,
+      key: Buffer.from(String(key), "utf8").toString("base64"),
+      countryCode,
+      email,
+    });
   }
 }
 
@@ -347,59 +366,16 @@ export async function validateMessageCentralMobileOtp({
   }
 }
 
-async function sendSmtpEmail({
-  host,
-  port,
-  secure,
-  user,
-  pass,
-  senderEmail,
-  senderName,
-  toEmail,
-  subject,
-  htmlContent,
-  textContent,
-}) {
-  let nodemailer;
-
-  try {
-    ({ default: nodemailer } = await import("nodemailer"));
-  } catch {
-    throw new Error(
-      "SMTP is configured, but the 'nodemailer' package is missing. Run 'npm install' in the backend."
-    );
-  }
-
-  const transport = nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: {
-      user,
-      pass,
-    },
-  });
-
-  await transport.sendMail({
-    from: senderName ? `"${senderName}" <${senderEmail}>` : senderEmail,
-    to: toEmail,
-    subject,
-    text: textContent,
-    html: htmlContent,
-  });
-}
-
 export async function deliverSignupOtps({ email, emailOtp, mobileNumber, name }) {
-  const smtpConfig = getSmtpConfig();
   const brevoConfig = getBrevoConfig();
   const messageCentralConfig = getMessageCentralConfig();
   const messageCentralConfigError = validateMessageCentralConfig(messageCentralConfig);
 
   const deliveryStatus = {
     email: {
-      configured: Boolean(smtpConfig || brevoConfig),
+      configured: Boolean(brevoConfig),
       sent: false,
-      provider: smtpConfig ? "smtp" : "brevo",
+      provider: "brevo",
     },
     mobile: {
       configured: Boolean(messageCentralConfig),
@@ -417,23 +393,16 @@ export async function deliverSignupOtps({ email, emailOtp, mobileNumber, name })
     htmlContent: `<p>Hi ${name},</p><p>Your TailorDiet email OTP is <strong>${emailOtp}</strong>.</p><p>It expires in 10 minutes.</p>`,
   };
 
-  if (!smtpConfig && !brevoConfig) {
+  if (!brevoConfig) {
     deliveryIssues.push(
-      "Email OTP delivery is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, OTP_EMAIL_FROM, and optionally SMTP_SECURE."
+      "Email OTP delivery is not configured. Set BREVO_API_KEY, OTP_EMAIL_FROM, and optionally OTP_EMAIL_FROM_NAME."
     );
   } else {
     try {
-      if (smtpConfig) {
-        await sendSmtpEmail({
-          ...smtpConfig,
-          ...message,
-        });
-      } else {
-        await sendBrevoEmail({
-          ...brevoConfig,
-          ...message,
-        });
-      }
+      await sendBrevoEmail({
+        ...brevoConfig,
+        ...message,
+      });
 
       deliveryStatus.email.sent = true;
     } catch (error) {

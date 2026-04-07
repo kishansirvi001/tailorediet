@@ -9,21 +9,9 @@ import dietPlanRoutes from "./routes/dietPlanRoutes.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const envCandidates = [
-  path.resolve(__dirname, ".env"),
-  path.resolve(__dirname, "..", ".env"),
-];
-
-let loadedEnvPath = null;
-
-for (const envPath of envCandidates) {
-  const result = dotenv.config({ path: envPath });
-
-  if (!result.error) {
-    loadedEnvPath = envPath;
-    break;
-  }
-}
+const envPath = path.resolve(__dirname, ".env");
+const envResult = dotenv.config({ path: envPath });
+const loadedEnvPath = envResult.error ? null : envPath;
 
 const app = express();
 

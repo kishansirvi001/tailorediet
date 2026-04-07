@@ -1,5 +1,6 @@
 # 🔐 Environment variables (VERY IMPORTANT)
 .env
+.env.*
 backend/.env
 
 # 📦 Dependencies

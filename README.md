@@ -4,35 +4,36 @@ TailorDiet uses a Vite frontend and an Express backend. Signup now requires both
 
 ## Backend OTP configuration
 
-OTP emails support SMTP first, with Brevo API fallback for older deployments, and mobile OTPs are sent through Message Central.
+The backend reads runtime secrets from [backend/.env](C:/Users/kisha/tailordiet/backend/.env).
 
-Set these variables in [backend/.env](C:/Users/kisha/tailordiet/backend/.env) or in your deployment service:
+Use Brevo for email OTP delivery and Message Central for mobile OTP delivery. Do not keep a second backend `.env` file at the repo root.
+
+Use [backend/.env.example](C:/Users/kisha/tailordiet/backend/.env.example) as the template, then place the real values in [backend/.env](C:/Users/kisha/tailordiet/backend/.env) for local development and in your deployment service's environment settings for production.
+
+Required variables:
 
 ```env
 PORT=5000
+GEMINI_API_KEY=
+
 OTP_EMAIL_FROM=your-sender@example.com
 OTP_EMAIL_FROM_NAME=TailorDiet
-
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your-smtp-username
-SMTP_PASS=your-smtp-password-or-app-password
+BREVO_API_KEY=your-brevo-api-key
 
 MESSAGE_CENTRAL_CUSTOMER_ID=your-message-central-customer-id
-MESSAGE_CENTRAL_KEY=your-message-central-base64-key
+MESSAGE_CENTRAL_KEY=your-message-central-key
+MESSAGE_CENTRAL_EMAIL=your-message-central-email
 MESSAGE_CENTRAL_COUNTRY_CODE=91
 ```
 
-Optional legacy fallback:
-
-```env
-BREVO_API_KEY=your-brevo-api-key
-```
+Notes:
+- `backend/.env.example` is documentation only.
+- `backend/.env` is the only backend env file used locally.
+- Render must have the same values configured in the backend service environment.
 
 ## Install backend dependencies
 
-Install backend packages so SMTP delivery can load `nodemailer`:
+Install backend packages:
 
 ```bash
 cd backend
