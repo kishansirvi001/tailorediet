@@ -1,5 +1,8 @@
 import crypto from "crypto";
-import { deliverSignupOtps } from "../lib/otpDelivery.js";
+import {
+  deliverSignupOtps,
+  validateMessageCentralMobileOtp,
+} from "../lib/otpDelivery.js";
 import { readSignupVerifications, writeSignupVerifications } from "../lib/signupVerificationStore.js";
 import { readUsers, writeUsers } from "../lib/userStore.js";
 
@@ -126,13 +129,17 @@ function validateSignupPayload({ name, email, mobileNumber, password, goal, diet
   return null;
 }
 
-function validateOtpVerificationPayload({ verificationId, emailOtp }) {
+function validateOtpVerificationPayload({ verificationId, emailOtp, mobileOtp }) {
   if (!String(verificationId || "").trim()) {
     return "Verification session is missing.";
   }
 
   if (!isValidOtp(emailOtp)) {
     return "Enter a valid 6-digit email OTP.";
+  }
+
+  if (!isValidOtp(mobileOtp)) {
+    return "Enter a valid 6-digit mobile OTP.";
   }
 
   return null;
@@ -178,6 +185,7 @@ function buildPendingVerificationPayload(body, email, mobileNumber) {
     emailOtp: createOtpCode(),
     deliveryStatus: {
       email: { configured: false, sent: false },
+      mobile: { configured: false, sent: false, verificationId: null },
     },
     createdAt: new Date().toISOString(),
     expiresAt: new Date(Date.now() + OTP_TTL_MS).toISOString(),
@@ -226,6 +234,7 @@ export async function requestSignupOtp(req, res) {
     verification.deliveryStatus = await deliverSignupOtps({
       email,
       emailOtp: verification.emailOtp,
+      mobileNumber,
       name: verification.name,
     });
   } catch (error) {
@@ -268,6 +277,26 @@ export async function verifySignupOtp(req, res) {
 
   if (verification.emailOtp !== String(req.body.emailOtp).trim()) {
     return res.status(400).json({ message: "Incorrect email OTP." });
+  }
+
+  const mobileVerificationId = verification.deliveryStatus?.mobile?.verificationId;
+
+  if (!mobileVerificationId) {
+    return res.status(500).json({
+      message: "Mobile OTP session is missing. Request OTP again.",
+    });
+  }
+
+  try {
+    await validateMessageCentralMobileOtp({
+      verificationId: mobileVerificationId,
+      mobileOtp: req.body.mobileOtp,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message:
+        error instanceof Error ? error.message : "Incorrect mobile OTP.",
+    });
   }
 
   const users = await readUsers();

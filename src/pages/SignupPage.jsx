@@ -17,6 +17,7 @@ const initialFormData = {
 
 const initialOtpData = {
   emailOtp: '',
+  mobileOtp: '',
 }
 
 function normalizeMobileNumber(value) {
@@ -54,6 +55,10 @@ function validateSignupForm(formData) {
 function validateOtpForm(otpData) {
   if (!/^\d{6}$/.test(otpData.emailOtp.trim())) {
     return 'Enter the 6-digit email OTP.'
+  }
+
+  if (!/^\d{6}$/.test(otpData.mobileOtp.trim())) {
+    return 'Enter the 6-digit mobile OTP.'
   }
 
   return ''
@@ -112,7 +117,7 @@ function SignupPage() {
       const nextVerification = await beginSignupVerification(formData)
       setVerification(nextVerification)
       setOtpData(initialOtpData)
-      setSuccessMessage('Email OTP sent. Enter the code below to finish signup.')
+      setSuccessMessage('Email and mobile OTPs sent. Enter both codes below to finish signup.')
     } catch (error) {
       setVerification(null)
       setErrorMessage(error.message)
@@ -138,6 +143,7 @@ function SignupPage() {
       await completeSignupVerification({
         verificationId: verification.verificationId,
         emailOtp: otpData.emailOtp,
+        mobileOtp: otpData.mobileOtp,
       })
       navigate('/account', { replace: true })
     } catch (error) {
@@ -155,15 +161,15 @@ function SignupPage() {
             Join TailorDiet
           </p>
           <h1 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 sm:text-5xl">
-            Create an account with your details confirmed by email.
+            Create an account with your details confirmed by email and mobile.
           </h1>
           <p className="mt-5 text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
             Signup now collects your email and mobile number, with account creation confirmed
-            through a quick email OTP.
+            through quick OTPs sent to both channels.
           </p>
           <div className="mt-8 space-y-4 text-sm leading-7 text-stone-600">
             <p>Email and Indian mobile number are both mandatory before an account can be created.</p>
-            <p>Each signup attempt generates a 6-digit email OTP to verify the account owner.</p>
+            <p>Each signup attempt generates 6-digit email and mobile OTPs to verify the account owner.</p>
             <p>
               Already have an account?{' '}
               <Link to="/login" className="font-semibold text-stone-950">
@@ -276,6 +282,9 @@ function SignupPage() {
                 <p className="mt-2 text-xs leading-6 text-stone-400">
                   Email delivery: {verification.deliveryStatus?.email?.sent ? 'sent' : 'pending'}.
                 </p>
+                <p className="mt-2 text-xs leading-6 text-stone-400">
+                  Mobile delivery: {verification.deliveryStatus?.mobile?.sent ? 'sent via Message Central' : 'pending'}.
+                </p>
               </div>
 
               <input
@@ -285,6 +294,15 @@ function SignupPage() {
                 value={otpData.emailOtp}
                 onChange={handleOtpChange}
                 placeholder="Email OTP"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white placeholder:text-stone-400 focus:border-amber-300 focus:outline-none"
+              />
+              <input
+                name="mobileOtp"
+                type="text"
+                inputMode="numeric"
+                value={otpData.mobileOtp}
+                onChange={handleOtpChange}
+                placeholder="Mobile OTP"
                 className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white placeholder:text-stone-400 focus:border-amber-300 focus:outline-none"
               />
 

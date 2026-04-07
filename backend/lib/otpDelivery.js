@@ -1,4 +1,5 @@
 const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
+const MESSAGE_CENTRAL_API_BASE_URL = "https://cpaas.messagecentral.com";
 const REQUEST_TIMEOUT_MS = 15000;
 
 function formatDeliveryError(error) {
@@ -61,6 +62,36 @@ function getBrevoConfig() {
   };
 }
 
+function getMessageCentralConfig() {
+  const customerId = process.env.MESSAGE_CENTRAL_CUSTOMER_ID;
+  const key = process.env.MESSAGE_CENTRAL_KEY;
+  const countryCode = String(process.env.MESSAGE_CENTRAL_COUNTRY_CODE || "91");
+
+  if (!customerId || !key) {
+    return null;
+  }
+
+  return {
+    customerId,
+    key,
+    countryCode,
+  };
+}
+
+async function parseJsonResponse(response) {
+  const rawBody = await response.text();
+
+  if (!rawBody) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(rawBody);
+  } catch {
+    throw new Error("Received a non-JSON response from the OTP provider.");
+  }
+}
+
 async function sendBrevoEmail({
   apiKey,
   senderEmail,
@@ -115,6 +146,171 @@ async function sendBrevoEmail({
   }
 }
 
+async function requestMessageCentralAuthToken({ customerId, key, countryCode }) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const params = new URLSearchParams({
+    customerId,
+    key,
+    scope: "NEW",
+    country: countryCode,
+  });
+
+  try {
+    const response = await fetch(
+      `${MESSAGE_CENTRAL_API_BASE_URL}/auth/v1/authentication/token?${params.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        signal: controller.signal,
+      }
+    );
+
+    const payload = await parseJsonResponse(response);
+
+    if (!response.ok || !payload?.token) {
+      throw new Error(
+        payload?.message ||
+          payload?.error ||
+          `Message Central token request failed with HTTP ${response.status}.`
+      );
+    }
+
+    return payload.token;
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(
+        `Message Central token request timed out after ${REQUEST_TIMEOUT_MS / 1000} seconds.`
+      );
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function sendMessageCentralMobileOtp({
+  customerId,
+  key,
+  countryCode,
+  mobileNumber,
+}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const authToken = await requestMessageCentralAuthToken({
+    customerId,
+    key,
+    countryCode,
+  });
+  const params = new URLSearchParams({
+    countryCode,
+    customerId,
+    flowType: "SMS",
+    mobileNumber,
+    otpLength: "6",
+  });
+
+  try {
+    const response = await fetch(
+      `${MESSAGE_CENTRAL_API_BASE_URL}/verification/v3/send?${params.toString()}`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          authToken,
+        },
+        signal: controller.signal,
+      }
+    );
+
+    const payload = await parseJsonResponse(response);
+    const verificationId = payload?.data?.verificationId;
+    const responseCode = Number(payload?.responseCode ?? payload?.data?.responseCode);
+
+    if (!response.ok || responseCode !== 200 || !verificationId) {
+      throw new Error(
+        payload?.data?.errorMessage ||
+          payload?.message ||
+          `Message Central send OTP failed with HTTP ${response.status}.`
+      );
+    }
+
+    return {
+      verificationId: String(verificationId),
+    };
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(
+        `Message Central send OTP timed out after ${REQUEST_TIMEOUT_MS / 1000} seconds.`
+      );
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function validateMessageCentralMobileOtp({
+  verificationId,
+  mobileOtp,
+}) {
+  const config = getMessageCentralConfig();
+
+  if (!config) {
+    throw new Error(
+      "Message Central mobile OTP is not configured. Set MESSAGE_CENTRAL_CUSTOMER_ID and MESSAGE_CENTRAL_KEY."
+    );
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const authToken = await requestMessageCentralAuthToken(config);
+  const params = new URLSearchParams({
+    verificationId: String(verificationId),
+    code: String(mobileOtp).trim(),
+  });
+
+  try {
+    const response = await fetch(
+      `${MESSAGE_CENTRAL_API_BASE_URL}/verification/v3/validateOtp?${params.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          authToken,
+        },
+        signal: controller.signal,
+      }
+    );
+
+    const payload = await parseJsonResponse(response);
+    const responseCode = Number(payload?.responseCode ?? payload?.data?.responseCode);
+    const verificationStatus = payload?.data?.verificationStatus;
+
+    if (!response.ok || responseCode !== 200 || verificationStatus !== "VERIFICATION_COMPLETED") {
+      throw new Error(
+        payload?.data?.errorMessage ||
+          payload?.message ||
+          "Mobile OTP verification failed."
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(
+        `Message Central OTP verification timed out after ${REQUEST_TIMEOUT_MS / 1000} seconds.`
+      );
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function sendSmtpEmail({
   host,
   port,
@@ -157,13 +353,20 @@ async function sendSmtpEmail({
   });
 }
 
-export async function deliverSignupOtps({ email, emailOtp, name }) {
+export async function deliverSignupOtps({ email, emailOtp, mobileNumber, name }) {
   const smtpConfig = getSmtpConfig();
   const brevoConfig = getBrevoConfig();
+  const messageCentralConfig = getMessageCentralConfig();
 
   if (!smtpConfig && !brevoConfig) {
     throw new Error(
       "OTP email delivery is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, OTP_EMAIL_FROM, and optionally SMTP_SECURE."
+    );
+  }
+
+  if (!messageCentralConfig) {
+    throw new Error(
+      "Message Central mobile OTP is not configured. Set MESSAGE_CENTRAL_CUSTOMER_ID and MESSAGE_CENTRAL_KEY."
     );
   }
 
@@ -172,6 +375,12 @@ export async function deliverSignupOtps({ email, emailOtp, name }) {
       configured: true,
       sent: false,
       provider: smtpConfig ? "smtp" : "brevo",
+    },
+    mobile: {
+      configured: true,
+      sent: false,
+      provider: "message-central",
+      verificationId: null,
     },
   };
 
@@ -200,5 +409,19 @@ export async function deliverSignupOtps({ email, emailOtp, name }) {
   }
 
   deliveryStatus.email.sent = true;
+
+  try {
+    const mobileDelivery = await sendMessageCentralMobileOtp({
+      ...messageCentralConfig,
+      mobileNumber,
+    });
+
+    deliveryStatus.mobile.sent = true;
+    deliveryStatus.mobile.verificationId = mobileDelivery.verificationId;
+  } catch (error) {
+    console.error("OTP mobile delivery failed:", formatDeliveryError(error));
+    throw new Error(`Mobile OTP delivery failed: ${formatDeliveryError(error)}`);
+  }
+
   return deliveryStatus;
 }
