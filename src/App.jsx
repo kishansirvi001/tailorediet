@@ -13,6 +13,7 @@ import HealthCalculatorsPage from './pages/HealthCalculatorsPage.jsx'
 import IdealWeightCalculatorPage from './pages/IdealWeightCalculatorPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import MacroCalculatorPage from './pages/MacroCalculatorPage.jsx'
+import MealScannerPage from './pages/MealScannerPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import WaterIntakeCalculatorPage from './pages/WaterIntakeCalculatorPage.jsx'
 
@@ -31,6 +32,14 @@ function RouterApp() {
       <Route path="/calculators/goal" element={<GoalPlannerPage />} />
       <Route path="/calculators/water-intake" element={<WaterIntakeCalculatorPage />} />
       <Route path="/diet-plans" element={<DietPlansPage />} />
+      <Route
+        path="/meal-scanner"
+        element={
+          <ProtectedRoute>
+            <MealScannerPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route

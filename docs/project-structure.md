@@ -1,3 +1,4 @@
+
 # TailorDiet Project Structure
 
 This starter structure is organized for a React + Vite app and keeps reusable UI, app logic, and assets separated as the project grows.

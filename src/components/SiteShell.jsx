@@ -68,6 +68,7 @@ function SiteShell({ children }) {
     { label: 'Home', to: '/' },
     { label: 'Calculators', to: '/calculators' },
     { label: 'Diet Plans', to: '/diet-plans' },
+    ...(isAuthenticated ? [{ label: 'Meal Scanner', to: '/meal-scanner' }] : []),
     ...(isAuthenticated ? [{ label: 'Account', to: '/account' }] : []),
   ]
 

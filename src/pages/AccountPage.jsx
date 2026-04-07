@@ -49,6 +49,12 @@ function AccountPage() {
                 Open calculators
               </Link>
               <Link
+                to="/meal-scanner"
+                className="rounded-full border border-stone-300 bg-white px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-stone-900 transition hover:border-amber-300 hover:bg-amber-50"
+              >
+                Scan a meal
+              </Link>
+              <Link
                 to="/diet-plans"
                 className="rounded-full border border-stone-300 bg-white px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-stone-900 transition hover:border-stone-500 hover:bg-stone-50"
               >
