@@ -2,6 +2,23 @@ const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 const MESSAGE_CENTRAL_API_BASE_URL = "https://cpaas.messagecentral.com";
 const REQUEST_TIMEOUT_MS = 15000;
 
+function normalizeEnvValue(value) {
+  const trimmed = String(value || "").trim();
+
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1).trim();
+  }
+
+  return trimmed;
+}
+
+function isProbablyBase64(value) {
+  return /^[A-Za-z0-9+/=_-]+$/.test(value);
+}
+
 function formatDeliveryError(error) {
   if (!(error instanceof Error)) {
     return "Unknown email delivery error.";
@@ -63,9 +80,9 @@ function getBrevoConfig() {
 }
 
 function getMessageCentralConfig() {
-  const customerId = process.env.MESSAGE_CENTRAL_CUSTOMER_ID;
-  const key = process.env.MESSAGE_CENTRAL_KEY;
-  const countryCode = String(process.env.MESSAGE_CENTRAL_COUNTRY_CODE || "91");
+  const customerId = normalizeEnvValue(process.env.MESSAGE_CENTRAL_CUSTOMER_ID);
+  const key = normalizeEnvValue(process.env.MESSAGE_CENTRAL_KEY);
+  const countryCode = normalizeEnvValue(process.env.MESSAGE_CENTRAL_COUNTRY_CODE || "91");
 
   if (!customerId || !key) {
     return null;
@@ -76,6 +93,26 @@ function getMessageCentralConfig() {
     key,
     countryCode,
   };
+}
+
+function validateMessageCentralConfig(config) {
+  if (!config) {
+    return "Message Central mobile OTP is not configured. Set MESSAGE_CENTRAL_CUSTOMER_ID and MESSAGE_CENTRAL_KEY.";
+  }
+
+  if (!/^\d+$/.test(config.customerId)) {
+    return "Message Central customer ID must contain only digits.";
+  }
+
+  if (!isProbablyBase64(config.key)) {
+    return "Message Central key looks malformed. It should be the raw Base64 key from Message Central without quotes, spaces, or extra punctuation.";
+  }
+
+  if (!/^\d+$/.test(config.countryCode)) {
+    return "Message Central country code must contain only digits.";
+  }
+
+  return null;
 }
 
 async function parseJsonResponse(response) {
@@ -259,11 +296,10 @@ export async function validateMessageCentralMobileOtp({
   mobileOtp,
 }) {
   const config = getMessageCentralConfig();
+  const configError = validateMessageCentralConfig(config);
 
-  if (!config) {
-    throw new Error(
-      "Message Central mobile OTP is not configured. Set MESSAGE_CENTRAL_CUSTOMER_ID and MESSAGE_CENTRAL_KEY."
-    );
+  if (configError) {
+    throw new Error(configError);
   }
 
   const controller = new AbortController();
@@ -357,6 +393,7 @@ export async function deliverSignupOtps({ email, emailOtp, mobileNumber, name })
   const smtpConfig = getSmtpConfig();
   const brevoConfig = getBrevoConfig();
   const messageCentralConfig = getMessageCentralConfig();
+  const messageCentralConfigError = validateMessageCentralConfig(messageCentralConfig);
 
   const deliveryStatus = {
     email: {
@@ -406,10 +443,8 @@ export async function deliverSignupOtps({ email, emailOtp, mobileNumber, name })
     }
   }
 
-  if (!messageCentralConfig) {
-    deliveryIssues.push(
-      "Message Central mobile OTP is not configured. Set MESSAGE_CENTRAL_CUSTOMER_ID and MESSAGE_CENTRAL_KEY."
-    );
+  if (messageCentralConfigError) {
+    deliveryIssues.push(messageCentralConfigError);
   } else {
     try {
       const mobileDelivery = await sendMessageCentralMobileOtp({
