@@ -197,6 +197,11 @@ function sanitizeVerification(verification) {
     verificationId: verification.id,
     expiresAt: verification.expiresAt,
     deliveryStatus: verification.deliveryStatus,
+    deliveryIssues: verification.deliveryIssues || [],
+    canVerify:
+      Boolean(verification.deliveryStatus?.email?.sent) &&
+      Boolean(verification.deliveryStatus?.mobile?.sent) &&
+      Boolean(verification.deliveryStatus?.mobile?.verificationId),
   };
 }
 
@@ -229,14 +234,18 @@ export async function requestSignupOtp(req, res) {
   );
 
   const verification = buildPendingVerificationPayload(req.body, email, mobileNumber);
+  verification.deliveryIssues = [];
 
   try {
-    verification.deliveryStatus = await deliverSignupOtps({
+    const delivery = await deliverSignupOtps({
       email,
       emailOtp: verification.emailOtp,
       mobileNumber,
       name: verification.name,
     });
+
+    verification.deliveryStatus = delivery.deliveryStatus;
+    verification.deliveryIssues = delivery.deliveryIssues;
   } catch (error) {
     return res.status(502).json({
       message:
@@ -250,7 +259,10 @@ export async function requestSignupOtp(req, res) {
   await writeSignupVerifications(activeVerifications);
 
   return res.status(201).json({
-    message: "Email OTP generated successfully.",
+    message:
+      verification.deliveryIssues.length > 0
+        ? "Verification started, but one or more OTP channels could not be delivered."
+        : "Email and mobile OTP generated successfully.",
     verification: sanitizeVerification(verification),
   });
 }
@@ -282,8 +294,8 @@ export async function verifySignupOtp(req, res) {
   const mobileVerificationId = verification.deliveryStatus?.mobile?.verificationId;
 
   if (!mobileVerificationId) {
-    return res.status(500).json({
-      message: "Mobile OTP session is missing. Request OTP again.",
+    return res.status(400).json({
+      message: "Mobile OTP was not sent successfully yet. Request OTP again.",
     });
   }
 

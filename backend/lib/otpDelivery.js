@@ -358,31 +358,20 @@ export async function deliverSignupOtps({ email, emailOtp, mobileNumber, name })
   const brevoConfig = getBrevoConfig();
   const messageCentralConfig = getMessageCentralConfig();
 
-  if (!smtpConfig && !brevoConfig) {
-    throw new Error(
-      "OTP email delivery is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, OTP_EMAIL_FROM, and optionally SMTP_SECURE."
-    );
-  }
-
-  if (!messageCentralConfig) {
-    throw new Error(
-      "Message Central mobile OTP is not configured. Set MESSAGE_CENTRAL_CUSTOMER_ID and MESSAGE_CENTRAL_KEY."
-    );
-  }
-
   const deliveryStatus = {
     email: {
-      configured: true,
+      configured: Boolean(smtpConfig || brevoConfig),
       sent: false,
       provider: smtpConfig ? "smtp" : "brevo",
     },
     mobile: {
-      configured: true,
+      configured: Boolean(messageCentralConfig),
       sent: false,
       provider: "message-central",
       verificationId: null,
     },
   };
+  const deliveryIssues = [];
 
   const message = {
     toEmail: email,
@@ -391,37 +380,58 @@ export async function deliverSignupOtps({ email, emailOtp, mobileNumber, name })
     htmlContent: `<p>Hi ${name},</p><p>Your TailorDiet email OTP is <strong>${emailOtp}</strong>.</p><p>It expires in 10 minutes.</p>`,
   };
 
-  try {
-    if (smtpConfig) {
-      await sendSmtpEmail({
-        ...smtpConfig,
-        ...message,
-      });
-    } else {
-      await sendBrevoEmail({
-        ...brevoConfig,
-        ...message,
-      });
+  if (!smtpConfig && !brevoConfig) {
+    deliveryIssues.push(
+      "Email OTP delivery is not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, OTP_EMAIL_FROM, and optionally SMTP_SECURE."
+    );
+  } else {
+    try {
+      if (smtpConfig) {
+        await sendSmtpEmail({
+          ...smtpConfig,
+          ...message,
+        });
+      } else {
+        await sendBrevoEmail({
+          ...brevoConfig,
+          ...message,
+        });
+      }
+
+      deliveryStatus.email.sent = true;
+    } catch (error) {
+      const message = `Email delivery failed: ${formatDeliveryError(error)}`;
+      console.error("OTP email delivery failed:", formatDeliveryError(error));
+      deliveryIssues.push(message);
     }
-  } catch (error) {
-    console.error("OTP email delivery failed:", formatDeliveryError(error));
-    throw new Error(`Email delivery failed: ${formatDeliveryError(error)}`);
   }
 
-  deliveryStatus.email.sent = true;
+  if (!messageCentralConfig) {
+    deliveryIssues.push(
+      "Message Central mobile OTP is not configured. Set MESSAGE_CENTRAL_CUSTOMER_ID and MESSAGE_CENTRAL_KEY."
+    );
+  } else {
+    try {
+      const mobileDelivery = await sendMessageCentralMobileOtp({
+        ...messageCentralConfig,
+        mobileNumber,
+      });
 
-  try {
-    const mobileDelivery = await sendMessageCentralMobileOtp({
-      ...messageCentralConfig,
-      mobileNumber,
-    });
-
-    deliveryStatus.mobile.sent = true;
-    deliveryStatus.mobile.verificationId = mobileDelivery.verificationId;
-  } catch (error) {
-    console.error("OTP mobile delivery failed:", formatDeliveryError(error));
-    throw new Error(`Mobile OTP delivery failed: ${formatDeliveryError(error)}`);
+      deliveryStatus.mobile.sent = true;
+      deliveryStatus.mobile.verificationId = mobileDelivery.verificationId;
+    } catch (error) {
+      const message = `Mobile OTP delivery failed: ${formatDeliveryError(error)}`;
+      console.error("OTP mobile delivery failed:", formatDeliveryError(error));
+      deliveryIssues.push(message);
+    }
   }
 
-  return deliveryStatus;
+  if (!deliveryStatus.email.sent && !deliveryStatus.mobile.sent) {
+    throw new Error(deliveryIssues.join(" "));
+  }
+
+  return {
+    deliveryStatus,
+    deliveryIssues,
+  };
 }

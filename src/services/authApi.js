@@ -32,7 +32,7 @@ export async function requestSignupOtp(formData) {
     body: JSON.stringify(formData),
   })
 
-  return payload.verification
+  return payload
 }
 
 export async function verifySignupOtpRequest(formData) {

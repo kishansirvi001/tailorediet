@@ -99,14 +99,13 @@ function SignupPage() {
     setOtpData((current) => ({ ...current, [name]: value.replace(/\D/g, '').slice(0, 6) }))
   }
 
-  async function handleRequestOtp(event) {
-    event.preventDefault()
+  async function submitOtpRequest() {
     const validationMessage = validateSignupForm(formData)
 
     if (validationMessage) {
       setErrorMessage(validationMessage)
       setSuccessMessage('')
-      return
+      return false
     }
 
     setErrorMessage('')
@@ -114,16 +113,34 @@ function SignupPage() {
     setIsSubmitting(true)
 
     try {
-      const nextVerification = await beginSignupVerification(formData)
+      const response = await beginSignupVerification(formData)
+      const nextVerification = response.verification
       setVerification(nextVerification)
       setOtpData(initialOtpData)
-      setSuccessMessage('Email and mobile OTPs sent. Enter both codes below to finish signup.')
+
+      if (nextVerification.canVerify) {
+        setSuccessMessage('Email and mobile OTPs sent. Enter both codes below to finish signup.')
+      } else {
+        setErrorMessage(
+          nextVerification.deliveryIssues?.[0] ||
+            response.message ||
+            'Verification started, but one or more OTPs could not be delivered yet.',
+        )
+      }
+
+      return true
     } catch (error) {
       setVerification(null)
       setErrorMessage(error.message)
+      return false
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  async function handleRequestOtp(event) {
+    event.preventDefault()
+    await submitOtpRequest()
   }
 
   async function handleVerifyOtp(event) {
@@ -285,6 +302,11 @@ function SignupPage() {
                 <p className="mt-2 text-xs leading-6 text-stone-400">
                   Mobile delivery: {verification.deliveryStatus?.mobile?.sent ? 'sent via Message Central' : 'pending'}.
                 </p>
+                {verification.deliveryIssues?.length ? (
+                  <p className="mt-3 text-xs leading-6 text-rose-200">
+                    {verification.deliveryIssues[0]}
+                  </p>
+                ) : null}
               </div>
 
               <input
@@ -320,10 +342,18 @@ function SignupPage() {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !verification.canVerify}
                   className="w-full rounded-full bg-amber-300 px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {isSubmitting ? 'Verifying...' : 'Verify and create account'}
+                  {isSubmitting ? 'Verifying...' : verification.canVerify ? 'Verify and create account' : 'Waiting for both OTPs'}
+                </button>
+                <button
+                  type="button"
+                  onClick={submitOtpRequest}
+                  disabled={isSubmitting}
+                  className="w-full rounded-full border border-white/15 px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isSubmitting ? 'Resending...' : 'Resend OTPs'}
                 </button>
                 <button
                   type="button"
