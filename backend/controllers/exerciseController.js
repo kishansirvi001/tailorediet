@@ -1,8 +1,23 @@
-const RAPID_API_BASE_URL = process.env.EXERCISEDB_API_URL || "https://exercisedb.p.rapidapi.com";
-const RAPID_API_HOST = process.env.EXERCISEDB_RAPIDAPI_HOST || "exercisedb.p.rapidapi.com";
+const EXERCISEDB_ENDPOINT_CANDIDATES = [
+  process.env.EXERCISEDB_EXERCISES_URL,
+  process.env.EXERCISEDB_API_URL,
+  "https://www.exercisedb.dev/api/v1/exercises",
+  "https://v1.exercisedb.dev/api/exercises",
+  "https://v2.exercisedb.dev/api/exercises",
+].filter(Boolean);
+
+const MEDIA_BASE_CANDIDATES = [
+  process.env.EXERCISEDB_MEDIA_BASE_URL,
+  "https://v2.exercisedb.dev/media",
+  "https://static.exercisedb.dev/media",
+].filter(Boolean);
+
 const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 
 const exerciseCache = new Map();
+let datasetCache = null;
+let datasetCacheExpiresAt = 0;
+let datasetRequest = null;
 
 const EXERCISE_NAME_MAP = {
   "Bench Press": "barbell bench press",
@@ -137,46 +152,212 @@ function mapExerciseName(name) {
   return EXERCISE_NAME_MAP[name] || String(name || "").trim();
 }
 
-function buildExerciseUrl(name) {
-  const encodedName = encodeURIComponent(name);
-  return `${RAPID_API_BASE_URL.replace(/\/+$/, "")}/exercises/name/${encodedName}?limit=10`;
+function normalizeToList(value) {
+  if (!value) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  return [String(value).trim()].filter(Boolean);
+}
+
+function flattenMediaValues(value) {
+  if (!value) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => flattenMediaValues(item));
+  }
+
+  if (typeof value === "object") {
+    return Object.values(value).flatMap((item) => flattenMediaValues(item));
+  }
+
+  return [String(value).trim()].filter(Boolean);
+}
+
+function buildMediaUrls(value) {
+  if (!value) {
+    return [];
+  }
+
+  const stringValue = String(value).trim();
+
+  if (!stringValue) {
+    return [];
+  }
+
+  if (/^https?:\/\//i.test(stringValue)) {
+    return [stringValue];
+  }
+
+  const cleanValue = stringValue.replace(/^\/+/, "");
+  const cleanPath = cleanValue.replace(/^media\/+/i, "");
+  const candidates = [cleanValue];
+
+  for (const base of MEDIA_BASE_CANDIDATES) {
+    const normalizedBase = base.replace(/\/+$/, "");
+    candidates.push(`${normalizedBase}/${cleanValue}`);
+
+    if (cleanPath !== cleanValue) {
+      candidates.push(`${normalizedBase}/${cleanPath}`);
+    }
+  }
+
+  return [...new Set(candidates.filter(Boolean))];
+}
+
+function extractMediaUrls(raw) {
+  return [
+    raw?.gifUrl,
+    raw?.gif_url,
+    raw?.imageUrl,
+    raw?.image,
+    raw?.videoUrl,
+    raw?.video,
+    raw?.mediaUrl,
+    raw?.media,
+    raw?.thumbnail,
+    raw?.thumbnailUrl,
+    raw?.previewUrl,
+    raw?.assets,
+    raw?.images,
+  ]
+    .flatMap((value) => flattenMediaValues(value))
+    .flatMap((value) => buildMediaUrls(value))
+    .filter(Boolean);
+}
+
+function extractExerciseList(payload) {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  const directList =
+    (Array.isArray(payload.data) && payload.data) ||
+    (Array.isArray(payload.exercises) && payload.exercises) ||
+    (Array.isArray(payload.results) && payload.results) ||
+    (Array.isArray(payload.items) && payload.items) ||
+    (Array.isArray(payload.body) && payload.body);
+
+  if (directList) {
+    return directList;
+  }
+
+  for (const value of Object.values(payload)) {
+    const nestedList = extractExerciseList(value);
+
+    if (nestedList.length > 0) {
+      return nestedList;
+    }
+  }
+
+  return [];
+}
+
+function normalizeDatasetExercise(raw) {
+  const mediaUrls = extractMediaUrls(raw);
+  const targetMuscles = normalizeToList(raw?.targetMuscles || raw?.target);
+  const equipments = normalizeToList(raw?.equipments || raw?.equipment);
+  const preferredVideoUrl =
+    mediaUrls.find((url) => /\.(mp4|webm|ogg)(\?|#|$)/i.test(url)) || raw?.videoUrl || raw?.video || null;
+  const preferredImageUrl =
+    mediaUrls.find((url) => !/\.(mp4|webm|ogg)(\?|#|$)/i.test(url)) ||
+    raw?.gifUrl ||
+    raw?.imageUrl ||
+    raw?.image ||
+    null;
+
+  return {
+    name: raw?.name || raw?.exerciseName || raw?.title || null,
+    gifUrl: preferredImageUrl,
+    videoUrl: preferredVideoUrl,
+    target: targetMuscles[0] || null,
+    equipment: equipments[0] || null,
+  };
+}
+
+async function fetchExerciseDataset() {
+  if (datasetCache && Date.now() < datasetCacheExpiresAt) {
+    return datasetCache;
+  }
+
+  if (datasetRequest) {
+    return datasetRequest;
+  }
+
+  datasetRequest = (async () => {
+    let lastError = null;
+
+    for (const endpoint of EXERCISEDB_ENDPOINT_CANDIDATES) {
+      try {
+        const response = await fetch(endpoint, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          lastError = new Error(`Exercise dataset request failed with status ${response.status}.`);
+          continue;
+        }
+
+        const payload = await response.json();
+        const list = extractExerciseList(payload)
+          .map(normalizeDatasetExercise)
+          .filter((exercise) => exercise.name);
+
+        if (list.length > 0) {
+          datasetCache = list;
+          datasetCacheExpiresAt = Date.now() + CACHE_TTL_MS;
+          return list;
+        }
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError || new Error("Unable to load exercise dataset.");
+  });
+  
+  try {
+    return await datasetRequest;
+  } finally {
+    datasetRequest = null;
+  }
+}
+
+async function requestExerciseList(searchName) {
+  const dataset = await fetchExerciseDataset();
+  const normalizedSearchName = normalizeKey(searchName);
+
+  return dataset
+    .map((exercise) => ({
+      exercise,
+      score: scoreMatch(normalizedSearchName, exercise),
+    }))
+    .filter((entry) => entry.score > 0)
+    .sort((left, right) => right.score - left.score)
+    .slice(0, 10)
+    .map((entry) => entry.exercise);
 }
 
 function normalizeExercise(exercise) {
   return {
     name: exercise?.name || null,
-    gifUrl: exercise?.gifUrl || exercise?.imageUrl || null,
+    gifUrl: exercise?.gifUrl || null,
     videoUrl: exercise?.videoUrl || null,
-    target: Array.isArray(exercise?.targetMuscles)
-      ? exercise.targetMuscles[0] || null
-      : exercise?.target || null,
-    equipment: Array.isArray(exercise?.equipments)
-      ? exercise.equipments[0] || null
-      : exercise?.equipment || null,
+    target: exercise?.target || null,
+    equipment: exercise?.equipment || null,
   };
-}
-
-async function requestExerciseList(searchName) {
-  const apiKey = process.env.RAPIDAPI_KEY || process.env.EXERCISEDB_RAPIDAPI_KEY;
-
-  if (!apiKey) {
-    throw new Error("Missing RAPIDAPI_KEY for ExerciseDB.");
-  }
-
-  const response = await fetch(buildExerciseUrl(searchName), {
-    headers: {
-      "X-RapidAPI-Key": apiKey,
-      "X-RapidAPI-Host": RAPID_API_HOST,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`ExerciseDB request failed with status ${response.status}.`);
-  }
-
-  const payload = await response.json();
-
-  return Array.isArray(payload) ? payload : [];
 }
 
 async function findExercise(name) {

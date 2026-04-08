@@ -23,7 +23,7 @@ function ExerciseCard({ exerciseName }) {
   }, [exerciseName])
 
   async function handleLoadDemo() {
-    if (isLoading || hasRequestedDemo) {
+    if (isLoading) {
       return
     }
 

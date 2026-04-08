@@ -20,7 +20,12 @@ export async function fetchExerciseByName(name) {
       const payload = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        throw new Error(payload.error || 'Unable to load exercise details right now.')
+        const message =
+          response.status >= 500
+            ? 'Exercise demo is temporarily unavailable. Please try again in a moment.'
+            : payload.error || 'Unable to load exercise details right now.'
+
+        throw new Error(message)
       }
 
       return payload

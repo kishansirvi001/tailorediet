@@ -279,6 +279,13 @@ export async function requestSignupOtp(req, res) {
       name: verification.name,
     });
   } catch (deliveryError) {
+    console.error("Failed to deliver signup email OTP.", {
+      email,
+      verificationId: verification.verificationId,
+      sender: process.env.OTP_EMAIL_FROM || null,
+      error: deliveryError instanceof Error ? deliveryError.message : deliveryError,
+    });
+
     await SignupVerification.deleteOne({ verificationId: verification.verificationId }).catch(() => null);
 
     return res.status(502).json({
