@@ -13,6 +13,7 @@ const MEDIA_BASE_CANDIDATES = [
 ].filter(Boolean);
 
 const CACHE_TTL_MS = 1000 * 60 * 60 * 12;
+const MEDIA_PROXY_TIMEOUT_MS = 8000;
 
 const exerciseCache = new Map();
 let datasetCache = null;
@@ -355,6 +356,7 @@ function normalizeExercise(exercise) {
     name: exercise?.name || null,
     gifUrl: exercise?.gifUrl || null,
     videoUrl: exercise?.videoUrl || null,
+    mediaUrls: Array.isArray(exercise?.mediaUrls) ? exercise.mediaUrls : [],
     target: exercise?.target || null,
     equipment: exercise?.equipment || null,
   };
@@ -413,8 +415,44 @@ function buildFallbackExercise(name) {
     name: String(name || "").trim() || null,
     gifUrl: null,
     videoUrl: null,
+    mediaUrls: [],
     target: guessTarget(name),
     equipment: guessEquipment(name),
+  };
+}
+
+function buildAbsoluteUrl(req, pathname, values = []) {
+  const origin = `${req.protocol}://${req.get("host")}`;
+  const params = new URLSearchParams();
+
+  for (const value of values) {
+    if (value) {
+      params.append("url", value);
+    }
+  }
+
+  const query = params.toString();
+  return `${origin}${pathname}${query ? `?${query}` : ""}`;
+}
+
+function withProxyUrls(req, exercise) {
+  const mediaUrls = Array.isArray(exercise?.mediaUrls)
+    ? exercise.mediaUrls.filter(Boolean)
+    : [exercise?.videoUrl, exercise?.gifUrl].filter(Boolean);
+  const videoCandidates = mediaUrls.filter((url) => /\.(mp4|webm|ogg)(\?|#|$)/i.test(url));
+  const imageCandidates = mediaUrls.filter((url) => !/\.(mp4|webm|ogg)(\?|#|$)/i.test(url));
+
+  return {
+    ...exercise,
+    mediaUrls,
+    videoUrl:
+      videoCandidates.length > 0
+        ? buildAbsoluteUrl(req, "/api/exercise/media", videoCandidates)
+        : exercise?.videoUrl || null,
+    gifUrl:
+      imageCandidates.length > 0
+        ? buildAbsoluteUrl(req, "/api/exercise/media", imageCandidates)
+        : exercise?.gifUrl || null,
   };
 }
 
@@ -467,6 +505,56 @@ async function findExercise(name) {
   return normalized;
 }
 
+export async function getExerciseMedia(req, res) {
+  try {
+    const input = req.query.url;
+    const candidates = (Array.isArray(input) ? input : [input])
+      .flatMap((value) => String(value || "").split(","))
+      .map((value) => value.trim())
+      .filter((value) => /^https?:\/\//i.test(value));
+
+    if (candidates.length === 0) {
+      return res.status(400).json({ error: "At least one media URL is required." });
+    }
+
+    for (const candidate of [...new Set(candidates)]) {
+      try {
+        const response = await fetch(candidate, {
+          headers: {
+            Accept: "image/*,video/*;q=0.9,*/*;q=0.5",
+          },
+          signal: AbortSignal.timeout(MEDIA_PROXY_TIMEOUT_MS),
+        });
+
+        if (!response.ok) {
+          continue;
+        }
+
+        const contentType = response.headers.get("content-type") || "application/octet-stream";
+
+        if (!/^(image|video)\//i.test(contentType)) {
+          continue;
+        }
+
+        const cacheControl = response.headers.get("cache-control") || "public, max-age=86400";
+        const payload = Buffer.from(await response.arrayBuffer());
+
+        res.set("Content-Type", contentType);
+        res.set("Cache-Control", cacheControl);
+        return res.send(payload);
+      } catch (error) {
+        continue;
+      }
+    }
+
+    return res.status(404).json({ error: "Exercise media is unavailable." });
+  } catch (error) {
+    return res.status(502).json({
+      error: error instanceof Error ? error.message : "Unable to proxy exercise media.",
+    });
+  }
+}
+
 export async function getExerciseByName(req, res) {
   try {
     const exerciseName = req.params.name;
@@ -483,7 +571,7 @@ export async function getExerciseByName(req, res) {
 
     res.set("Cache-Control", "public, max-age=43200");
 
-    return res.json(exercise);
+    return res.json(withProxyUrls(req, exercise));
   } catch (error) {
     return res.status(502).json({
       error: error instanceof Error ? error.message : "Unable to fetch exercise details.",

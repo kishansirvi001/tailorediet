@@ -14,12 +14,21 @@ function ExerciseCard({ exerciseName }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [hasRequestedDemo, setHasRequestedDemo] = useState(false)
+  const [preferImageFallback, setPreferImageFallback] = useState(false)
+  const [mediaFailed, setMediaFailed] = useState(false)
+
+  const searchUrl = useMemo(() => {
+    const query = encodeURIComponent(`${exercise?.name || exerciseName} exercise demo`)
+    return `https://www.youtube.com/results?search_query=${query}`
+  }, [exercise?.name, exerciseName])
 
   useEffect(() => {
     setExercise(null)
     setError('')
     setIsLoading(false)
     setHasRequestedDemo(false)
+    setPreferImageFallback(false)
+    setMediaFailed(false)
   }, [exerciseName])
 
   async function handleLoadDemo() {
@@ -34,6 +43,8 @@ function ExerciseCard({ exerciseName }) {
     try {
       const nextExercise = await fetchExerciseByName(exerciseName)
       setExercise(nextExercise)
+      setPreferImageFallback(false)
+      setMediaFailed(false)
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Demo unavailable.')
     } finally {
@@ -48,7 +59,7 @@ function ExerciseCard({ exerciseName }) {
           <div className="flex h-full animate-pulse items-center justify-center bg-black/10 px-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white/90">
             Loading demo
           </div>
-        ) : exercise?.videoUrl ? (
+        ) : exercise?.videoUrl && !preferImageFallback && !mediaFailed ? (
           <video
             src={exercise.videoUrl}
             className="h-full w-full object-cover"
@@ -57,17 +68,41 @@ function ExerciseCard({ exerciseName }) {
             playsInline
             controls
             preload="none"
+            onLoadedData={() => {
+              setPreferImageFallback(false)
+              setMediaFailed(false)
+            }}
+            onError={() => {
+              if (exercise?.gifUrl) {
+                setPreferImageFallback(true)
+                return
+              }
+
+              setMediaFailed(true)
+            }}
           />
-        ) : exercise?.gifUrl ? (
+        ) : exercise?.gifUrl && !mediaFailed ? (
           <img
             src={exercise.gifUrl}
             alt={exercise.name || exerciseName}
             loading="lazy"
             className="h-full w-full object-cover"
+            onLoad={() => setMediaFailed(false)}
+            onError={() => setMediaFailed(true)}
           />
         ) : (
-          <div className="flex h-full items-center justify-center px-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white">
-            {hasRequestedDemo ? 'Demo unavailable' : 'Load demo on demand'}
+          <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white">
+            <span>{hasRequestedDemo ? 'Demo unavailable here' : 'Load demo on demand'}</span>
+            {hasRequestedDemo ? (
+              <a
+                href={searchUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-white/50 px-4 py-2 text-[11px] transition hover:bg-white/10"
+              >
+                Find video demo
+              </a>
+            ) : null}
           </div>
         )}
       </div>
@@ -111,6 +146,10 @@ function ExerciseCard({ exerciseName }) {
 
         {error ? (
           <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>
+        ) : mediaFailed ? (
+          <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            The built-in preview could not load, so the backup search link above is ready.
+          </p>
         ) : (
           <p className="text-sm leading-6 text-stone-600">
             {isLoading
