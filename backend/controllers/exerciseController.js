@@ -360,6 +360,64 @@ function normalizeExercise(exercise) {
   };
 }
 
+function guessEquipment(name) {
+  const lowerName = normalizeKey(name);
+
+  if (lowerName.includes("barbell")) return "Barbell";
+  if (lowerName.includes("dumbbell")) return "Dumbbell";
+  if (lowerName.includes("cable")) return "Cable";
+  if (lowerName.includes("machine")) return "Machine";
+  if (lowerName.includes("pull-up")) return "Pull-Up Bar";
+  if (lowerName.includes("carry")) return "Dumbbell or Kettlebell";
+  if (lowerName.includes("plank") || lowerName.includes("dead bug")) return "Body Weight";
+
+  return "Gym Equipment";
+}
+
+function guessTarget(name) {
+  const lowerName = normalizeKey(name);
+
+  if (lowerName.includes("squat") || lowerName.includes("lunge") || lowerName.includes("leg")) {
+    return "Quadriceps";
+  }
+
+  if (lowerName.includes("deadlift") || lowerName.includes("hip thrust") || lowerName.includes("bridge")) {
+    return "Glutes";
+  }
+
+  if (lowerName.includes("press") || lowerName.includes("dip") || lowerName.includes("fly")) {
+    return "Chest";
+  }
+
+  if (lowerName.includes("row") || lowerName.includes("pull") || lowerName.includes("pulldown")) {
+    return "Back";
+  }
+
+  if (lowerName.includes("curl")) {
+    return "Biceps";
+  }
+
+  if (lowerName.includes("tricep") || lowerName.includes("triceps") || lowerName.includes("extension")) {
+    return "Triceps";
+  }
+
+  if (lowerName.includes("plank") || lowerName.includes("crunch") || lowerName.includes("raise") || lowerName.includes("bug")) {
+    return "Core";
+  }
+
+  return "Full Body";
+}
+
+function buildFallbackExercise(name) {
+  return {
+    name: String(name || "").trim() || null,
+    gifUrl: null,
+    videoUrl: null,
+    target: guessTarget(name),
+    equipment: guessEquipment(name),
+  };
+}
+
 async function findExercise(name) {
   const mappedName = mapExerciseName(name);
   const cacheKey = normalizeKey(name);
@@ -371,9 +429,15 @@ async function findExercise(name) {
 
   const candidates = [...new Set([mappedName, String(name || "").trim()].filter(Boolean))];
   let matches = [];
+  let lookupFailed = false;
 
   for (const candidate of candidates) {
-    matches = await requestExerciseList(candidate);
+    try {
+      matches = await requestExerciseList(candidate);
+    } catch (error) {
+      lookupFailed = true;
+      continue;
+    }
 
     if (matches.length > 0) {
       break;
@@ -388,6 +452,12 @@ async function findExercise(name) {
     .sort((left, right) => right.score - left.score)[0]?.exercise;
 
   if (!bestMatch) {
+    if (lookupFailed) {
+      const fallback = buildFallbackExercise(name);
+      setCacheEntry(cacheKey, fallback);
+      return fallback;
+    }
+
     return null;
   }
 
