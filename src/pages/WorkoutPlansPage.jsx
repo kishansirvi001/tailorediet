@@ -11,39 +11,35 @@ const LEVEL_OPTIONS = [
 
 function ExerciseCard({ exerciseName }) {
   const [exercise, setExercise] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [hasRequestedDemo, setHasRequestedDemo] = useState(false)
 
   useEffect(() => {
-    let isMounted = true
-
-    async function loadExercise() {
-      setIsLoading(true)
-      setError('')
-
-      try {
-        const nextExercise = await fetchExerciseByName(exerciseName)
-
-        if (isMounted) {
-          setExercise(nextExercise)
-        }
-      } catch (loadError) {
-        if (isMounted) {
-          setError(loadError instanceof Error ? loadError.message : 'Demo unavailable.')
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    loadExercise()
-
-    return () => {
-      isMounted = false
-    }
+    setExercise(null)
+    setError('')
+    setIsLoading(false)
+    setHasRequestedDemo(false)
   }, [exerciseName])
+
+  async function handleLoadDemo() {
+    if (isLoading || hasRequestedDemo) {
+      return
+    }
+
+    setHasRequestedDemo(true)
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const nextExercise = await fetchExerciseByName(exerciseName)
+      setExercise(nextExercise)
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : 'Demo unavailable.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <article className="overflow-hidden rounded-[1.75rem] border border-stone-900/10 bg-white shadow-[0_18px_45px_rgba(28,25,23,0.08)]">
@@ -71,7 +67,7 @@ function ExerciseCard({ exerciseName }) {
           />
         ) : (
           <div className="flex h-full items-center justify-center px-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white">
-            Demo unavailable
+            {hasRequestedDemo ? 'Demo unavailable' : 'Load demo on demand'}
           </div>
         )}
       </div>
@@ -81,7 +77,11 @@ function ExerciseCard({ exerciseName }) {
           <div>
             <h4 className="text-xl font-semibold text-stone-950">{exerciseName}</h4>
             <p className="mt-1 text-sm text-stone-500">
-              {exercise?.name ? `Matched as ${exercise.name}` : 'ExerciseDB lookup'}
+              {exercise?.name
+                ? `Matched as ${exercise.name}`
+                : hasRequestedDemo
+                  ? 'ExerciseDB lookup'
+                  : 'Demo available on request'}
             </p>
           </div>
           <span className="rounded-full bg-stone-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-600">
@@ -91,12 +91,23 @@ function ExerciseCard({ exerciseName }) {
 
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
-            Target: {exercise?.target || 'Not available'}
+            Target: {exercise?.target || 'Load demo first'}
           </span>
           <span className="rounded-full bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
-            Equipment: {exercise?.equipment || 'Not available'}
+            Equipment: {exercise?.equipment || 'Load demo first'}
           </span>
         </div>
+
+        {!exercise ? (
+          <button
+            type="button"
+            onClick={handleLoadDemo}
+            disabled={isLoading}
+            className="w-full rounded-2xl bg-stone-950 px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-stone-800 disabled:cursor-wait disabled:opacity-70"
+          >
+            {isLoading ? 'Loading demo...' : hasRequestedDemo ? 'Retry demo' : 'Load demo'}
+          </button>
+        ) : null}
 
         {error ? (
           <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>
@@ -104,7 +115,9 @@ function ExerciseCard({ exerciseName }) {
           <p className="text-sm leading-6 text-stone-600">
             {isLoading
               ? 'Fetching the best-matched movement demonstration and equipment details.'
-              : 'Use the demo before your set if you want a quick refresher on the movement pattern.'}
+              : hasRequestedDemo
+                ? 'Use the demo before your set if you want a quick refresher on the movement pattern.'
+                : 'Load the demo only when you need it to keep the page fast and avoid API rate limits.'}
           </p>
         )}
       </div>
