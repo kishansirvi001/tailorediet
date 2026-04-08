@@ -253,26 +253,39 @@ function flattenMediaValues(value) {
   return [String(value).trim()].filter(Boolean);
 }
 
-function buildMediaUrl(value) {
+function buildMediaUrls(value) {
   if (!value) {
-    return null;
+    return [];
   }
 
-  if (/^https?:\/\//i.test(value)) {
-    return value;
+  const stringValue = String(value).trim();
+
+  if (!stringValue) {
+    return [];
   }
 
-  const cleanValue = String(value).replace(/^\/+/, "");
+  if (/^https?:\/\//i.test(stringValue)) {
+    return [stringValue];
+  }
+
+  const cleanValue = stringValue.replace(/^\/+/, "");
+  const cleanPath = cleanValue.replace(/^media\/+/i, "");
+  const candidates = [cleanValue];
 
   for (const base of MEDIA_BASE_CANDIDATES) {
-    return `${base.replace(/\/+$/, "")}/${cleanValue}`;
+    const normalizedBase = base.replace(/\/+$/, "");
+    candidates.push(`${normalizedBase}/${cleanValue}`);
+
+    if (cleanPath !== cleanValue) {
+      candidates.push(`${normalizedBase}/${cleanPath}`);
+    }
   }
 
-  return cleanValue;
+  return [...new Set(candidates.filter(Boolean))];
 }
 
-function extractMediaUrl(raw) {
-  const candidates = [
+function extractMediaUrls(raw) {
+  return [
     raw.gifUrl,
     raw.gif_url,
     raw.imageUrl,
@@ -288,10 +301,12 @@ function extractMediaUrl(raw) {
     raw.images,
   ]
     .flatMap((value) => flattenMediaValues(value))
-    .map((value) => buildMediaUrl(value))
+    .flatMap((value) => buildMediaUrls(value))
     .filter(Boolean);
+}
 
-  return candidates[0] || null;
+function extractMediaUrl(raw) {
+  return extractMediaUrls(raw)[0] || null;
 }
 
 function extractExerciseList(payload) {
@@ -339,12 +354,14 @@ function normalizeExercise(raw) {
   const targetMuscles = normalizeToList(raw.targetMuscles || raw.target);
   const secondaryMuscles = normalizeToList(raw.secondaryMuscles || raw.secondary);
   const bodyParts = normalizeToList(raw.bodyParts || raw.bodyPart);
-  const mediaUrl = extractMediaUrl(raw);
+  const mediaUrls = extractMediaUrls(raw);
+  const mediaUrl = mediaUrls[0] || null;
 
   return {
     id: raw.exerciseId || raw.id || slugify(name),
     name,
     mediaUrl,
+    mediaUrls,
     instructions,
     tips,
     equipments,
@@ -426,6 +443,12 @@ function attachExerciseDetails(dataset, template) {
           ...plannedExercise,
           exerciseId: bestMatch?.id || slugify(plannedExercise.name),
           mediaUrl: bestMatch?.mediaUrl || null,
+          mediaUrls:
+            bestMatch?.mediaUrls?.length > 0
+              ? bestMatch.mediaUrls
+              : bestMatch?.mediaUrl
+                ? [bestMatch.mediaUrl]
+                : [],
           instructions:
             bestMatch?.instructions?.length > 0
               ? bestMatch.instructions.slice(0, 4)

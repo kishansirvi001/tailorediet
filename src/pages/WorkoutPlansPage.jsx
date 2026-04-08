@@ -1,38 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import SiteShell from '../components/SiteShell.jsx'
-import { useAuth } from '../context/AuthContext.jsx'
-import { fetchWorkoutPlan } from '../services/workoutApi.js'
+import { workoutPlan } from '../data/workoutPlan.js'
+import { fetchExerciseByName } from '../services/exerciseApi.js'
 
-function WorkoutPlansPage() {
-  const { token, user } = useAuth()
-  const [plan, setPlan] = useState(null)
-  const [selectedLevelId, setSelectedLevelId] = useState('beginner')
-  const [error, setError] = useState('')
+const LEVEL_OPTIONS = [
+  { id: 'beginner', label: 'Beginner', description: 'Build consistency with a simple six-day split.' },
+  { id: 'intermediate', label: 'Intermediate', description: 'Add more volume and variation across the week.' },
+  { id: 'advanced', label: 'Advanced', description: 'Train with the fullest split and the most total work.' },
+]
+
+function ExerciseCard({ exerciseName }) {
+  const [exercise, setExercise] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let isMounted = true
 
-    async function loadPlan() {
-      if (!token) {
-        return
-      }
-
+    async function loadExercise() {
       setIsLoading(true)
       setError('')
 
       try {
-        const nextPlan = await fetchWorkoutPlan(token)
+        const nextExercise = await fetchExerciseByName(exerciseName)
 
-        if (!isMounted) {
-          return
+        if (isMounted) {
+          setExercise(nextExercise)
         }
-
-        setPlan(nextPlan)
-        setSelectedLevelId(nextPlan.levels?.[0]?.id || 'beginner')
       } catch (loadError) {
         if (isMounted) {
-          setError(loadError instanceof Error ? loadError.message : 'Unable to load the workout plan.')
+          setError(loadError instanceof Error ? loadError.message : 'Demo unavailable.')
         }
       } finally {
         if (isMounted) {
@@ -41,259 +38,162 @@ function WorkoutPlansPage() {
       }
     }
 
-    loadPlan()
+    loadExercise()
 
     return () => {
       isMounted = false
     }
-  }, [token])
+  }, [exerciseName])
 
-  const selectedLevel = plan?.levels?.find((level) => level.id === selectedLevelId) || plan?.levels?.[0] || null
+  return (
+    <article className="overflow-hidden rounded-[1.75rem] border border-stone-900/10 bg-white shadow-[0_18px_45px_rgba(28,25,23,0.08)]">
+      <div className="aspect-[16/11] bg-[linear-gradient(135deg,#fbbf24,#fb7185_55%,#fdba74)]">
+        {isLoading ? (
+          <div className="flex h-full animate-pulse items-center justify-center bg-black/10 px-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white/90">
+            Loading demo
+          </div>
+        ) : exercise?.videoUrl ? (
+          <video
+            src={exercise.videoUrl}
+            className="h-full w-full object-cover"
+            muted
+            loop
+            playsInline
+            controls
+            preload="none"
+          />
+        ) : exercise?.gifUrl ? (
+          <img
+            src={exercise.gifUrl}
+            alt={exercise.name || exerciseName}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center px-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white">
+            Demo unavailable
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h4 className="text-xl font-semibold text-stone-950">{exerciseName}</h4>
+            <p className="mt-1 text-sm text-stone-500">
+              {exercise?.name ? `Matched as ${exercise.name}` : 'ExerciseDB lookup'}
+            </p>
+          </div>
+          <span className="rounded-full bg-stone-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-600">
+            Demo
+          </span>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
+            Target: {exercise?.target || 'Not available'}
+          </span>
+          <span className="rounded-full bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+            Equipment: {exercise?.equipment || 'Not available'}
+          </span>
+        </div>
+
+        {error ? (
+          <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>
+        ) : (
+          <p className="text-sm leading-6 text-stone-600">
+            {isLoading
+              ? 'Fetching the best-matched movement demonstration and equipment details.'
+              : 'Use the demo before your set if you want a quick refresher on the movement pattern.'}
+          </p>
+        )}
+      </div>
+    </article>
+  )
+}
+
+function WorkoutPlansPage() {
+  const [selectedLevel, setSelectedLevel] = useState('beginner')
+
+  const days = useMemo(() => workoutPlan[selectedLevel] || [], [selectedLevel])
 
   return (
     <SiteShell>
-      <section className="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-10 lg:pb-14 lg:pt-18">
-        <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div>
-            <div className="inline-flex items-center gap-3 rounded-full border border-emerald-900/10 bg-white/85 px-4 py-2 shadow-sm backdrop-blur">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-700">
-                Members-only training
-              </span>
-            </div>
-
-            <h1 className="mt-6 max-w-4xl font-['Georgia'] text-4xl font-bold leading-[0.95] tracking-tight text-stone-950 sm:text-5xl md:text-7xl">
-              Watch the movement, follow the cues, and progress from your first gym week to athlete-level training.
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg md:text-xl md:leading-8">
-              {user?.name?.split(' ')[0] || 'Member'}, this plan maps a clear beginner to advanced gym path and pairs each lift with ExerciseDB media, instructions, and technique cues whenever available.
-            </p>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-stone-900/10 bg-white/70 p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Built for</p>
-                <p className="mt-2 text-2xl font-semibold text-stone-950">Beginner to advanced</p>
+      <section className="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-10 lg:pb-16 lg:pt-14">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-white/70 p-6 shadow-[0_24px_60px_rgba(28,25,23,0.08)] backdrop-blur sm:p-8 lg:p-10">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-3 rounded-full border border-emerald-900/10 bg-emerald-50 px-4 py-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-900">
+                  Weekly workout plan
+                </span>
               </div>
-              <div className="rounded-[1.5rem] border border-stone-900/10 bg-white/70 p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Access</p>
-                <p className="mt-2 text-2xl font-semibold text-stone-950">Logged-in users only</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-4 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.24)] sm:p-6">
-            <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-5 sm:p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200/70">
-                Training rules
+              <h1 className="mt-5 font-['Georgia'] text-4xl font-bold leading-[0.95] tracking-tight text-stone-950 sm:text-5xl md:text-6xl">
+                Train day by day with built-in exercise demos.
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-7 text-stone-600 sm:text-lg">
+                Pick your level, scan the week, and open each exercise card to see a GIF or video demo from ExerciseDB,
+                plus the target muscle and equipment details.
               </p>
-              <div className="mt-6 grid gap-4">
-                {(plan?.onboardingChecklist || [
-                  'Choose the level that matches your current technique and recovery.',
-                  'Use the movement media before lifting if the exercise is new to you.',
-                  'Increase load only when your full set stays clean and repeatable.',
-                  'Sharp pain is a stop sign, not a challenge.',
-                ]).map((item) => (
-                  <div key={item} className="rounded-[1.25rem] bg-white/5 p-4 text-sm leading-6 text-stone-200">
-                    {item}
-                  </div>
-                ))}
-              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3 lg:max-w-2xl">
+              {LEVEL_OPTIONS.map((level) => {
+                const isActive = level.id === selectedLevel
+
+                return (
+                  <button
+                    key={level.id}
+                    type="button"
+                    onClick={() => setSelectedLevel(level.id)}
+                    className={`rounded-[1.5rem] border p-4 text-left transition ${
+                      isActive
+                        ? 'border-stone-950 bg-stone-950 text-white shadow-[0_18px_40px_rgba(28,25,23,0.18)]'
+                        : 'border-stone-900/10 bg-stone-50 text-stone-900 hover:border-amber-300 hover:bg-amber-50'
+                    }`}
+                  >
+                    <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${isActive ? 'text-amber-200' : 'text-stone-500'}`}>
+                      Level
+                    </p>
+                    <p className="mt-2 text-xl font-semibold">{level.label}</p>
+                    <p className={`mt-2 text-sm leading-6 ${isActive ? 'text-stone-200' : 'text-stone-600'}`}>
+                      {level.description}
+                    </p>
+                  </button>
+                )
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-y border-stone-900/10 bg-white/70 py-14 backdrop-blur sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          {isLoading ? (
-            <div className="rounded-[2rem] border border-stone-900/10 bg-white/90 p-8 text-base text-stone-700 shadow-sm">
-              Loading your workout progression...
-            </div>
-          ) : error ? (
-            <div className="rounded-[2rem] border border-rose-200 bg-rose-50 p-8 text-base text-rose-700 shadow-sm">
-              {error}
-            </div>
-          ) : !plan || !selectedLevel ? (
-            <div className="rounded-[2rem] border border-stone-900/10 bg-white/90 p-8 text-base text-stone-700 shadow-sm">
-              No workout plan is available yet.
-            </div>
-          ) : (
-            <div className="grid gap-10 lg:grid-cols-[0.34fr_0.66fr]">
-              <aside className="space-y-4">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-10">
+        <div className="grid gap-6">
+          {days.map((dayPlan) => (
+            <section
+              key={`${selectedLevel}-${dayPlan.day}`}
+              className="rounded-[2rem] border border-stone-900/10 bg-white/85 p-5 shadow-[0_18px_45px_rgba(28,25,23,0.08)] backdrop-blur sm:p-6"
+            >
+              <div className="flex flex-col gap-3 border-b border-stone-900/10 pb-5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
-                    Program ladder
-                  </p>
-                  <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
-                    Choose your current level.
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{dayPlan.day}</p>
+                  <h2 className="mt-2 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950">
+                    {dayPlan.muscle}
                   </h2>
                 </div>
-
-                <div className="grid gap-3">
-                  {plan.levels.map((level) => {
-                    const isActive = level.id === selectedLevel.id
-
-                    return (
-                      <button
-                        key={level.id}
-                        type="button"
-                        onClick={() => setSelectedLevelId(level.id)}
-                        className={`rounded-[1.7rem] border p-5 text-left transition ${
-                          isActive
-                            ? 'border-stone-950 bg-stone-950 text-white shadow-[0_24px_55px_rgba(28,25,23,0.18)]'
-                            : 'border-stone-900/10 bg-white text-stone-900 hover:border-amber-300 hover:bg-amber-50/60'
-                        }`}
-                      >
-                        <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${isActive ? 'text-amber-200' : 'text-stone-500'}`}>
-                          {level.frequency}
-                        </p>
-                        <p className="mt-3 text-2xl font-semibold">{level.label}</p>
-                        <p className={`mt-3 text-sm leading-6 ${isActive ? 'text-stone-200' : 'text-stone-600'}`}>
-                          {level.summary}
-                        </p>
-                        <p className={`mt-4 text-xs font-semibold uppercase tracking-[0.16em] ${isActive ? 'text-emerald-200' : 'text-emerald-700'}`}>
-                          {level.duration}
-                        </p>
-                      </button>
-                    )
-                  })}
-                </div>
-              </aside>
-
-              <div className="space-y-8">
-                <section className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-6 text-stone-100 shadow-[0_30px_70px_rgba(28,25,23,0.16)]">
-                  <div className="flex flex-wrap items-end justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200/70">
-                        {selectedLevel.frequency}
-                      </p>
-                      <h3 className="mt-3 font-['Georgia'] text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                        {selectedLevel.label}
-                      </h3>
-                    </div>
-                    <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-200">
-                      {selectedLevel.duration}
-                    </span>
-                  </div>
-
-                  <p className="mt-5 max-w-3xl text-base leading-7 text-stone-300">
-                    {selectedLevel.summary}
-                  </p>
-
-                  <div className="mt-6 grid gap-3">
-                    {selectedLevel.progression.map((item) => (
-                      <div key={item} className="rounded-[1.25rem] bg-white/5 p-4 text-sm leading-6 text-stone-200">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </section>
-
-                <section className="grid gap-6">
-                  {selectedLevel.weeklySplit.map((day) => (
-                    <article
-                      key={`${selectedLevel.id}-${day.day}`}
-                      className="rounded-[2rem] border border-stone-900/10 bg-white/90 p-5 shadow-sm sm:p-6"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{day.day}</p>
-                          <h4 className="mt-2 font-['Georgia'] text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
-                            {day.focus}
-                          </h4>
-                        </div>
-                        <span className="rounded-full bg-emerald-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">
-                          {day.coachingGoal}
-                        </span>
-                      </div>
-
-                      <div className="mt-6 grid gap-5">
-                        {day.exercises.map((exercise) => (
-                          <div
-                            key={`${day.day}-${exercise.exerciseId}-${exercise.name}`}
-                            className="grid gap-5 rounded-[1.7rem] border border-stone-900/10 bg-stone-50/90 p-4 lg:grid-cols-[240px_1fr]"
-                          >
-                            <div className="overflow-hidden rounded-[1.35rem] bg-white shadow-sm">
-                              {exercise.mediaUrl ? (
-                                <img
-                                  src={exercise.mediaUrl}
-                                  alt={exercise.name}
-                                  loading="lazy"
-                                  className="h-full min-h-52 w-full object-cover"
-                                />
-                              ) : (
-                                <div className="flex min-h-52 items-center justify-center bg-[linear-gradient(135deg,#f59e0b,#fb7185)] p-6 text-center text-sm font-semibold uppercase tracking-[0.16em] text-white">
-                                  Exercise media unavailable
-                                </div>
-                              )}
-                            </div>
-
-                            <div>
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="rounded-full bg-stone-900 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white">
-                                  {exercise.setsReps}
-                                </span>
-                                <span className="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-700">
-                                  Rest {exercise.rest}
-                                </span>
-                                <span className="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-stone-700">
-                                  Tempo {exercise.tempo}
-                                </span>
-                              </div>
-
-                              <h5 className="mt-4 text-2xl font-semibold text-stone-950">{exercise.name}</h5>
-
-                              <div className="mt-4 flex flex-wrap gap-2">
-                                {(exercise.targetMuscles || []).map((item) => (
-                                  <span key={`${exercise.name}-${item}`} className="rounded-full bg-emerald-100 px-3 py-2 text-xs font-semibold text-emerald-900">
-                                    {item}
-                                  </span>
-                                ))}
-                                {(exercise.equipments || []).map((item) => (
-                                  <span key={`${exercise.name}-equipment-${item}`} className="rounded-full bg-amber-100 px-3 py-2 text-xs font-semibold text-amber-900">
-                                    {item}
-                                  </span>
-                                ))}
-                              </div>
-
-                              <div className="mt-5 grid gap-4 lg:grid-cols-2">
-                                <div>
-                                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-                                    How to do it
-                                  </p>
-                                  <div className="mt-3 space-y-2">
-                                    {(exercise.instructions || []).map((item) => (
-                                      <div key={item} className="rounded-[1.1rem] bg-white p-3 text-sm leading-6 text-stone-700 shadow-sm">
-                                        {item}
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-                                    Form cues
-                                  </p>
-                                  <div className="mt-3 space-y-2">
-                                    {(exercise.tips || []).map((item) => (
-                                      <div key={item} className="rounded-[1.1rem] bg-stone-900 p-3 text-sm leading-6 text-stone-200 shadow-sm">
-                                        {item}
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </article>
-                  ))}
-                </section>
+                <span className="w-fit rounded-full bg-stone-950 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white">
+                  {dayPlan.exercises.length} exercises
+                </span>
               </div>
-            </div>
-          )}
+
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {dayPlan.exercises.map((exerciseName) => (
+                  <ExerciseCard key={`${dayPlan.day}-${exerciseName}`} exerciseName={exerciseName} />
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
       </section>
     </SiteShell>

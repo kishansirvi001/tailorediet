@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/authRoutes.js";
 import dietPlanRoutes from "./routes/dietPlanRoutes.js";
+import exerciseRoutes from "./routes/exerciseRoutes.js";
 import mealScanRoutes from "./routes/mealScanRoutes.js";
 import workoutPlanRoutes from "./routes/workoutPlanRoutes.js";
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => res.send("API running"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/diet-plans", dietPlanRoutes);
+app.use("/api/exercise", exerciseRoutes);
 app.use("/api/meal-scan", mealScanRoutes);
 app.use("/api/workout-plans", workoutPlanRoutes);
 
