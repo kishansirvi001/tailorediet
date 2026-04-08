@@ -279,6 +279,7 @@ function normalizeDatasetExercise(raw) {
 
   return {
     name: raw?.name || raw?.exerciseName || raw?.title || null,
+    mediaUrls,
     gifUrl: preferredImageUrl,
     videoUrl: preferredVideoUrl,
     target: targetMuscles[0] || null,
@@ -356,7 +357,9 @@ function normalizeExercise(exercise) {
     name: exercise?.name || null,
     gifUrl: exercise?.gifUrl || null,
     videoUrl: exercise?.videoUrl || null,
-    mediaUrls: Array.isArray(exercise?.mediaUrls) ? exercise.mediaUrls : [],
+    mediaUrls: Array.isArray(exercise?.mediaUrls)
+      ? exercise.mediaUrls.filter(Boolean)
+      : [exercise?.gifUrl, exercise?.videoUrl].filter(Boolean),
     target: exercise?.target || null,
     equipment: exercise?.equipment || null,
   };
@@ -436,15 +439,17 @@ function buildAbsoluteUrl(req, pathname, values = []) {
 }
 
 function withProxyUrls(req, exercise) {
-  const mediaUrls = Array.isArray(exercise?.mediaUrls)
-    ? exercise.mediaUrls.filter(Boolean)
-    : [exercise?.videoUrl, exercise?.gifUrl].filter(Boolean);
+  const mediaUrls = [
+    ...(Array.isArray(exercise?.mediaUrls) ? exercise.mediaUrls : []),
+    exercise?.gifUrl,
+    exercise?.videoUrl,
+  ].filter(Boolean);
   const videoCandidates = mediaUrls.filter((url) => /\.(mp4|webm|ogg)(\?|#|$)/i.test(url));
   const imageCandidates = mediaUrls.filter((url) => !/\.(mp4|webm|ogg)(\?|#|$)/i.test(url));
 
   return {
     ...exercise,
-    mediaUrls,
+    mediaUrls: [...new Set(mediaUrls)],
     videoUrl:
       videoCandidates.length > 0
         ? buildAbsoluteUrl(req, "/api/exercise/media", videoCandidates)

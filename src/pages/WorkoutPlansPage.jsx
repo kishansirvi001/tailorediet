@@ -59,7 +59,23 @@ function ExerciseCard({ exerciseName }) {
           <div className="flex h-full animate-pulse items-center justify-center bg-black/10 px-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white/90">
             Loading demo
           </div>
-        ) : exercise?.videoUrl && !preferImageFallback && !mediaFailed ? (
+        ) : exercise?.gifUrl && !mediaFailed ? (
+          <img
+            src={exercise.gifUrl}
+            alt={exercise.name || exerciseName}
+            loading="lazy"
+            className="h-full w-full object-cover"
+            onLoad={() => setMediaFailed(false)}
+            onError={() => {
+              if (exercise?.videoUrl) {
+                setPreferImageFallback(true)
+                return
+              }
+
+              setMediaFailed(true)
+            }}
+          />
+        ) : exercise?.videoUrl && (!mediaFailed || preferImageFallback) ? (
           <video
             src={exercise.videoUrl}
             className="h-full w-full object-cover"
@@ -69,25 +85,9 @@ function ExerciseCard({ exerciseName }) {
             controls
             preload="none"
             onLoadedData={() => {
-              setPreferImageFallback(false)
+              setPreferImageFallback(true)
               setMediaFailed(false)
             }}
-            onError={() => {
-              if (exercise?.gifUrl) {
-                setPreferImageFallback(true)
-                return
-              }
-
-              setMediaFailed(true)
-            }}
-          />
-        ) : exercise?.gifUrl && !mediaFailed ? (
-          <img
-            src={exercise.gifUrl}
-            alt={exercise.name || exerciseName}
-            loading="lazy"
-            className="h-full w-full object-cover"
-            onLoad={() => setMediaFailed(false)}
             onError={() => setMediaFailed(true)}
           />
         ) : (
