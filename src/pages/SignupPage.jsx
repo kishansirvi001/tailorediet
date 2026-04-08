@@ -153,6 +153,8 @@ function SignupPage() {
       await completeSignupVerification({
         verificationId: verification.verificationId,
         emailOtp: otpData.emailOtp,
+        email: verification.email,
+        mobileNumber: formData.mobileNumber,
       })
       navigate('/account', { replace: true })
     } catch (error) {

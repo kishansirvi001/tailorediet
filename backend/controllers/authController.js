@@ -146,10 +146,6 @@ function validateSignupPayload({ name, email, mobileNumber, dateOfBirth, passwor
 }
 
 function validateOtpVerificationPayload({ verificationId, emailOtp }) {
-  if (!String(verificationId || "").trim()) {
-    return "Verification session is missing.";
-  }
-
   if (!OTP_PATTERN.test(String(emailOtp || "").trim())) {
     return "Enter a valid 6-digit email OTP.";
   }
@@ -183,6 +179,41 @@ async function findExistingUser({ email, mobileNumber }) {
   return User.findOne({
     $or: [{ email }, { mobileNumber }],
   });
+}
+
+async function findPendingVerification({ verificationId, email, mobileNumber }) {
+  const trimmedVerificationId = String(verificationId || "").trim();
+
+  if (trimmedVerificationId) {
+    const directMatch = await SignupVerification.findOne({
+      verificationId: trimmedVerificationId,
+    });
+
+    if (directMatch) {
+      return directMatch;
+    }
+  }
+
+  const normalizedEmail = email ? normalizeEmail(email) : "";
+  const normalizedMobileNumber = mobileNumber ? normalizeMobileNumber(mobileNumber) : "";
+  const lookupFilters = [];
+
+  if (normalizedEmail) {
+    lookupFilters.push({ email: normalizedEmail });
+  }
+
+  if (normalizedMobileNumber) {
+    lookupFilters.push({ mobileNumber: normalizedMobileNumber });
+  }
+
+  if (lookupFilters.length === 0) {
+    return null;
+  }
+
+  return SignupVerification.findOne({
+    $or: lookupFilters,
+    expiresAt: { $gt: new Date() },
+  }).sort({ createdAt: -1 });
 }
 
 function buildPendingVerificationPayload(body, email, mobileNumber) {
@@ -275,8 +306,10 @@ export async function verifySignupOtp(req, res) {
     return res.status(400).json({ message: error });
   }
 
-  const verification = await SignupVerification.findOne({
+  const verification = await findPendingVerification({
     verificationId: req.body.verificationId,
+    email: req.body.email,
+    mobileNumber: req.body.mobileNumber,
   });
 
   if (!verification) {
@@ -307,16 +340,27 @@ export async function verifySignupOtp(req, res) {
   }
 
   const token = createSessionToken();
-  const user = await User.create({
-    name: verification.name,
-    email: verification.email,
-    mobileNumber: verification.mobileNumber,
-    dateOfBirth: verification.dateOfBirth,
-    passwordHash: verification.passwordHash,
-    goal: verification.goal,
-    dietStyle: verification.dietStyle,
-    sessionToken: token,
-  });
+  let user;
+
+  try {
+    user = await User.create({
+      name: verification.name,
+      email: verification.email,
+      mobileNumber: verification.mobileNumber,
+      dateOfBirth: verification.dateOfBirth,
+      passwordHash: verification.passwordHash,
+      goal: verification.goal,
+      dietStyle: verification.dietStyle,
+      sessionToken: token,
+    });
+  } catch (persistenceError) {
+    return res.status(500).json({
+      message:
+        persistenceError instanceof Error
+          ? `Failed to create account: ${persistenceError.message}`
+          : "Failed to create account.",
+    });
+  }
 
   await SignupVerification.deleteOne({ _id: verification._id });
 

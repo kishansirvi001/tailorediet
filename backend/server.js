@@ -30,10 +30,10 @@ app.use("/api/meal-scan", mealScanRoutes);
 app.use("/api/workout-plans", workoutPlanRoutes);
 
 async function startServer() {
-  const mongoUri = process.env.MONGODB_URI;
+  const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
 
   if (!mongoUri) {
-    throw new Error("MONGODB_URI is missing. Add it to backend/.env before starting the server.");
+    throw new Error("MongoDB URI is missing. Add MONGODB_URI or MONGO_URI to backend/.env before starting the server.");
   }
 
   await mongoose.connect(mongoUri);

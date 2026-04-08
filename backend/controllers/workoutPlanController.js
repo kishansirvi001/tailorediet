@@ -237,6 +237,22 @@ function normalizeToList(value) {
   return [String(value).trim()].filter(Boolean);
 }
 
+function flattenMediaValues(value) {
+  if (!value) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => flattenMediaValues(item));
+  }
+
+  if (typeof value === "object") {
+    return Object.values(value).flatMap((item) => flattenMediaValues(item));
+  }
+
+  return [String(value).trim()].filter(Boolean);
+}
+
 function buildMediaUrl(value) {
   if (!value) {
     return null;
@@ -255,6 +271,60 @@ function buildMediaUrl(value) {
   return cleanValue;
 }
 
+function extractMediaUrl(raw) {
+  const candidates = [
+    raw.gifUrl,
+    raw.gif_url,
+    raw.imageUrl,
+    raw.image,
+    raw.videoUrl,
+    raw.video,
+    raw.mediaUrl,
+    raw.media,
+    raw.thumbnail,
+    raw.thumbnailUrl,
+    raw.previewUrl,
+    raw.assets,
+    raw.images,
+  ]
+    .flatMap((value) => flattenMediaValues(value))
+    .map((value) => buildMediaUrl(value))
+    .filter(Boolean);
+
+  return candidates[0] || null;
+}
+
+function extractExerciseList(payload) {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  const directList =
+    (Array.isArray(payload.data) && payload.data) ||
+    (Array.isArray(payload.exercises) && payload.exercises) ||
+    (Array.isArray(payload.results) && payload.results) ||
+    (Array.isArray(payload.items) && payload.items) ||
+    (Array.isArray(payload.body) && payload.body);
+
+  if (directList) {
+    return directList;
+  }
+
+  for (const value of Object.values(payload)) {
+    const nestedList = extractExerciseList(value);
+
+    if (nestedList.length > 0) {
+      return nestedList;
+    }
+  }
+
+  return [];
+}
+
 function normalizeExercise(raw) {
   const name = raw.name || raw.exerciseName || raw.title || "";
   const instructions =
@@ -269,13 +339,7 @@ function normalizeExercise(raw) {
   const targetMuscles = normalizeToList(raw.targetMuscles || raw.target);
   const secondaryMuscles = normalizeToList(raw.secondaryMuscles || raw.secondary);
   const bodyParts = normalizeToList(raw.bodyParts || raw.bodyPart);
-  const mediaUrl =
-    buildMediaUrl(raw.gifUrl) ||
-    buildMediaUrl(raw.gif_url) ||
-    buildMediaUrl(raw.imageUrl) ||
-    buildMediaUrl(raw.image) ||
-    buildMediaUrl(raw.videoUrl) ||
-    buildMediaUrl(raw.video);
+  const mediaUrl = extractMediaUrl(raw);
 
   return {
     id: raw.exerciseId || raw.id || slugify(name),
@@ -318,22 +382,18 @@ async function fetchExerciseDataset() {
 
   for (const endpoint of EXERCISEDB_ENDPOINT_CANDIDATES) {
     try {
-      const response = await fetch(endpoint);
+      const response = await fetch(endpoint, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
       if (!response.ok) {
         lastError = new Error(`ExerciseDB request failed with ${response.status}`);
         continue;
       }
 
       const payload = await response.json();
-      const list = Array.isArray(payload)
-        ? payload
-        : Array.isArray(payload?.data)
-          ? payload.data
-          : Array.isArray(payload?.exercises)
-            ? payload.exercises
-            : Array.isArray(payload?.results)
-              ? payload.results
-              : [];
+      const list = extractExerciseList(payload);
 
       if (list.length > 0) {
         return list.map(normalizeExercise).filter((exercise) => exercise.name);
@@ -471,9 +531,23 @@ export const getWorkoutPlan = [
   requireAuth,
   async (req, res) => {
     try {
-      const dataset = await fetchExerciseDataset();
+      let dataset = [];
+      let mediaStatus = null;
+
+      try {
+        dataset = await fetchExerciseDataset();
+      } catch (datasetError) {
+        mediaStatus =
+          datasetError instanceof Error
+            ? datasetError.message
+            : "Exercise media is temporarily unavailable.";
+      }
+
       return res.json({
-        plan: buildResponse(dataset),
+        plan: {
+          ...buildResponse(dataset),
+          mediaStatus,
+        },
         user: {
           id: req.user._id,
           name: req.user.name,
