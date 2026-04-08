@@ -4,6 +4,8 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true, lowercase: true, unique: true },
+    // Keep the legacy field in sync because the production database still has a unique `mobile` index.
+    mobile: { type: String, required: true, trim: true, unique: true },
     mobileNumber: { type: String, required: true, trim: true, unique: true },
     dateOfBirth: { type: Date, required: true },
     passwordHash: { type: String, required: true },

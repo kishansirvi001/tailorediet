@@ -177,7 +177,7 @@ function validateLoginPayload({ email, mobileNumber, identifier, password }) {
 
 async function findExistingUser({ email, mobileNumber }) {
   return User.findOne({
-    $or: [{ email }, { mobileNumber }],
+    $or: [{ email }, { mobileNumber }, { mobile: mobileNumber }],
   });
 }
 
@@ -346,6 +346,7 @@ export async function verifySignupOtp(req, res) {
     user = await User.create({
       name: verification.name,
       email: verification.email,
+      mobile: verification.mobileNumber,
       mobileNumber: verification.mobileNumber,
       dateOfBirth: verification.dateOfBirth,
       passwordHash: verification.passwordHash,
@@ -382,7 +383,7 @@ export async function login(req, res) {
   const user = await User.findOne(
     identity.type === "email"
       ? { email: identity.value }
-      : { mobileNumber: identity.value }
+      : { $or: [{ mobileNumber: identity.value }, { mobile: identity.value }] }
   );
 
   if (!user || !verifyPassword(req.body.password, user.passwordHash)) {
