@@ -328,7 +328,7 @@ async function fetchExerciseDataset() {
     }
 
     throw lastError || new Error("Unable to load exercise dataset.");
-  });
+  })();
   
   try {
     return await datasetRequest;
@@ -428,7 +428,7 @@ function buildAbsoluteUrl(req, pathname, values = []) {
   const origin = `${req.protocol}://${req.get("host")}`;
   const params = new URLSearchParams();
 
-  for (const value of values) {
+  for (const value of [...new Set(values.filter(Boolean))]) {
     if (value) {
       params.append("url", value);
     }
