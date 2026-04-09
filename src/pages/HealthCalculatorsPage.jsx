@@ -1,12 +1,11 @@
 ﻿import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SiteShell from '../components/SiteShell.jsx'
-import { activityOptions, goalOptions } from '../lib/calculatorData.js'
+import { activityOptions } from '../lib/calculatorData.js'
 import {
   calculateBmi,
   calculateCalories,
   calculateMacros,
-  getGoalOption,
   validateBodyMetrics,
   validateMacroInputs,
 } from '../lib/calculatorUtils.js'
@@ -51,18 +50,8 @@ function HealthCalculatorsPage() {
   const calorieResult = useMemo(() => calculateCalories(profile), [profile])
   const bmiResult = useMemo(() => calculateBmi(profile), [profile])
   const macroResult = useMemo(() => calculateMacros(profile), [profile])
-  const selectedGoal = useMemo(() => getGoalOption(profile.goal), [profile.goal])
   const bodyIssues = useMemo(() => validateBodyMetrics(profile), [profile])
   const macroIssues = useMemo(() => validateMacroInputs(profile), [profile])
-
-  const goalResult = useMemo(
-    () => ({
-      pace: selectedGoal.pace,
-      suggestedIntake: `${calorieResult.target} kcal / day`,
-      direction: selectedGoal.direction,
-    }),
-    [selectedGoal, calorieResult.target],
-  )
 
   return (
     <SiteShell>
@@ -313,27 +302,31 @@ function HealthCalculatorsPage() {
               <div className="inline-flex rounded-full bg-rose-200 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-stone-900">
                 Goal planner
               </div>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <label className="rounded-2xl border border-stone-900/10 bg-white/75 p-4 sm:col-span-2">
-                  <span className="text-xs uppercase tracking-[0.16em] text-stone-500">Goal</span>
-                  <select name="goal" value={profile.goal} onChange={updateField} className="mt-2 w-full bg-transparent text-lg font-semibold text-stone-950 outline-none">
-                    {goalOptions.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
+              <p className="mt-6 text-base leading-7 text-stone-700">
+                Generate a 7-day gym workout plan in structured JSON using a
+                selected fitness level, goal, and daily exercise count.
+              </p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl bg-stone-900 p-4 text-white">
-                  <p className="text-xs uppercase tracking-[0.16em] text-stone-400">Pace</p>
-                  <p className="mt-2 text-xl font-semibold">{goalResult.pace}</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-400">Split</p>
+                  <p className="mt-2 text-xl font-semibold">7 days</p>
                 </div>
                 <div className="rounded-2xl bg-rose-200 p-4 text-stone-950">
-                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Suggested intake</p>
-                  <p className="mt-2 text-xl font-semibold">{goalResult.suggestedIntake}</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Daily count</p>
+                  <p className="mt-2 text-xl font-semibold">6 / 8 / 10</p>
+                </div>
+                <div className="rounded-2xl border border-stone-900/10 bg-white p-4 text-stone-950">
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-500">GIF media</p>
+                  <p className="mt-2 text-base font-semibold">Search terms</p>
                 </div>
               </div>
               <div className="mt-4 rounded-2xl border border-stone-900/10 bg-white/75 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Plan direction</p>
-                <p className="mt-2 text-base leading-7 text-stone-700">{goalResult.direction}</p>
+                <p className="mt-2 text-base leading-7 text-stone-700">
+                  The dedicated page returns sets, reps, rest time, muscle
+                  groups, descriptions, and `gifSearchTerm` values instead of
+                  fragile remote GIF URLs.
+                </p>
               </div>
               <Link to={calculatorLinks['Goal planner']} className="mt-6 inline-flex rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:border-stone-500 hover:bg-stone-100">
                 Open dedicated page
