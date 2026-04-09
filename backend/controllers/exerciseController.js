@@ -6,6 +6,11 @@ const EXERCISEDB_ENDPOINT_CANDIDATES = [
   "https://v2.exercisedb.dev/api/exercises",
 ].filter(Boolean);
 
+const FREE_EXERCISE_DB_ENDPOINT =
+  "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/dist/exercises.json";
+const FREE_EXERCISE_DB_MEDIA_BASE =
+  "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises";
+
 const MEDIA_BASE_CANDIDATES = [
   process.env.EXERCISEDB_MEDIA_BASE_URL,
   "https://v2.exercisedb.dev/media",
@@ -19,6 +24,9 @@ const exerciseCache = new Map();
 let datasetCache = null;
 let datasetCacheExpiresAt = 0;
 let datasetRequest = null;
+let freeDatasetCache = null;
+let freeDatasetCacheExpiresAt = 0;
+let freeDatasetRequest = null;
 
 const EXERCISE_NAME_MAP = {
   "Bench Press": "barbell bench press",
@@ -287,7 +295,76 @@ function normalizeDatasetExercise(raw) {
   };
 }
 
-async function fetchExerciseDataset() {
+function titleCaseWords(value) {
+  return String(value || "")
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function normalizeFreeDatasetExercise(raw) {
+  const imagePaths = Array.isArray(raw?.images) ? raw.images.filter(Boolean) : [];
+  const frameUrls = imagePaths.map(
+    (path) => `${FREE_EXERCISE_DB_MEDIA_BASE}/${String(path).replace(/^\/+/, "")}`
+  );
+
+  return {
+    name: raw?.name || null,
+    mediaUrls: frameUrls,
+    frameUrls,
+    gifUrl: frameUrls[0] || null,
+    videoUrl: null,
+    target: titleCaseWords(raw?.primaryMuscles?.[0] || ""),
+    targetMuscles: Array.isArray(raw?.primaryMuscles)
+      ? raw.primaryMuscles.map((muscle) => titleCaseWords(muscle))
+      : [],
+    secondaryMuscles: Array.isArray(raw?.secondaryMuscles)
+      ? raw.secondaryMuscles.map((muscle) => titleCaseWords(muscle))
+      : [],
+    equipment: raw?.equipment ? titleCaseWords(raw.equipment) : null,
+  };
+}
+
+async function fetchFreeExerciseDataset() {
+  if (freeDatasetCache && Date.now() < freeDatasetCacheExpiresAt) {
+    return freeDatasetCache;
+  }
+
+  if (freeDatasetRequest) {
+    return freeDatasetRequest;
+  }
+
+  freeDatasetRequest = (async () => {
+    const response = await fetch(FREE_EXERCISE_DB_ENDPOINT, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Free exercise dataset request failed with status ${response.status}.`);
+    }
+
+    const payload = await response.json();
+    const list = Array.isArray(payload) ? payload : [];
+    const normalized = list
+      .map(normalizeFreeDatasetExercise)
+      .filter((exercise) => exercise.name);
+
+    freeDatasetCache = normalized;
+    freeDatasetCacheExpiresAt = Date.now() + CACHE_TTL_MS;
+    return normalized;
+  })();
+
+  try {
+    return await freeDatasetRequest;
+  } finally {
+    freeDatasetRequest = null;
+  }
+}
+
+async function _fetchExerciseDataset() {
   if (datasetCache && Date.now() < datasetCacheExpiresAt) {
     return datasetCache;
   }
@@ -338,7 +415,7 @@ async function fetchExerciseDataset() {
 }
 
 async function requestExerciseList(searchName) {
-  const dataset = await fetchExerciseDataset();
+  const dataset = await fetchFreeExerciseDataset();
   const normalizedSearchName = normalizeKey(searchName);
 
   return dataset
@@ -357,10 +434,19 @@ function normalizeExercise(exercise) {
     name: exercise?.name || null,
     gifUrl: exercise?.gifUrl || null,
     videoUrl: exercise?.videoUrl || null,
+    frameUrls: Array.isArray(exercise?.frameUrls)
+      ? exercise.frameUrls.filter(Boolean)
+      : [exercise?.gifUrl].filter(Boolean),
     mediaUrls: Array.isArray(exercise?.mediaUrls)
       ? exercise.mediaUrls.filter(Boolean)
       : [exercise?.gifUrl, exercise?.videoUrl].filter(Boolean),
     target: exercise?.target || null,
+    targetMuscles: Array.isArray(exercise?.targetMuscles)
+      ? exercise.targetMuscles.filter(Boolean)
+      : [exercise?.target].filter(Boolean),
+    secondaryMuscles: Array.isArray(exercise?.secondaryMuscles)
+      ? exercise.secondaryMuscles.filter(Boolean)
+      : [],
     equipment: exercise?.equipment || null,
   };
 }
@@ -418,8 +504,11 @@ function buildFallbackExercise(name) {
     name: String(name || "").trim() || null,
     gifUrl: null,
     videoUrl: null,
+    frameUrls: [],
     mediaUrls: [],
     target: guessTarget(name),
+    targetMuscles: [guessTarget(name)],
+    secondaryMuscles: [],
     equipment: guessEquipment(name),
   };
 }
@@ -477,7 +566,7 @@ async function findExercise(name) {
   for (const candidate of candidates) {
     try {
       matches = await requestExerciseList(candidate);
-    } catch (error) {
+    } catch {
       lookupFailed = true;
       continue;
     }
@@ -508,6 +597,42 @@ async function findExercise(name) {
   setCacheEntry(cacheKey, normalized);
 
   return normalized;
+}
+
+export async function findExerciseByName(name) {
+  return findExercise(name);
+}
+
+export async function getExerciseGifByName(req, res) {
+  try {
+    const exerciseName = req.params.name;
+
+    if (!exerciseName) {
+      return res.status(400).json({ error: "Exercise name is required." });
+    }
+
+    const exercise = await findExercise(exerciseName);
+
+    if (!exercise) {
+      return res.status(404).json({ error: "Exercise not found." });
+    }
+
+    const imageCandidates = [
+      ...(Array.isArray(exercise?.frameUrls) ? exercise.frameUrls : []),
+      ...(Array.isArray(exercise?.mediaUrls) ? exercise.mediaUrls : []),
+      exercise?.gifUrl,
+    ].filter(Boolean);
+
+    if (imageCandidates.length === 0) {
+      return res.status(404).json({ error: "Exercise GIF is unavailable." });
+    }
+
+    return res.redirect(imageCandidates[0]);
+  } catch (error) {
+    return res.status(502).json({
+      error: error instanceof Error ? error.message : "Unable to fetch exercise GIF.",
+    });
+  }
 }
 
 export async function getExerciseMedia(req, res) {
@@ -547,7 +672,7 @@ export async function getExerciseMedia(req, res) {
         res.set("Content-Type", contentType);
         res.set("Cache-Control", cacheControl);
         return res.send(payload);
-      } catch (error) {
+      } catch {
         continue;
       }
     }

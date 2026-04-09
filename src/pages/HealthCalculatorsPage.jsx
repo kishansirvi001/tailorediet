@@ -23,7 +23,7 @@ const calculatorLinks = {
   'Calorie surplus calculator': '/calculators/calorie-surplus',
   'BMI calculator': '/calculators/bmi',
   'Macro calculator': '/calculators/macro',
-  'Goal planner': '/calculators/goal',
+  'Workout planner': '/workout-planner',
   'Water intake': '/calculators/water-intake',
   'Ideal weight': '/calculators/ideal-weight',
   'Body fat estimator': '/calculators/body-fat',
@@ -300,35 +300,35 @@ function HealthCalculatorsPage() {
 
             <article className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-8 shadow-sm">
               <div className="inline-flex rounded-full bg-rose-200 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-stone-900">
-                Goal planner
+                Workout planner
               </div>
               <p className="mt-6 text-base leading-7 text-stone-700">
-                Generate a 7-day gym workout plan in structured JSON using a
-                selected fitness level, goal, and daily exercise count.
+                Select fitness level and goal first, then choose one of three
+                workout combos: Chest & Triceps, Back & Biceps, or Legs &
+                Shoulders.
               </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl bg-stone-900 p-4 text-white">
-                  <p className="text-xs uppercase tracking-[0.16em] text-stone-400">Split</p>
-                  <p className="mt-2 text-xl font-semibold">7 days</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-400">Format</p>
+                  <p className="mt-2 text-xl font-semibold">Exercise cards</p>
                 </div>
                 <div className="rounded-2xl bg-rose-200 p-4 text-stone-950">
-                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Daily count</p>
-                  <p className="mt-2 text-xl font-semibold">6 / 8 / 10</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Exercise count</p>
+                  <p className="mt-2 text-xl font-semibold">6 / 7 / 8</p>
                 </div>
                 <div className="rounded-2xl border border-stone-900/10 bg-white p-4 text-stone-950">
                   <p className="text-xs uppercase tracking-[0.16em] text-stone-500">GIF media</p>
-                  <p className="mt-2 text-base font-semibold">Search terms</p>
+                  <p className="mt-2 text-base font-semibold">Proxy URLs</p>
                 </div>
               </div>
               <div className="mt-4 rounded-2xl border border-stone-900/10 bg-white/75 p-5">
-                <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Plan direction</p>
+                <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Selection flow</p>
                 <p className="mt-2 text-base leading-7 text-stone-700">
-                  The dedicated page returns sets, reps, rest time, muscle
-                  groups, descriptions, and `gifSearchTerm` values instead of
-                  fragile remote GIF URLs.
+                  The dedicated page shows category-specific exercise cards with
+                  live GIF demonstrations, target muscles, sets, reps, and rest time.
                 </p>
               </div>
-              <Link to={calculatorLinks['Goal planner']} className="mt-6 inline-flex rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:border-stone-500 hover:bg-stone-100">
+              <Link to={calculatorLinks['Workout planner']} className="mt-6 inline-flex rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:border-stone-500 hover:bg-stone-100">
                 Open dedicated page
               </Link>
             </article>

@@ -17,12 +17,17 @@ const features = [
     description:
       'Turn health inputs into a clearer diet direction so users know what plan style fits them best.',
   },
+  {
+    title: 'Workout planner',
+    description:
+      'Choose a muscle combo and get guided workout cards with common gym exercises, prescriptions, and real GIFs.',
+  },
 ]
 
 const stats = [
   { value: '4 core', label: 'health calculators in one product' },
   { value: '5 plan types', label: 'for different dietary goals' },
-  { value: '7-day', label: 'personalized plan structure' },
+  { value: '3 combos', label: 'for targeted workout selection' },
 ]
 
 const plannerCards = [
@@ -38,10 +43,14 @@ const plannerCards = [
     title: 'Diet plans',
     subtitle: 'Surface vegan, keto, weight loss, and muscle gain plan options instantly.',
   },
+  {
+    title: 'Workout planner',
+    subtitle: 'Pick a muscle combo and get exercise cards with GIFs, sets, reps, rest, and target muscles.',
+  },
 ]
 
 function metricCardTone(index) {
-  return ['bg-amber-200', 'bg-lime-200', 'bg-sky-200'][index % 3]
+  return ['bg-amber-200', 'bg-lime-200', 'bg-sky-200', 'bg-rose-200'][index % 4]
 }
 
 function HomePage() {
@@ -72,6 +81,12 @@ function HomePage() {
               className="rounded-full bg-stone-900 px-7 py-4 text-center text-sm font-semibold uppercase tracking-[0.14em] text-amber-100 transition hover:bg-stone-700"
             >
               Create account
+            </Link>
+            <Link
+              to="/workout-planner"
+              className="rounded-full border border-stone-400/60 bg-white/80 px-7 py-4 text-center text-sm font-semibold uppercase tracking-[0.14em] text-stone-900 backdrop-blur transition hover:border-stone-600 hover:bg-white"
+            >
+              Open workout planner
             </Link>
             <a
               href="#features"
@@ -130,7 +145,7 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {plannerCards.map((card, index) => (
                 <div
                   key={card.title}
@@ -251,6 +266,12 @@ function HomePage() {
               className="rounded-full bg-amber-300 px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-stone-950 transition hover:bg-amber-200"
             >
               Create account
+            </Link>
+            <Link
+              to="/workout-planner"
+              className="rounded-full border border-white/20 px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-white transition hover:bg-white/10"
+            >
+              Workout planner
             </Link>
             <Link
               to="/login"

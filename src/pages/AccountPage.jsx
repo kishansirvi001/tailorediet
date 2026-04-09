@@ -55,6 +55,12 @@ function AccountPage() {
                 Scan a meal
               </Link>
               <Link
+                to="/workout-planner"
+                className="rounded-full border border-stone-300 bg-white px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-stone-900 transition hover:border-rose-300 hover:bg-rose-50"
+              >
+                Workout planner
+              </Link>
+              <Link
                 to="/diet-plans"
                 className="rounded-full border border-stone-300 bg-white px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-stone-900 transition hover:border-stone-500 hover:bg-stone-50"
               >

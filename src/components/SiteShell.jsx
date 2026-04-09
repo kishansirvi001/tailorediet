@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
 function InstagramIcon(props) {
@@ -61,12 +61,12 @@ function NavItem({ label, to, onClick }) {
 
 function SiteShell({ children }) {
   const { isAuthenticated, user, logout } = useAuth()
-  const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navLinks = [
     { label: 'Home', to: '/' },
     { label: 'Calculators', to: '/calculators' },
+    { label: 'Workout Planner', to: '/workout-planner' },
     { label: 'Diet Plans', to: '/diet-plans' },
     ...(isAuthenticated ? [{ label: 'Meal Scanner', to: '/meal-scanner' }] : []),
     ...(isAuthenticated ? [{ label: 'Account', to: '/account' }] : []),
@@ -87,10 +87,6 @@ function SiteShell({ children }) {
     },
   ]
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [location.pathname])
-
   return (
     <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.16),_transparent_24%),radial-gradient(circle_at_88%_12%,_rgba(16,185,129,0.16),_transparent_30%),linear-gradient(180deg,_#f7f0e1_0%,_#fffaf1_38%,_#f5f1e8_100%)] text-stone-800">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[linear-gradient(135deg,rgba(120,53,15,0.1),rgba(5,150,105,0.08))]" />
@@ -100,7 +96,7 @@ function SiteShell({ children }) {
 
       <header className="sticky top-0 z-30 border-b border-stone-900/10 bg-white/78 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#f59e0b,#f97316)] text-base font-bold text-white shadow-[0_14px_28px_rgba(249,115,22,0.22)] sm:h-11 sm:w-11 sm:text-lg">
               TD
             </span>
@@ -135,6 +131,7 @@ function SiteShell({ children }) {
                 </button>
                 <Link
                   to="/account"
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-5 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(249,115,22,0.22)] transition hover:translate-y-[-1px]"
                 >
                   Dashboard
@@ -144,12 +141,14 @@ function SiteShell({ children }) {
               <>
                 <Link
                   to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="rounded-full border border-stone-300 px-5 py-2 text-sm font-semibold text-stone-800 transition hover:border-stone-500 hover:bg-stone-100"
                 >
                   Log in
                 </Link>
                 <Link
                   to="/signup"
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-5 py-2 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(249,115,22,0.22)] transition hover:translate-y-[-1px]"
                 >
                   Start free
@@ -263,6 +262,9 @@ function SiteShell({ children }) {
               </Link>
               <Link to="/diet-plans" className="block transition hover:text-white">
                 Diet Plans
+              </Link>
+              <Link to="/workout-planner" className="block transition hover:text-white">
+                Workout Planner
               </Link>
               {isAuthenticated ? (
                 <Link to="/account" className="block transition hover:text-white">

@@ -29,7 +29,8 @@ function RouterApp() {
       <Route path="/calculators/body-fat" element={<BodyFatCalculatorPage />} />
       <Route path="/calculators/ideal-weight" element={<IdealWeightCalculatorPage />} />
       <Route path="/calculators/macro" element={<MacroCalculatorPage />} />
-      <Route path="/calculators/goal" element={<GoalPlannerPage />} />
+      <Route path="/workout-planner" element={<GoalPlannerPage />} />
+      <Route path="/calculators/goal" element={<Navigate to="/workout-planner" replace />} />
       <Route path="/calculators/water-intake" element={<WaterIntakeCalculatorPage />} />
       <Route path="/diet-plans" element={<DietPlansPage />} />
       <Route
