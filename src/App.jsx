@@ -16,7 +16,6 @@ import MacroCalculatorPage from './pages/MacroCalculatorPage.jsx'
 import MealScannerPage from './pages/MealScannerPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import WaterIntakeCalculatorPage from './pages/WaterIntakeCalculatorPage.jsx'
-import WorkoutPlansPage from './pages/WorkoutPlansPage.jsx'
 
 function RouterApp() {
   return (
@@ -33,14 +32,6 @@ function RouterApp() {
       <Route path="/calculators/goal" element={<GoalPlannerPage />} />
       <Route path="/calculators/water-intake" element={<WaterIntakeCalculatorPage />} />
       <Route path="/diet-plans" element={<DietPlansPage />} />
-      <Route
-        path="/workout-plans"
-        element={
-          <ProtectedRoute>
-            <WorkoutPlansPage />
-          </ProtectedRoute>
-        }
-      />
       <Route
         path="/meal-scanner"
         element={
