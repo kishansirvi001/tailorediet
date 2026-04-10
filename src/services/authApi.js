@@ -2,9 +2,14 @@ function getApiBaseUrl() {
   const envUrl = import.meta.env.VITE_API_BASE_URL
   if (envUrl) return envUrl
   
-  // Auto-detect for Render or production
+  // For production domains that are different from backend
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname
+    // If frontend is on custom domain, route to Render backend
+    if (hostname === 'www.tailorediet.com' || hostname === 'tailorediet.com') {
+      return 'https://tailorediet.onrender.com'
+    }
+    // If already on Render, use that
     if (hostname === 'tailorediet.onrender.com') {
       return 'https://tailorediet.onrender.com'
     }
