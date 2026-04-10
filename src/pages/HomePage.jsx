@@ -78,7 +78,7 @@ function HomePage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               to="/signup"
-              className="rounded-full bg-stone-900 px-7 py-4 text-center text-sm font-semibold uppercase tracking-[0.14em] text-amber-100 transition hover:bg-stone-700"
+              className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-7 py-4 text-center text-sm font-semibold uppercase tracking-[0.14em] text-stone-950 shadow-lg shadow-amber-300/30 transition hover:from-amber-300 hover:to-amber-400 hover:shadow-amber-300/50"
             >
               Create account
             </Link>
