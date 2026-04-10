@@ -1,4 +1,19 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+function getApiBaseUrl() {
+  const envUrl = import.meta.env.VITE_API_BASE_URL
+  if (envUrl) return envUrl
+  
+  // Auto-detect for Render or production
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname
+    if (hostname === 'tailorediet.onrender.com') {
+      return 'https://tailorediet.onrender.com'
+    }
+  }
+  
+  return ''
+}
+
+const API_BASE_URL = getApiBaseUrl()
 
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
