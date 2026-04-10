@@ -36,11 +36,13 @@ const distPath = path.resolve(__dirname, "../dist");
 app.use(express.static(distPath));
 
 // Handle client-side routing - serve index.html for all non-API routes
-app.use((req, res) => {
-  if (!req.path.startsWith("/api")) {
-    return res.sendFile(path.join(distPath, "index.html"));
+app.get(/.+/, (req, res, next) => {
+  if (req.path.startsWith("/api")) {
+    return next();
   }
-  res.status(404).json({ message: "Not found" });
+  res.sendFile(path.join(distPath, "index.html"), (err) => {
+    if (err) next(err);
+  });
 });
 
 async function startServer() {
