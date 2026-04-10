@@ -10,13 +10,6 @@ import {
   validateMacroInputs,
 } from '../lib/calculatorUtils.js'
 
-const steps = [
-  'Enter age, weight, height, and activity level.',
-  'Choose a nutrition goal that matches the user journey.',
-  'Review calorie, BMI, macro, and goal outputs instantly.',
-  'Move from the result into a personalized diet plan.',
-]
-
 const calculatorLinks = {
   'Calorie calculator': '/calculators/calorie',
   'Calorie deficit calculator': '/calculators/calorie-deficit',
@@ -93,20 +86,17 @@ function HealthCalculatorsPage() {
         <div className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-4 text-stone-100 shadow-[0_40px_90px_rgba(28,25,23,0.22)] sm:rounded-[2.2rem] sm:p-6">
           <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4 sm:p-5">
             <p className="text-xs uppercase tracking-[0.2em] text-amber-200/70">
-              Calculator flow
+              Quick links
             </p>
             <h2 className="mt-3 text-2xl font-semibold text-white">
-              A clean path from health inputs to tailored nutrition guidance.
+              Access all calculators.
             </h2>
 
-            <div className="mt-6 space-y-3">
-              {steps.map((step, index) => (
-                <div key={step} className="flex gap-4 rounded-2xl bg-white/5 p-4">
-                  <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-300 text-sm font-bold text-stone-950">
-                    {index + 1}
-                  </span>
-                  <p className="text-sm leading-6 text-stone-200">{step}</p>
-                </div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {Object.entries(calculatorLinks).map(([name, path]) => (
+                <Link key={name} to={path} className="rounded-lg border border-white/20 bg-white/5 p-3 text-sm font-medium text-white transition hover:bg-white/10">
+                  {name}
+                </Link>
               ))}
             </div>
           </div>
