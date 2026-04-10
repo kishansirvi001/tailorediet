@@ -31,6 +31,15 @@ app.use("/api/exercise", exerciseRoutes);
 app.use("/api/meal-scan", mealScanRoutes);
 app.use("/api/workout-plans", workoutPlanRoutes);
 
+// Serve frontend static files
+const distPath = path.resolve(__dirname, "../dist");
+app.use(express.static(distPath));
+
+// Handle client-side routing - serve index.html for all non-API routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
+
 async function startServer() {
   const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
 
