@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SiteShell from '../components/SiteShell.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -23,6 +23,10 @@ function MealScannerPage() {
   const [confirmedWeight, setConfirmedWeight] = useState('')
   const [isScanning, setIsScanning] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isCameraActive, setIsCameraActive] = useState(false)
+  const videoRef = useRef(null)
+  const canvasRef = useRef(null)
+  const streamRef = useRef(null)
 
   async function handleFileChange(event) {
     const file = event.target.files?.[0]
@@ -45,6 +49,7 @@ function MealScannerPage() {
       setAnalysis(null)
       setConfirmedWeight('')
       setErrorMessage('')
+      setIsCameraActive(false)
     }
 
     reader.onerror = () => {
@@ -52,6 +57,53 @@ function MealScannerPage() {
     }
 
     reader.readAsDataURL(file)
+  }
+
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      })
+      streamRef.current = stream
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+      }
+      setIsCameraActive(true)
+      setErrorMessage('')
+    } catch (error) {
+      setErrorMessage('Could not access camera. Please check permissions.')
+    }
+  }
+
+  function stopCamera() {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+    }
+    setIsCameraActive(false)
+  }
+
+  function capturePhoto() {
+    if (!videoRef.current || !canvasRef.current) {
+      return
+    }
+
+    const context = canvasRef.current.getContext('2d')
+    if (!context) {
+      return
+    }
+
+    canvasRef.current.width = videoRef.current.videoWidth
+    canvasRef.current.height = videoRef.current.videoHeight
+    context.drawImage(videoRef.current, 0, 0)
+
+    const base64Data = canvasRef.current.toDataURL('image/jpeg')
+    setImageBase64(base64Data)
+    setImagePreview(base64Data)
+    setAnalysis(null)
+    setConfirmedWeight('')
+    setErrorMessage('')
+    stopCamera()
   }
 
   async function handleScan(event) {
@@ -132,12 +184,56 @@ function MealScannerPage() {
 
         <div className="rounded-[2rem] border border-stone-900/10 bg-white/85 p-6 shadow-[0_30px_70px_rgba(28,25,23,0.1)] backdrop-blur sm:p-8">
           <form className="space-y-5" onSubmit={handleScan}>
-            <label className="block rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50/80 p-5 transition hover:border-amber-300">
-              <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                Upload meal photo
-              </span>
-              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleFileChange} className="mt-4 block w-full text-sm text-stone-700" />
-            </label>
+            {!isCameraActive ? (
+              <>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="block rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50/80 p-5 transition hover:border-amber-300">
+                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+                      Upload meal photo
+                    </span>
+                    <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleFileChange} className="mt-4 block w-full text-sm text-stone-700" />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={startCamera}
+                    className="rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50/80 p-5 transition hover:border-amber-300"
+                  >
+                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+                      📷 Take photo
+                    </span>
+                    <span className="mt-4 block text-sm text-stone-600">Use your camera</span>
+                  </button>
+                </div>
+              </>
+            ) : null}
+
+            {isCameraActive ? (
+              <div className="space-y-3">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full rounded-[1.5rem] border border-stone-200 bg-black"
+                />
+                <canvas ref={canvasRef} className="hidden" />
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={capturePhoto}
+                    className="flex-1 rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5"
+                  >
+                    Capture photo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={stopCamera}
+                    className="flex-1 rounded-full border border-stone-300 bg-white px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-stone-900 transition hover:border-stone-500 hover:bg-stone-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : null}
 
             {imagePreview ? (
               <div className="overflow-hidden rounded-[1.5rem] border border-stone-200 bg-stone-50">
@@ -151,13 +247,15 @@ function MealScannerPage() {
               </div>
             ) : null}
 
-            <button
-              type="submit"
-              disabled={isScanning}
-              className="w-full rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isScanning ? 'Scanning meal...' : 'Scan meal photo'}
-            </button>
+            {!isCameraActive ? (
+              <button
+                type="submit"
+                disabled={isScanning}
+                className="w-full rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isScanning ? 'Scanning meal...' : 'Scan meal photo'}
+              </button>
+            ) : null}
           </form>
 
           {analysis ? (
@@ -208,21 +306,25 @@ function MealScannerPage() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-2xl bg-stone-900 p-5 text-white">
-                  <p className="text-xs uppercase tracking-[0.16em] text-stone-400">Calories</p>
-                  <p className="mt-2 text-3xl font-semibold">{finalNutrition?.calories ?? 0}</p>
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950 p-5 text-white shadow-xl shadow-black/30">
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent" />
+                  <p className="relative text-xs uppercase tracking-[0.16em] text-stone-300">Calories</p>
+                  <p className="relative mt-2 text-3xl font-semibold bg-gradient-to-r from-white to-stone-200 bg-clip-text text-transparent">{finalNutrition?.calories ?? 0}</p>
                 </div>
-                <div className="rounded-2xl bg-emerald-200 p-5 text-stone-950">
-                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Protein</p>
-                  <p className="mt-2 text-3xl font-semibold">{finalNutrition?.protein ?? 0} g</p>
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-200 to-emerald-300 p-5 text-stone-950 shadow-lg shadow-emerald-400/30">
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
+                  <p className="relative text-xs uppercase tracking-[0.16em] text-emerald-700">Protein</p>
+                  <p className="relative mt-2 text-3xl font-semibold">{finalNutrition?.protein ?? 0} g</p>
                 </div>
-                <div className="rounded-2xl bg-sky-200 p-5 text-stone-950">
-                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Carbs</p>
-                  <p className="mt-2 text-3xl font-semibold">{finalNutrition?.carbs ?? 0} g</p>
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sky-200 to-sky-300 p-5 text-stone-950 shadow-lg shadow-sky-400/30">
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
+                  <p className="relative text-xs uppercase tracking-[0.16em] text-sky-700">Carbs</p>
+                  <p className="relative mt-2 text-3xl font-semibold">{finalNutrition?.carbs ?? 0} g</p>
                 </div>
-                <div className="rounded-2xl bg-rose-200 p-5 text-stone-950">
-                  <p className="text-xs uppercase tracking-[0.16em] text-stone-700">Fat</p>
-                  <p className="mt-2 text-3xl font-semibold">{finalNutrition?.fat ?? 0} g</p>
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-200 to-rose-300 p-5 text-stone-950 shadow-lg shadow-rose-400/30">
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
+                  <p className="relative text-xs uppercase tracking-[0.16em] text-rose-700">Fat</p>
+                  <p className="relative mt-2 text-3xl font-semibold">{finalNutrition?.fat ?? 0} g</p>
                 </div>
               </div>
 
