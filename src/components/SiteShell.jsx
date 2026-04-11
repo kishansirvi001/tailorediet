@@ -91,6 +91,7 @@ function SiteShell({ children }) {
     { label: 'Calculators', to: '/calculators' },
     { label: 'Workout Planner', to: '/workout-planner' },
     { label: 'Diet Plans', to: '/diet-plans' },
+    { label: 'Chat', to: '/chat' },
     ...(isAuthenticated ? [{ label: 'Account', to: '/account' }] : []),
   ]
 

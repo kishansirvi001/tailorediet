@@ -9,6 +9,7 @@ import dietPlanRoutes from "./routes/dietPlanRoutes.js";
 import exerciseRoutes from "./routes/exerciseRoutes.js";
 import mealScanRoutes from "./routes/mealScanRoutes.js";
 import workoutPlanRoutes from "./routes/workoutPlanRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +31,7 @@ app.use("/api/diet-plans", dietPlanRoutes);
 app.use("/api/exercise", exerciseRoutes);
 app.use("/api/meal-scan", mealScanRoutes);
 app.use("/api/workout-plans", workoutPlanRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Serve frontend static files
 const distPath = path.resolve(__dirname, "../dist");
