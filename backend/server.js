@@ -50,17 +50,18 @@ app.get(/.+/, (req, res, next) => {
 async function startServer() {
   const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
 
-  if (!mongoUri) {
-    throw new Error("MongoDB URI is missing. Add MONGODB_URI or MONGO_URI to backend/.env before starting the server.");
+  if (mongoUri) {
+    await mongoose.connect(mongoUri);
+    console.log('MongoDB connected');
+  } else {
+    console.warn('MONGODB_URI not set — running without database (development mode). Some features requiring DB will be disabled.');
   }
-
-  await mongoose.connect(mongoUri);
 
   app.listen(process.env.PORT || 5000, () => {
     console.log(
       `Server running on port ${process.env.PORT || 5000}. Env loaded from: ${
         loadedEnvPath || "not found"
-      }. MongoDB connected: yes. GEMINI_API_KEY present: ${process.env.GEMINI_API_KEY ? "yes" : "no"}`
+      }. MongoDB connected: ${mongoUri ? "yes" : "no"}. GEMINI_API_KEY present: ${process.env.GEMINI_API_KEY ? "yes" : "no"}`
     );
   });
 }

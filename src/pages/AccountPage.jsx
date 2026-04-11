@@ -69,34 +69,34 @@ function AccountPage() {
             </div>
           </div>
 
-          <aside className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-6 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.18)] sm:p-8">
+          <aside className="rounded-[2rem] border border-stone-900/10 bg-white p-6 text-stone-800 shadow-sm sm:p-8">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-200/70">
               Profile details
             </p>
             <div className="mt-8 space-y-5">
-              <div className="rounded-[1.5rem] bg-white/5 p-5">
+              <div className="rounded-[1.5rem] bg-stone-50 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Full name</p>
-                <p className="mt-2 text-lg font-semibold text-white">{user?.name}</p>
+                <p className="mt-2 text-lg font-semibold text-stone-800">{user?.name}</p>
               </div>
-              <div className="rounded-[1.5rem] bg-white/5 p-5">
+              <div className="rounded-[1.5rem] bg-stone-50 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Email</p>
-                <p className="mt-2 text-lg font-semibold break-all text-white">
+                <p className="mt-2 text-lg font-semibold break-all text-stone-800">
                   {user?.email || 'Not added'}
                 </p>
               </div>
-              <div className="rounded-[1.5rem] bg-white/5 p-5">
+              <div className="rounded-[1.5rem] bg-stone-50 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Mobile</p>
-                <p className="mt-2 text-lg font-semibold text-white">
+                <p className="mt-2 text-lg font-semibold text-stone-800">
                   {user?.mobileNumber || 'Not added'}
                 </p>
               </div>
-              <div className="rounded-[1.5rem] bg-white/5 p-5">
+              <div className="rounded-[1.5rem] bg-stone-50 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Date of birth</p>
-                <p className="mt-2 text-lg font-semibold text-white">{birthDateLabel}</p>
+                <p className="mt-2 text-lg font-semibold text-stone-800">{birthDateLabel}</p>
               </div>
-              <div className="rounded-[1.5rem] bg-white/5 p-5">
+              <div className="rounded-[1.5rem] bg-stone-50 p-5">
                 <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Joined</p>
-                <p className="mt-2 text-lg font-semibold text-white">
+                <p className="mt-2 text-lg font-semibold text-stone-800">
                   {user?.createdAt
                     ? new Date(user.createdAt).toLocaleDateString()
                     : 'Recently'}
@@ -107,7 +107,7 @@ function AccountPage() {
             <button
               type="button"
               onClick={logout}
-              className="mt-8 w-full rounded-full border border-amber-200/30 bg-amber-300/10 px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-amber-100 transition hover:bg-amber-300/20"
+              className="mt-8 w-full rounded-full bg-gradient-to-r from-amber-400 to-orange-600 px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-md transition hover:opacity-95"
             >
               Log out
             </button>

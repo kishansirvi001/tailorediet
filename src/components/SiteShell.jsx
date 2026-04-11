@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import ChatWidget from './ChatWidget.jsx'
 
 // -------------------- Icons -------------------- //
 function InstagramIcon(props) {
@@ -259,6 +260,9 @@ function SiteShell({ children }) {
 
       {/* -------------------- Main Content -------------------- */}
       <main>{children}</main>
+
+      {/* Floating chat widget */}
+      <ChatWidget />
 
       {/* -------------------- Footer -------------------- */}
       <footer className="border-t bg-stone-900 text-stone-300 py-8">

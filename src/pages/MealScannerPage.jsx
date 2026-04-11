@@ -159,7 +159,7 @@ function MealScannerPage() {
   return (
     <SiteShell>
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:py-16">
-        <div className="rounded-[2rem] border border-stone-900/10 bg-white/95 p-6 shadow-sm sm:p-8">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-white p-6 shadow-lg sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">Meal scanner</p>
           <h1 className="mt-4 font-['Georgia'] text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">Capture or upload a meal photo</h1>
           <p className="mt-3 text-sm leading-6 text-stone-700">Use your camera or upload an image. The scanner will estimate the dish and nutrition; confirm the visible quantity to improve accuracy.</p>
@@ -192,7 +192,7 @@ function MealScannerPage() {
 
             {streamActive && (
               <div>
-                <video ref={videoRef} autoPlay playsInline muted className="h-64 w-full rounded-[1rem] bg-black object-cover border" />
+                <video ref={videoRef} autoPlay playsInline muted className="h-64 w-full rounded-[1rem] bg-stone-100 object-cover border" />
                 <div className="mt-3 flex gap-2">
                   <button type="button" onClick={capturePhoto} className="rounded-full bg-amber-500 text-white px-4 py-2 text-sm">Capture</button>
                 </div>
@@ -200,9 +200,18 @@ function MealScannerPage() {
             )}
             /* Hidden canvas for captures */
             <canvas ref={canvasRef} className="hidden" />
+
+            {!streamActive && !imagePreview && (
+              <div className="mt-4 flex h-64 w-full items-center justify-center rounded-[1rem] border border-dashed border-stone-200 bg-gradient-to-br from-stone-50 to-white">
+                <div className="text-center text-sm text-stone-500">
+                  <p className="mb-2 font-medium">No photo yet</p>
+                  <p className="mb-3">Upload an image or start the camera to capture a meal.</p>
+                </div>
+              </div>
+            )}
             {imagePreview && (
               <div className="overflow-hidden rounded-[1rem] border mt-4">
-                <img src={imagePreview} alt="Preview" className="w-full h-64 object-cover" />
+                <img src={imagePreview} alt="Preview" className="w-full h-64 object-cover bg-stone-100" />
               </div>
             )}
             {errorMessage && <div className="rounded-md border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{errorMessage}</div>}
@@ -215,18 +224,28 @@ function MealScannerPage() {
             </form>
             {analysis && (
               <div className="mt-6 space-y-4">
-                <div className="rounded-md p-4 border">
-                  <h3 className="text-lg font-semibold">{analysis.mealName} <span className="text-sm text-stone-500">(confidence {analysis.confidence})</span></h3>
+              <div className="text-sm text-stone-500">Tip: for best results, place the plate on a plain background and take the photo from above.</div>
+                <div className="rounded-md p-4 border bg-white">
+                  <h3 className="text-lg font-semibold">{analysis.mealName}</h3>
+                  <div className="text-sm text-stone-500 mt-1">(confidence {analysis.confidence})</div>
                   <p className="text-sm text-stone-700 mt-2">{analysis.summary}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-md p-4 bg-white/5">
-                    <p className="text-xs text-stone-400">Calories</p>
-                    <p className="text-2xl font-semibold">{finalNutrition?.calories ?? 0}</p>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="rounded-md p-3 bg-amber-50">
+                    <div className="text-xs text-stone-500">Calories</div>
+                    <div className="text-xl font-semibold">{finalNutrition?.calories ?? 0}</div>
                   </div>
-                  <div className="rounded-md p-4 bg-white/5">
-                    <p className="text-xs text-stone-400">Protein</p>
-                    <p className="text-2xl font-semibold">{finalNutrition?.protein ?? 0} g</p>
+                  <div className="rounded-md p-3 bg-amber-50">
+                    <div className="text-xs text-stone-500">Protein</div>
+                    <div className="text-xl font-semibold">{finalNutrition?.protein ?? 0} g</div>
+                  </div>
+                  <div className="rounded-md p-3 bg-amber-50">
+                    <div className="text-xs text-stone-500">Carbs</div>
+                    <div className="text-xl font-semibold">{finalNutrition?.carbs ?? 0} g</div>
+                  </div>
+                  <div className="rounded-md p-3 bg-amber-50">
+                    <div className="text-xs text-stone-500">Fat</div>
+                    <div className="text-xl font-semibold">{finalNutrition?.fat ?? 0} g</div>
                   </div>
                 </div>
               </div>
