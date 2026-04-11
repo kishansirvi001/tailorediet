@@ -129,14 +129,6 @@ function LoginPage() {
               autoComplete="current-password"
               className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none"
             />
-            <div className="rounded-[1.5rem] border border-amber-200/70 bg-amber-50/80 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                After login
-              </p>
-              <p className="mt-2 text-sm leading-6 text-stone-600">
-                Resume calorie targets, saved preferences, and your latest health planning choices from one dashboard.
-              </p>
-            </div>
             <p className="text-xs leading-6 text-stone-500">
               Sign in with `name@example.com`, `9876543210`, or `+91 9876543210`.
             </p>

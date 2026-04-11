@@ -166,162 +166,52 @@ function SignupPage() {
 
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-16 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-24">
-        <div className="overflow-hidden rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,252,244,0.96),rgba(244,236,220,0.9))] p-6 shadow-[0_30px_70px_rgba(120,53,15,0.08)] backdrop-blur sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-800/70">
-            Join TailorDiet
-          </p>
-          <h1 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 sm:text-5xl">
-            Sign up with email verification and a cleaner profile form.
-          </h1>
-          <p className="mt-5 text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
-            Your email still gets an OTP for verification. Your mobile number stays in the form, but there is no mobile OTP step anymore.
-          </p>
-
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[1.5rem] border border-white/70 bg-white/70 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                What you add
-              </p>
-              <p className="mt-3 text-sm leading-6 text-stone-700">
-                Name, email, mobile number, date of birth, goal, and diet preference.
-              </p>
-            </div>
-            <div className="rounded-[1.5rem] border border-emerald-200/70 bg-emerald-50/80 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                Verification
-              </p>
-              <p className="mt-3 text-sm leading-6 text-emerald-900">
-                A 6-digit OTP is sent to your email only, so signup stays secure without the extra mobile verification step.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8 space-y-4 text-sm leading-7 text-stone-600">
-            <p>Date of birth is included now to make the profile more complete for future personalization.</p>
-            <p>Mobile number is still required in the form and saved with the account.</p>
-            <p>
-              Already have an account?{' '}
-              <Link to="/login" className="font-semibold text-amber-800 transition hover:text-amber-900">
-                Log in here
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(251,248,240,0.9))] p-6 shadow-[0_35px_80px_rgba(28,25,23,0.1)] backdrop-blur sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
-            Sign up
-          </p>
-          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
-            Start your plan with a lighter, faster flow.
-          </h2>
+      <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 lg:px-10 lg:py-24">
+        <div className="mx-auto rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(251,248,240,0.9))] p-6 shadow-[0_35px_80px_rgba(28,25,23,0.1)] backdrop-blur sm:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">Sign up</p>
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">Start your plan with a lighter, faster flow.</h2>
 
           {!verification ? (
             <form className="mt-8 space-y-5" onSubmit={handleRequestOtp}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                    Full name
-                  </span>
-                  <input
-                    name="name"
-                    type="text"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Kishan Sirvi"
-                    autoComplete="name"
-                    className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none"
-                  />
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Full name</span>
+                  <input name="name" type="text" value={formData.name} onChange={handleChange} placeholder="Kishan Sirvi" autoComplete="name" className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none" />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                    Email
-                  </span>
-                  <input
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="name@example.com"
-                    autoComplete="email"
-                    className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none"
-                  />
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Email</span>
+                  <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="name@example.com" autoComplete="email" className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none" />
                 </label>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                    Mobile number
-                  </span>
-                  <input
-                    name="mobileNumber"
-                    type="tel"
-                    value={formData.mobileNumber}
-                    onChange={handleChange}
-                    placeholder="9876543210"
-                    autoComplete="tel"
-                    className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none"
-                  />
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Mobile number</span>
+                  <input name="mobileNumber" type="tel" value={formData.mobileNumber} onChange={handleChange} placeholder="9876543210" autoComplete="tel" className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none" />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                    Date of birth
-                  </span>
-                  <input
-                    name="dateOfBirth"
-                    type="date"
-                    value={formData.dateOfBirth}
-                    onChange={handleChange}
-                    max={new Date().toISOString().split('T')[0]}
-                    className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 focus:border-amber-400 focus:outline-none"
-                  />
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Date of birth</span>
+                  <input name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} max={new Date().toISOString().split('T')[0]} className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 focus:border-amber-400 focus:outline-none" />
                 </label>
               </div>
 
               <label className="block">
-                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                  Password
-                </span>
-                <input
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create password"
-                  autoComplete="new-password"
-                  className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none"
-                />
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Password</span>
+                <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Create password" autoComplete="new-password" className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none" />
               </label>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                    Goal
-                  </span>
-                  <select
-                    name="goal"
-                    value={formData.goal}
-                    onChange={handleChange}
-                    className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 focus:border-amber-400 focus:outline-none"
-                  >
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Goal</span>
+                  <select name="goal" value={formData.goal} onChange={handleChange} className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 focus:border-amber-400 focus:outline-none">
                     <option>Weight loss</option>
                     <option>Muscle gain</option>
                     <option>Maintain weight</option>
                   </select>
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                    Diet style
-                  </span>
-                  <select
-                    name="dietStyle"
-                    value={formData.dietStyle}
-                    onChange={handleChange}
-                    className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 focus:border-amber-400 focus:outline-none"
-                  >
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Diet style</span>
+                  <select name="dietStyle" value={formData.dietStyle} onChange={handleChange} className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 focus:border-amber-400 focus:outline-none">
                     <option>Balanced</option>
                     <option>Vegan</option>
                     <option>Keto</option>
@@ -329,97 +219,42 @@ function SignupPage() {
                 </label>
               </div>
 
-              <div className="rounded-[1.5rem] border border-amber-200/70 bg-amber-50/80 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-800/80">
-                  Quick note
-                </p>
-                <p className="mt-2 text-sm leading-6 text-stone-700">
-                  We now send a code only to your email. Your mobile number is still saved, but mobile OTP verification has been removed.
-                </p>
-              </div>
 
               {errorMessage ? (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                  {errorMessage}
-                </div>
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{errorMessage}</div>
               ) : null}
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_45px_rgba(249,115,22,0.28)] disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isSubmitting ? 'Sending email OTP...' : 'Send email OTP'}
-              </button>
+              <button type="submit" disabled={isSubmitting} className="w-full rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_45px_rgba(249,115,22,0.28)] disabled:cursor-not-allowed disabled:opacity-70">{isSubmitting ? 'Sending email OTP...' : 'Send email OTP'}</button>
             </form>
           ) : (
             <form className="mt-8 space-y-5" onSubmit={handleVerifyOtp}>
               <div className="rounded-[1.5rem] border border-stone-200 bg-white/80 p-5 text-sm text-stone-700">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                  Email verification
-                </p>
-                <p className="mt-3 leading-6">
-                  We sent a 6-digit OTP to <span className="font-semibold text-stone-950">{verification.email}</span>.
-                </p>
-                <p className="mt-2 text-xs leading-6 text-stone-500">
-                  Code expires at {expiresAtLabel || 'soon'}.
-                </p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Email verification</p>
+                <p className="mt-3 leading-6">We sent a 6-digit OTP to <span className="font-semibold text-stone-950">{verification.email}</span>.</p>
+                <p className="mt-2 text-xs leading-6 text-stone-500">Code expires at {expiresAtLabel || 'soon'}.</p>
               </div>
 
               <label className="block">
-                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                  Email OTP
-                </span>
-                <input
-                  name="emailOtp"
-                  type="text"
-                  inputMode="numeric"
-                  value={otpData.emailOtp}
-                  onChange={handleOtpChange}
-                  placeholder="Enter 6-digit OTP"
-                  className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none"
-                />
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Email OTP</span>
+                <input name="emailOtp" type="text" inputMode="numeric" value={otpData.emailOtp} onChange={handleOtpChange} placeholder="Enter 6-digit OTP" className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none" />
               </label>
 
               {successMessage ? (
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                  {successMessage}
-                </div>
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{successMessage}</div>
               ) : null}
               {errorMessage ? (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                  {errorMessage}
-                </div>
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{errorMessage}</div>
               ) : null}
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_45px_rgba(249,115,22,0.28)] disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {isSubmitting ? 'Verifying...' : 'Verify and create account'}
-                </button>
-                <button
-                  type="button"
-                  onClick={submitOtpRequest}
-                  disabled={isSubmitting}
-                  className="w-full rounded-full border border-stone-300 bg-white px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-stone-800 transition hover:border-amber-300 hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {isSubmitting ? 'Resending...' : 'Resend email OTP'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
+                <button type="submit" disabled={isSubmitting} className="w-full rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_45px_rgba(249,115,22,0.28)] disabled:cursor-not-allowed disabled:opacity-70">{isSubmitting ? 'Verifying...' : 'Verify and create account'}</button>
+                <button type="button" onClick={submitOtpRequest} disabled={isSubmitting} className="w-full rounded-full border border-stone-300 bg-white px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-stone-800 transition hover:border-amber-300 hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-70">{isSubmitting ? 'Resending...' : 'Resend email OTP'}</button>
+                <button type="button" onClick={() => {
                     setVerification(null)
                     setOtpData(initialOtpData)
                     setErrorMessage('')
                     setSuccessMessage('')
-                  }}
-                  className="w-full rounded-full border border-stone-300 bg-white px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-stone-800 transition hover:border-amber-300 hover:bg-amber-50"
-                >
-                  Edit details
-                </button>
+                  }} className="w-full rounded-full border border-stone-300 bg-white px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-stone-800 transition hover:border-amber-300 hover:bg-amber-50">Edit details</button>
               </div>
             </form>
           )}

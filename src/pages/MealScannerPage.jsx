@@ -61,17 +61,50 @@ function MealScannerPage() {
 
   async function startCamera() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      })
+      const constraintsList = [
+        { video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+        { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } },
+        { video: { width: { ideal: 1280 }, height: { ideal: 720 } } },
+        { video: true },
+      ]
+
+      let stream = null
+      for (const constraints of constraintsList) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia(constraints)
+          if (stream && stream.getVideoTracks().length) break
+        } catch (e) {
+          console.debug('getUserMedia failed for constraints', constraints, e)
+        }
+      }
+
+      if (!stream) throw new Error('No camera found or permission denied')
+
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
+        videoRef.current.muted = true
+        try {
+          await videoRef.current.play()
+        } catch (e) {
+          // play can fail on some browsers; fallback to waiting for metadata
+        }
+        if (videoRef.current.readyState < 2) {
+          await new Promise((resolve) => videoRef.current.addEventListener('loadedmetadata', resolve, { once: true }))
+        }
       }
+
+      const tracks = stream.getVideoTracks()
+      if (!tracks.length) {
+        throw new Error('No video tracks available from camera')
+      }
+
       setIsCameraActive(true)
       setErrorMessage('')
     } catch (error) {
-      setErrorMessage('Could not access camera. Please check permissions.')
+      console.error(error)
+      setErrorMessage(`Could not access camera: ${error.message || 'check permissions/HTTPS'}`)
+      stopCamera()
     }
   }
 
@@ -88,16 +121,25 @@ function MealScannerPage() {
       return
     }
 
-    const context = canvasRef.current.getContext('2d')
+    const video = videoRef.current
+    const canvas = canvasRef.current
+    const context = canvas.getContext('2d')
     if (!context) {
       return
     }
 
-    canvasRef.current.width = videoRef.current.videoWidth
-    canvasRef.current.height = videoRef.current.videoHeight
-    context.drawImage(videoRef.current, 0, 0)
+    // Use available video dimensions; fall back to a sensible default
+    const width = video.videoWidth || 1280
+    const height = video.videoHeight || Math.round((width * 9) / 16)
 
-    const base64Data = canvasRef.current.toDataURL('image/jpeg')
+    canvas.width = width
+    canvas.height = height
+
+    // Draw scaled frame to the canvas to ensure good resolution
+    context.drawImage(video, 0, 0, width, height)
+
+    // Export JPEG with reasonable quality
+    const base64Data = canvas.toDataURL('image/jpeg', 0.9)
     setImageBase64(base64Data)
     setImagePreview(base64Data)
     setAnalysis(null)
@@ -213,9 +255,13 @@ function MealScannerPage() {
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  className="w-full rounded-[1.5rem] border border-stone-200 bg-black"
+                  muted
+                  className="h-72 w-full rounded-[1.5rem] border border-stone-200 bg-black object-cover"
                 />
                 <canvas ref={canvasRef} className="hidden" />
+                {isCameraActive && (videoRef.current?.videoWidth ?? 0) === 0 ? (
+                  <p className="mt-2 text-sm text-stone-500">Starting camera — please allow camera permissions and wait. If preview remains black, try switching browsers or using HTTPS (localhost/secure origin).</p>
+                ) : null}
                 <div className="flex gap-3">
                   <button
                     type="button"

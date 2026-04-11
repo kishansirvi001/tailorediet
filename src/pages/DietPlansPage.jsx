@@ -182,7 +182,7 @@ function DietPlansPage() {
 
   return (
     <SiteShell>
-      <section className="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-10 lg:pb-14 lg:pt-18">
+      <section className="mx-auto max-w-7xl px-4 pb-8 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-12">
         <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
             <div className="inline-flex items-center gap-3 rounded-full border border-stone-900/10 bg-white/85 px-4 py-2 shadow-sm backdrop-blur">
@@ -192,17 +192,17 @@ function DietPlansPage() {
               </span>
             </div>
 
-            <h1 className="mt-6 max-w-4xl font-['Georgia'] text-4xl font-bold leading-[0.95] tracking-tight text-stone-950 sm:text-5xl md:text-7xl">
+            <h1 className="mt-4 max-w-4xl font-['Georgia'] text-3xl font-bold leading-[1.0] tracking-tight text-stone-950 sm:text-4xl md:text-5xl">
               A full diet-plan intake page that actually asks the right questions.
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg md:text-xl md:leading-8">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-700 sm:text-base md:text-lg md:leading-7">
               Users can now enter personal details, activity, food preferences,
               allergies, budget, and regional context, then get a detailed
               AI-generated Indian diet plan instead of static cards.
             </p>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {summaryItems.map((item) => (
                 <div key={item.label} className="rounded-[1.5rem] border border-stone-900/10 bg-white/70 p-5 shadow-sm">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{item.label}</p>
