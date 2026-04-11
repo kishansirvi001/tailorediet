@@ -23,8 +23,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
-// Test route
-app.get("/", (req, res) => res.send("API running"));
+// API health route
+app.get("/api", (req, res) => res.send("API running"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/diet-plans", dietPlanRoutes);
