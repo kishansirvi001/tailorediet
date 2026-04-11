@@ -261,8 +261,47 @@ function SiteShell({ children }) {
       <main>{children}</main>
 
       {/* -------------------- Footer -------------------- */}
-      <footer className="border-t bg-stone-900 text-stone-300 py-6 text-center">
-        <p>&copy; 2026 TailorDiet. All rights reserved.</p>
+      <footer className="border-t bg-stone-900 text-stone-300 py-8">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <p className="text-sm font-semibold">&copy; 2026 TailorDiet</p>
+              <p className="text-xs text-stone-400">Built with ❤️ for healthier living</p>
+            </div>
+
+            <nav className="flex flex-wrap items-center justify-center gap-3">
+              <Link to="/" className="text-sm text-stone-300 hover:text-white">Home</Link>
+              <Link to="/calculators" className="text-sm text-stone-300 hover:text-white">Calculators</Link>
+              <Link to="/workout-planner" className="text-sm text-stone-300 hover:text-white">Workout Planner</Link>
+              <Link to="/diet-plans" className="text-sm text-stone-300 hover:text-white">Diet Plans</Link>
+              <Link to="/signup" className="text-sm text-stone-300 hover:text-white">Join</Link>
+            </nav>
+
+            <div className="flex items-center gap-3 justify-center md:justify-end">
+              {socialLinks.map((s) => {
+                const Icon = s.icon
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-stone-300 hover:text-white"
+                    aria-label={s.label}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span className="text-sm">{s.value}</span>
+                  </a>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="mt-4 text-center text-xs text-stone-500">
+            <a href="/privacy" className="underline hover:text-white mr-3">Privacy</a>
+            <a href="/terms" className="underline hover:text-white">Terms</a>
+          </div>
+        </div>
       </footer>
     </div>
   )

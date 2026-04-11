@@ -204,3 +204,93 @@ export function calculateBodyFatEstimate({ age, weight, height, sex }) {
     note: 'This is a screening estimate, not a clinical body composition reading.',
   }
 }
+
+export function calculateBMR({ age, weight, height, sex }) {
+  const normalizedAge = toNumber(age)
+  const normalizedWeight = toNumber(weight)
+  const normalizedHeight = toNumber(height)
+  
+  let bmr
+  if (sex === 'male') {
+    bmr = 88.362 + 13.397 * normalizedWeight + 4.799 * normalizedHeight - 5.677 * normalizedAge
+  } else {
+    bmr = 447.593 + 9.247 * normalizedWeight + 3.098 * normalizedHeight - 4.330 * normalizedAge
+  }
+
+  return {
+    bmr: Math.max(1000, Math.round(bmr)),
+    note: 'Basal Metabolic Rate (BMR) is the minimum calories needed at rest.',
+  }
+}
+
+export function calculateTDEE({ age, weight, height, activity, sex }) {
+  const bmrResult = calculateBMR({ age, weight, height, sex })
+  const activityOption = getActivityOption(activity)
+  const tdee = Math.round(bmrResult.bmr * activityOption.multiplier)
+
+  return {
+    bmr: bmrResult.bmr,
+    tdee,
+    activityLevel: activityOption.label,
+    note: 'Total Daily Energy Expenditure (TDEE) is calories burned in a day.',
+  }
+}
+
+export function calculateMetabolicAge({ age, weight, height, sex }) {
+  const bmiInfo = calculateBmi({ weight, height })
+  const bmi = toNumber(bmiInfo.bmi)
+  const normalizedAge = toNumber(age)
+  
+  const avgBmi = sex === 'male' ? 22.5 : 21.5
+  const metabolicAge = normalizedAge + (bmi - avgBmi) * 0.75
+
+  return {
+    age: Math.max(15, Math.round(metabolicAge)),
+    actual: normalizedAge,
+    difference: Math.round(metabolicAge - normalizedAge),
+    note: 'Metabolic age compares your BMI to people of the same biological age.',
+  }
+}
+
+export function calculateExerciseCalories({ weight, duration, exerciseType }) {
+  const normalizedWeight = toNumber(weight)
+  const normalizedDuration = toNumber(duration)
+  
+  const metFactors = {
+    'walking': 3.5,
+    'jogging': 7,
+    'running': 9.8,
+    'cycling': 7.5,
+    'swimming': 8,
+    'hiit': 10,
+    'yoga': 3,
+    'strength': 6,
+  }
+  
+  const met = metFactors[exerciseType] || 5
+  const caloriesBurned = Math.round((met * normalizedWeight * normalizedDuration) / 60)
+
+  return {
+    calories: Math.max(0, caloriesBurned),
+    met,
+    note: `${exerciseType} burns approximately ${caloriesBurned} calories.`,
+  }
+}
+
+export function calculateStepCalories({ weight, steps, height }) {
+  const normalizedWeight = toNumber(weight)
+  const normalizedSteps = toNumber(steps)
+  const normalizedHeight = toNumber(height)
+  
+  const strideLength = (normalizedHeight * 0.413) / 100
+  const distanceKm = (normalizedSteps * strideLength) / 1000
+  const caloriesPerKm = normalizedWeight * 1.036
+  const calories = Math.round(distanceKm * caloriesPerKm)
+
+  return {
+    calories: Math.max(0, calories),
+    steps: normalizedSteps,
+    distanceKm: distanceKm.toFixed(2),
+    note: 'Based on body weight and stride length.',
+  }
+}
