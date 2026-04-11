@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SiteShell from '../components/SiteShell.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -6,7 +6,6 @@ import { scanMealPhoto } from '../services/mealScanApi.js'
 
 function scaleNutrition(nutritionPer100g, grams) {
   const multiplier = Number(grams || 0) / 100
-
   return {
     calories: Math.round((nutritionPer100g.calories || 0) * multiplier * 10) / 10,
     protein: Math.round((nutritionPer100g.protein || 0) * multiplier * 10) / 10,
@@ -17,69 +16,75 @@ function scaleNutrition(nutritionPer100g, grams) {
 
 function MealScannerPage() {
   const { token, user } = useAuth()
+  const [devices, setDevices] = useState([])
+  const [selectedDeviceId, setSelectedDeviceId] = useState('')
+  const [streamActive, setStreamActive] = useState(false)
   const [imagePreview, setImagePreview] = useState('')
   const [imageBase64, setImageBase64] = useState('')
   const [analysis, setAnalysis] = useState(null)
   const [confirmedWeight, setConfirmedWeight] = useState('')
   const [isScanning, setIsScanning] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [isCameraActive, setIsCameraActive] = useState(false)
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const streamRef = useRef(null)
 
-  async function handleFileChange(event) {
-    const file = event.target.files?.[0]
-
-    if (!file) {
-      return
+  useEffect(() => {
+    // enumerate devices so user can pick camera
+    async function loadDevices() {
+      try {
+        const list = await navigator.mediaDevices.enumerateDevices()
+        const videoInput = list.filter((d) => d.kind === 'videoinput')
+        setDevices(videoInput)
+        if (videoInput.length && !selectedDeviceId) {
+          setSelectedDeviceId(videoInput[0].deviceId)
+        }
+      } catch (e) {
+        console.debug('enumerateDevices failed', e)
+      }
     }
+    loadDevices()
+  }, [])
 
-    if (!file.type.startsWith('image/')) {
-      setErrorMessage('Please upload an image file.')
-      return
-    }
+  useEffect(() => {
+    // cleanup on unmount
+    return () => stopCamera()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-    const reader = new FileReader()
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(String(reader.result || ''))
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
 
-    reader.onload = () => {
-      const result = String(reader.result || '')
-      setImagePreview(result)
-      setImageBase64(result)
+  async function handleFileChange(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) return setErrorMessage('Please upload an image file.')
+    try {
+      const data = await fileToDataUrl(file)
+      setImagePreview(data)
+      setImageBase64(data)
       setAnalysis(null)
       setConfirmedWeight('')
       setErrorMessage('')
-      setIsCameraActive(false)
+      stopCamera()
+    } catch (err) {
+      setErrorMessage('Could not read that image.')
     }
-
-    reader.onerror = () => {
-      setErrorMessage('Could not read that image. Please try another one.')
-    }
-
-    reader.readAsDataURL(file)
   }
 
-  async function startCamera() {
+  async function startCamera(deviceId) {
+    stopCamera()
     try {
-      const constraintsList = [
-        { video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
-        { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } },
-        { video: { width: { ideal: 1280 }, height: { ideal: 720 } } },
-        { video: true },
-      ]
-
-      let stream = null
-      for (const constraints of constraintsList) {
-        try {
-          stream = await navigator.mediaDevices.getUserMedia(constraints)
-          if (stream && stream.getVideoTracks().length) break
-        } catch (e) {
-          console.debug('getUserMedia failed for constraints', constraints, e)
-        }
-      }
-
-      if (!stream) throw new Error('No camera found or permission denied')
-
+      const constraints = deviceId
+        ? { video: { deviceId: { exact: deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } } }
+        : { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } }
+      const stream = await navigator.mediaDevices.getUserMedia(constraints)
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
@@ -87,318 +92,146 @@ function MealScannerPage() {
         try {
           await videoRef.current.play()
         } catch (e) {
-          // play can fail on some browsers; fallback to waiting for metadata
+          // ignore
         }
         if (videoRef.current.readyState < 2) {
           await new Promise((resolve) => videoRef.current.addEventListener('loadedmetadata', resolve, { once: true }))
         }
       }
-
-      const tracks = stream.getVideoTracks()
-      if (!tracks.length) {
-        throw new Error('No video tracks available from camera')
-      }
-
-      setIsCameraActive(true)
+      setStreamActive(true)
       setErrorMessage('')
-    } catch (error) {
-      console.error(error)
-      setErrorMessage(`Could not access camera: ${error.message || 'check permissions/HTTPS'}`)
+    } catch (err) {
+      console.error(err)
+      setErrorMessage('Unable to start camera. Check permissions or try another device/browser.')
       stopCamera()
     }
   }
 
   function stopCamera() {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current.getTracks().forEach((t) => t.stop())
       streamRef.current = null
     }
-    setIsCameraActive(false)
+    setStreamActive(false)
   }
 
   function capturePhoto() {
-    if (!videoRef.current || !canvasRef.current) {
-      return
-    }
-
     const video = videoRef.current
     const canvas = canvasRef.current
-    const context = canvas.getContext('2d')
-    if (!context) {
-      return
-    }
-
-    // Use available video dimensions; fall back to a sensible default
-    const width = video.videoWidth || 1280
-    const height = video.videoHeight || Math.round((width * 9) / 16)
-
-    canvas.width = width
-    canvas.height = height
-
-    // Draw scaled frame to the canvas to ensure good resolution
-    context.drawImage(video, 0, 0, width, height)
-
-    // Export JPEG with reasonable quality
-    const base64Data = canvas.toDataURL('image/jpeg', 0.9)
-    setImageBase64(base64Data)
-    setImagePreview(base64Data)
+    if (!video || !canvas) return
+    const ctx = canvas.getContext('2d')
+    const w = video.videoWidth || 1280
+    const h = video.videoHeight || Math.round((w * 9) / 16)
+    canvas.width = w
+    canvas.height = h
+    ctx.drawImage(video, 0, 0, w, h)
+    const data = canvas.toDataURL('image/jpeg', 0.9)
+    setImagePreview(data)
+    setImageBase64(data)
     setAnalysis(null)
     setConfirmedWeight('')
     setErrorMessage('')
     stopCamera()
   }
 
-  async function handleScan(event) {
-    event.preventDefault()
-
-    if (!imageBase64) {
-      setErrorMessage('Upload a meal photo first.')
-      return
-    }
-
+  async function handleScan(e) {
+    e.preventDefault()
+    if (!imageBase64) return setErrorMessage('Please upload or capture a photo first.')
     setIsScanning(true)
     setErrorMessage('')
-
     try {
-      const nextAnalysis = await scanMealPhoto({ token, imageBase64 })
-      setAnalysis(nextAnalysis)
-      setConfirmedWeight(String(nextAnalysis.estimatedPortion.estimatedWeightGrams))
-    } catch (error) {
-      setErrorMessage(error.message)
+      const result = await scanMealPhoto({ token, imageBase64 })
+      setAnalysis(result)
+      setConfirmedWeight(String(result.estimatedPortion?.estimatedWeightGrams || ''))
+    } catch (err) {
+      setErrorMessage(err.message || 'Meal scan failed')
     } finally {
       setIsScanning(false)
     }
   }
 
   const finalNutrition = useMemo(() => {
-    if (!analysis) {
-      return null
-    }
-
-    const grams = Number(confirmedWeight || analysis.estimatedPortion.estimatedWeightGrams)
-    return scaleNutrition(analysis.nutritionPer100g, grams)
+    if (!analysis) return null
+    const grams = Number(confirmedWeight || analysis.estimatedPortion?.estimatedWeightGrams)
+    return scaleNutrition(analysis.nutritionPer100g || {}, grams)
   }, [analysis, confirmedWeight])
 
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-20">
-        <div className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-6 shadow-sm sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
-            Protected tool
-          </p>
-          <h1 className="mt-4 font-['Georgia'] text-4xl font-bold tracking-tight text-stone-950 sm:text-5xl">
-            Scan a meal photo and tighten the nutrition estimate with your quantity.
-          </h1>
-          <p className="mt-5 text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
-            Upload a meal image, let AI estimate the dish and portion, then confirm how much food the photo actually contains so calories, protein, carbs, and fat are more believable.
-          </p>
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-10 lg:py-16">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-white/95 p-6 shadow-sm sm:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">Meal scanner</p>
+          <h1 className="mt-4 font-['Georgia'] text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">Capture or upload a meal photo</h1>
+          <p className="mt-3 text-sm leading-6 text-stone-700">Use your camera or upload an image. The scanner will estimate the dish and nutrition; confirm the visible quantity to improve accuracy.</p>
 
-          <div className="mt-8 grid gap-4">
-            <div className="rounded-[1.5rem] border border-white/70 bg-white/70 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">How it works</p>
-              <p className="mt-3 text-sm leading-6 text-stone-700">
-                The AI estimates the meal and nutrition per 100 g. You confirm the visible quantity in grams, and the final total updates immediately.
-              </p>
-            </div>
-            <div className="rounded-[1.5rem] border border-emerald-200/70 bg-emerald-50/80 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Signed-in access</p>
-              <p className="mt-3 text-sm leading-6 text-emerald-900">
-                This scanner is available only for logged-in users. You are scanning as {user?.name || 'a TailorDiet member'}.
-              </p>
-            </div>
-          </div>
+          <div className="mt-6 space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50 p-4">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Upload photo</span>
+                <input type="file" accept="image/*" onChange={handleFileChange} className="mt-3 block w-full text-sm text-stone-700" />
+              </label>
 
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <Link
-              to="/account"
-              className="rounded-full border border-stone-300 bg-white px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-stone-900 transition hover:border-stone-500 hover:bg-stone-50"
-            >
-              Back to account
-            </Link>
-            <Link
-              to="/diet-plans"
-              className="rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5"
-            >
-              View diet plans
-            </Link>
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border border-stone-900/10 bg-white/85 p-6 shadow-[0_30px_70px_rgba(28,25,23,0.1)] backdrop-blur sm:p-8">
-          <form className="space-y-5" onSubmit={handleScan}>
-            {!isCameraActive ? (
-              <>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="block rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50/80 p-5 transition hover:border-amber-300">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                      Upload meal photo
-                    </span>
-                    <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleFileChange} className="mt-4 block w-full text-sm text-stone-700" />
-                  </label>
-                  <button
-                    type="button"
-                    onClick={startCamera}
-                    className="rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50/80 p-5 transition hover:border-amber-300"
-                  >
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                      📷 Take photo
-                    </span>
-                    <span className="mt-4 block text-sm text-stone-600">Use your camera</span>
-                  </button>
-                </div>
-              </>
-            ) : null}
-
-            {isCameraActive ? (
-              <div className="space-y-3">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="h-72 w-full rounded-[1.5rem] border border-stone-200 bg-black object-cover"
-                />
-                <canvas ref={canvasRef} className="hidden" />
-                {isCameraActive && (videoRef.current?.videoWidth ?? 0) === 0 ? (
-                  <p className="mt-2 text-sm text-stone-500">Starting camera — please allow camera permissions and wait. If preview remains black, try switching browsers or using HTTPS (localhost/secure origin).</p>
-                ) : null}
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={capturePhoto}
-                    className="flex-1 rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5"
-                  >
-                    Capture photo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={stopCamera}
-                    className="flex-1 rounded-full border border-stone-300 bg-white px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-stone-900 transition hover:border-stone-500 hover:bg-stone-50"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : null}
-
-            {imagePreview ? (
-              <div className="overflow-hidden rounded-[1.5rem] border border-stone-200 bg-stone-50">
-                <img src={imagePreview} alt="Meal preview" className="h-72 w-full object-cover" />
-              </div>
-            ) : null}
-
-            {errorMessage ? (
-              <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                {errorMessage}
-              </div>
-            ) : null}
-
-            {!isCameraActive ? (
-              <button
-                type="submit"
-                disabled={isScanning}
-                className="w-full rounded-full bg-[linear-gradient(135deg,#f59e0b,#f97316)] px-6 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(249,115,22,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isScanning ? 'Scanning meal...' : 'Scan meal photo'}
-              </button>
-            ) : null}
-          </form>
-
-          {analysis ? (
-            <div className="mt-8 space-y-5">
-              <div className="rounded-[1.5rem] border border-stone-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(251,248,240,0.9))] p-5">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50 p-4">
+                <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                      AI meal estimate
-                    </p>
-                    <h2 className="mt-2 text-2xl font-semibold text-stone-950">{analysis.mealName}</h2>
+                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Camera</span>
+                    <p className="mt-1 text-sm text-stone-600">Select a camera and start live preview.</p>
                   </div>
-                  <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber-900">
-                    Confidence: {analysis.confidence}
-                  </span>
-                </div>
-                <p className="mt-4 text-sm leading-6 text-stone-700">{analysis.summary}</p>
-                {analysis.visibleItems.length ? (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {analysis.visibleItems.map((item) => (
-                      <span key={item} className="rounded-full border border-stone-200 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
-              <div className="rounded-[1.5rem] border border-amber-200/70 bg-amber-50/80 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-800/80">
-                  Quantity confirmation
-                </p>
-                <p className="mt-2 text-sm leading-6 text-stone-700">
-                  AI guessed: {analysis.estimatedPortion.quantityLabel}. Adjust the actual quantity in grams for a better final estimate.
-                </p>
-                <label className="mt-4 block">
-                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-                    Actual quantity in photo or eaten (grams)
-                  </span>
-                  <input
-                    type="number"
-                    min="1"
-                    value={confirmedWeight}
-                    onChange={(event) => setConfirmedWeight(event.target.value)}
-                    className="w-full rounded-2xl border border-stone-200 bg-white px-5 py-4 text-stone-950 focus:border-amber-400 focus:outline-none"
-                  />
-                </label>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-stone-950 via-stone-900 to-stone-950 p-5 text-white shadow-xl shadow-black/30">
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent" />
-                  <p className="relative text-xs uppercase tracking-[0.16em] text-stone-300">Calories</p>
-                  <p className="relative mt-2 text-3xl font-semibold bg-gradient-to-r from-white to-stone-200 bg-clip-text text-transparent">{finalNutrition?.calories ?? 0}</p>
-                </div>
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-200 to-emerald-300 p-5 text-stone-950 shadow-lg shadow-emerald-400/30">
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-                  <p className="relative text-xs uppercase tracking-[0.16em] text-emerald-700">Protein</p>
-                  <p className="relative mt-2 text-3xl font-semibold">{finalNutrition?.protein ?? 0} g</p>
-                </div>
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sky-200 to-sky-300 p-5 text-stone-950 shadow-lg shadow-sky-400/30">
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-                  <p className="relative text-xs uppercase tracking-[0.16em] text-sky-700">Carbs</p>
-                  <p className="relative mt-2 text-3xl font-semibold">{finalNutrition?.carbs ?? 0} g</p>
-                </div>
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-200 to-rose-300 p-5 text-stone-950 shadow-lg shadow-rose-400/30">
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-                  <p className="relative text-xs uppercase tracking-[0.16em] text-rose-700">Fat</p>
-                  <p className="relative mt-2 text-3xl font-semibold">{finalNutrition?.fat ?? 0} g</p>
-                </div>
-              </div>
-
-              <div className="rounded-[1.5rem] border border-stone-200 bg-white/80 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                  Nutrition density
-                </p>
-                <p className="mt-3 text-sm leading-6 text-stone-700">
-                  Per 100 g: {analysis.nutritionPer100g.calories} kcal, {analysis.nutritionPer100g.protein} g protein, {analysis.nutritionPer100g.carbs} g carbs, {analysis.nutritionPer100g.fat} g fat.
-                </p>
-              </div>
-
-              {analysis.accuracyTips.length ? (
-                <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50/80 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                    Accuracy tips
-                  </p>
-                  <div className="mt-3 space-y-2 text-sm leading-6 text-stone-700">
-                    {analysis.accuracyTips.map((tip) => (
-                      <p key={tip}>{tip}</p>
-                    ))}
+                  <div className="flex items-center gap-2">
+                    <select value={selectedDeviceId} onChange={(e) => setSelectedDeviceId(e.target.value)} className="rounded-md bg-white border px-3 py-2 text-sm">
+                      {devices.map((d) => (
+                        <option key={d.deviceId} value={d.deviceId}>{d.label || `Camera ${d.deviceId.slice(-4)}`}</option>
+                      ))}
+                    </select>
+                    <button type="button" onClick={() => startCamera(selectedDeviceId)} className="rounded-md bg-amber-500 text-white px-3 py-2 text-sm">Start</button>
+                    <button type="button" onClick={stopCamera} className="rounded-md border px-3 py-2 text-sm">Stop</button>
                   </div>
                 </div>
-              ) : null}
-
-              <p className="text-xs leading-6 text-stone-500">{analysis.disclaimer}</p>
+              </div>
             </div>
-          ) : null}
+
+            {streamActive && (
+              <div>
+                <video ref={videoRef} autoPlay playsInline muted className="h-64 w-full rounded-[1rem] bg-black object-cover border" />
+                <div className="mt-3 flex gap-2">
+                  <button type="button" onClick={capturePhoto} className="rounded-full bg-amber-500 text-white px-4 py-2 text-sm">Capture</button>
+                </div>
+              </div>
+            )}
+            /* Hidden canvas for captures */
+            <canvas ref={canvasRef} className="hidden" />
+            {imagePreview && (
+              <div className="overflow-hidden rounded-[1rem] border mt-4">
+                <img src={imagePreview} alt="Preview" className="w-full h-64 object-cover" />
+              </div>
+            )}
+            {errorMessage && <div className="rounded-md border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{errorMessage}</div>}
+            <form onSubmit={handleScan} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Estimated quantity (grams)</label>
+                <input type="number" min="1" value={confirmedWeight} onChange={(e) => setConfirmedWeight(e.target.value)} className="w-full rounded-md border px-3 py-2 mt-2" />
+              </div>
+              <button type="submit" disabled={isScanning} className="w-full rounded-full bg-amber-500 text-white px-4 py-3 text-sm">{isScanning ? 'Scanning…' : 'Scan photo'}</button>
+            </form>
+            {analysis && (
+              <div className="mt-6 space-y-4">
+                <div className="rounded-md p-4 border">
+                  <h3 className="text-lg font-semibold">{analysis.mealName} <span className="text-sm text-stone-500">(confidence {analysis.confidence})</span></h3>
+                  <p className="text-sm text-stone-700 mt-2">{analysis.summary}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-md p-4 bg-white/5">
+                    <p className="text-xs text-stone-400">Calories</p>
+                    <p className="text-2xl font-semibold">{finalNutrition?.calories ?? 0}</p>
+                  </div>
+                  <div className="rounded-md p-4 bg-white/5">
+                    <p className="text-xs text-stone-400">Protein</p>
+                    <p className="text-2xl font-semibold">{finalNutrition?.protein ?? 0} g</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </SiteShell>

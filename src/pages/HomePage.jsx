@@ -56,7 +56,7 @@ function metricCardTone(index) {
 function HomePage() {
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-14 pt-8 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-24 lg:pt-20">
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-6 pt-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-8 lg:pt-8">
         <div className="relative">
           <div className="inline-flex items-center gap-3 rounded-full border border-stone-900/10 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
@@ -65,11 +65,11 @@ function HomePage() {
             </span>
           </div>
 
-          <h1 className="mt-6 max-w-4xl font-['Georgia'] text-4xl font-bold leading-[0.95] tracking-tight text-stone-950 sm:text-5xl md:text-7xl">
+          <h1 className="mt-3 max-w-4xl font-['Georgia'] text-2xl font-bold leading-[1.05] tracking-tight text-stone-950 sm:text-3xl md:text-4xl">
             A focused nutrition platform built around health calculators and personalized diet planning.
           </h1>
 
-          <p className="mt-5 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg md:text-xl md:leading-8">
+          <p className="mt-2 max-w-2xl text-sm leading-5 text-stone-700 sm:text-sm md:text-base md:leading-6">
             TailorDiet is positioned as a clean diet planning product where users
             discover calorie and BMI tools, explore macro guidance, and move into
             tailored meal plans designed for their specific goals and food styles.
@@ -78,31 +78,31 @@ function HomePage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               to="/signup"
-              className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-7 py-4 text-center text-sm font-semibold uppercase tracking-[0.14em] text-stone-950 shadow-lg shadow-amber-300/30 transition hover:from-amber-300 hover:to-amber-400 hover:shadow-amber-300/50"
+              className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-2 text-center text-sm font-semibold uppercase tracking-[0.14em] text-stone-950 shadow-lg shadow-amber-300/30 transition hover:from-amber-300 hover:to-amber-400 hover:shadow-amber-300/50"
             >
               Create account
             </Link>
             <Link
               to="/workout-planner"
-              className="rounded-full border border-stone-400/60 bg-white/80 px-7 py-4 text-center text-sm font-semibold uppercase tracking-[0.14em] text-stone-900 backdrop-blur transition hover:border-stone-600 hover:bg-white"
+              className="rounded-full border border-stone-400/60 bg-white/80 px-4 py-2 text-center text-sm font-semibold uppercase tracking-[0.14em] text-stone-900 backdrop-blur transition hover:border-stone-600 hover:bg-white"
             >
               Open workout planner
             </Link>
             <a
               href="#features"
-              className="rounded-full border border-stone-400/60 bg-white/80 px-7 py-4 text-center text-sm font-semibold uppercase tracking-[0.14em] text-stone-900 backdrop-blur transition hover:border-stone-600 hover:bg-white"
+              className="rounded-full border border-stone-400/60 bg-white/80 px-4 py-2 text-center text-sm font-semibold uppercase tracking-[0.14em] text-stone-900 backdrop-blur transition hover:border-stone-600 hover:bg-white"
             >
               Explore features
             </a>
           </div>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-[1.75rem] border border-stone-900/10 bg-white/70 p-5 shadow-sm backdrop-blur"
+                className="rounded-[1.75rem] border border-stone-900/10 bg-white/70 p-4 shadow-sm backdrop-blur"
               >
-                <p className="text-3xl font-bold text-stone-950">{stat.value}</p>
+                <p className="text-xl font-bold text-stone-950">{stat.value}</p>
                 <p className="mt-2 text-sm leading-6 text-stone-600">{stat.label}</p>
               </div>
             ))}
@@ -178,13 +178,13 @@ function HomePage() {
             {features.map((feature, index) => (
               <article
                 key={feature.title}
-                className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-6 shadow-sm sm:p-8"
+                className="rounded-[2rem] border border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,239,227,0.92))] p-4 shadow-sm sm:p-6"
               >
                 <span className="inline-flex rounded-full bg-stone-900 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-amber-100">
                   0{index + 1}
                 </span>
-                <h3 className="mt-6 text-2xl font-semibold text-stone-950">{feature.title}</h3>
-                <p className="mt-4 text-base leading-7 text-stone-700">{feature.description}</p>
+                <h3 className="mt-4 text-xl font-semibold text-stone-950">{feature.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-stone-700">{feature.description}</p>
               </article>
             ))}
           </div>
