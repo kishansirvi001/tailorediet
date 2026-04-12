@@ -15,6 +15,7 @@ import LoginPage from './pages/LoginPage.jsx'
 import MacroCalculatorPage from './pages/MacroCalculatorPage.jsx'
 import MealScannerPage from './pages/MealScannerPage.jsx'
 import ChatBotPage from './pages/ChatBotPage.jsx'
+import Shorts from './pages/Shorts.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import WaterIntakeCalculatorPage from './pages/WaterIntakeCalculatorPage.jsx'
 
@@ -44,6 +45,7 @@ function RouterApp() {
       />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/chat" element={<ChatBotPage />} />
+      <Route path="/shorts" element={<Shorts />} />
       <Route path="/login" element={<LoginPage />} />
       <Route
         path="/account"

@@ -1,41 +1,129 @@
 # TailorDiet
 
-TailorDiet uses a Vite frontend and an Express backend. Signup now requires both email OTP and Message Central mobile OTP delivery before the account is created.
+TailorDiet uses a Vite frontend and an Express backend for fitness tools, AI planning, chat, and a YouTube Shorts-style exercise feed.
 
-## Backend OTP configuration
+## Folder Structure
 
-The backend reads runtime secrets from [backend/.env](C:/Users/kisha/tailordiet/backend/.env).
+```text
+tailordiet/
+  backend/
+    controllers/
+    routes/
+    middleware/
+    lib/
+    .env.example
+    server.js
+  src/
+    components/
+    pages/
+    services/
+  .env.example
+```
 
-Use Brevo for email OTP delivery and Message Central for mobile OTP delivery. Do not keep a second backend `.env` file at the repo root.
+## Environment Variables
 
-Use [backend/.env.example](C:/Users/kisha/tailordiet/backend/.env.example) as the template, then place the real values in [backend/.env](C:/Users/kisha/tailordiet/backend/.env) for local development and in your deployment service's environment settings for production.
+Frontend variables live in [`.env.example`](C:/Users/kisha/tailordiet/.env.example).
 
-Required variables:
+Backend variables live in [`backend/.env.example`](C:/Users/kisha/tailordiet/backend/.env.example) and should be copied to `backend/.env` for local development.
+
+Required backend variables:
 
 ```env
 PORT=5000
+MONGO_URI=
+JWT_SECRET=your-jwt-secret
 GEMINI_API_KEY=
-
+YOUTUBE_API_KEY=your_api_key_here
 OTP_EMAIL_FROM=your-sender@example.com
 OTP_EMAIL_FROM_NAME=TailorDiet
-BREVO_API_KEY=your-brevo-api-key
-
-MESSAGE_CENTRAL_CUSTOMER_ID=your-message-central-customer-id
-MESSAGE_CENTRAL_KEY=your-message-central-key
-MESSAGE_CENTRAL_EMAIL=your-message-central-email
+BREVO_API_KEY=
+MESSAGE_CENTRAL_CUSTOMER_ID=
+MESSAGE_CENTRAL_KEY=
+MESSAGE_CENTRAL_EMAIL=
 MESSAGE_CENTRAL_COUNTRY_CODE=91
 ```
 
 Notes:
-- `backend/.env.example` is documentation only.
 - `backend/.env` is the only backend env file used locally.
-- Render must have the same values configured in the backend service environment.
+- `YOUTUBE_API_KEY` powers `/api/youtube/shorts`.
+- `VITE_API_BASE_URL` can stay empty in local development to use the Vite proxy.
 
-## Install backend dependencies
+## Install And Run
 
-Install backend packages:
+Install frontend dependencies:
+
+```bash
+npm install
+```
+
+Install backend dependencies:
 
 ```bash
 cd backend
 npm install
 ```
+
+Run the backend:
+
+```bash
+cd backend
+npm start
+```
+
+Run the frontend:
+
+```bash
+npm run dev
+```
+
+## YouTube Shorts API
+
+Endpoint:
+
+```text
+GET /api/youtube/shorts?filter=deadlift&limit=9
+```
+
+Optional query params:
+- `filter`: examples include `all`, `bench-press`, `deadlift`, `squat`, `hip-thrust`, `pull-up`, `lat-pulldown`, `plank`, `yoga`
+- `limit`: max `15`
+- `pageToken`: fetch the next page of results
+
+Example response:
+
+```json
+{
+  "filter": "deadlift",
+  "filterLabel": "Deadlift",
+  "availableFilters": [
+    { "value": "all", "label": "All Exercises" },
+    { "value": "deadlift", "label": "Deadlift" }
+  ],
+  "videos": [
+    {
+      "videoId": "abc123",
+      "title": "15 Minute Dumbbell Burner",
+      "thumbnail": "https://i.ytimg.com/vi/abc123/hqdefault.jpg",
+      "channelTitle": "Fit Coach",
+      "embedUrl": "https://www.youtube.com/embed/abc123",
+      "shareUrl": "https://www.youtube.com/watch?v=abc123",
+      "durationSeconds": 42
+    }
+  ],
+  "nextPageToken": "CAoQAA",
+  "cached": false
+}
+```
+
+The backend filters results to videos that are 60 seconds or shorter, uses in-memory caching, and embeds videos without downloading or storing media files.
+
+## Frontend Shorts Page
+
+The Shorts feed lives at [`/shorts`](C:/Users/kisha/tailordiet/src/pages/Shorts.jsx) and includes:
+- vertical snap scrolling
+- intersection-based playback control
+- exercise-specific filters for technique videos
+- mute/unmute, like, and share UI
+- category filters
+- lazy iframe loading
+- load-more pagination

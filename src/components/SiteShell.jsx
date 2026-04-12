@@ -92,6 +92,7 @@ function SiteShell({ children }) {
     { label: 'Calculators', to: '/calculators' },
     { label: 'Workout Planner', to: '/workout-planner' },
     { label: 'Diet Plans', to: '/diet-plans' },
+    { label: 'Shorts', to: '/shorts' },
     { label: 'Chat', to: '/chat' },
     ...(isAuthenticated ? [{ label: 'Account', to: '/account' }] : []),
   ]
@@ -278,6 +279,7 @@ function SiteShell({ children }) {
               <Link to="/calculators" className="text-sm text-stone-300 hover:text-white">Calculators</Link>
               <Link to="/workout-planner" className="text-sm text-stone-300 hover:text-white">Workout Planner</Link>
               <Link to="/diet-plans" className="text-sm text-stone-300 hover:text-white">Diet Plans</Link>
+              <Link to="/shorts" className="text-sm text-stone-300 hover:text-white">Shorts</Link>
               <Link to="/signup" className="text-sm text-stone-300 hover:text-white">Join</Link>
             </nav>
 
