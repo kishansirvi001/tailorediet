@@ -49,6 +49,22 @@ function CloseIcon(props) {
   )
 }
 
+function ShortsIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M9.4 3.75c1.28-.74 2.88-.74 4.16 0l3.43 1.98c1.28.74 2.08 2.11 2.08 3.59v3.36c0 1.48-.8 2.85-2.08 3.59l-3.43 1.98c-1.28.74-2.88.74-4.16 0l-3.43-1.98a4.14 4.14 0 0 1-2.08-3.59V9.32c0-1.48.8-2.85 2.08-3.59l3.43-1.98Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d="m10.4 9.2 4.55 2.8-4.55 2.8V9.2Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
 // -------------------- Navigation Item -------------------- //
 function NavItem({ label, to, onClick }) {
   return (
@@ -97,6 +113,8 @@ function SiteShell({ children }) {
     ...(isAuthenticated ? [{ label: 'Account', to: '/account' }] : []),
   ]
 
+  const mobileMenuLinks = navLinks.filter((link) => link.label !== 'Shorts')
+
   const socialLinks = [
     {
       label: 'Instagram',
@@ -115,7 +133,7 @@ function SiteShell({ children }) {
   return (
     <div className="min-h-screen bg-[#fffaf1] text-stone-800">
       {/* -------------------- Header -------------------- */}
-      <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/90 shadow-sm backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
@@ -167,19 +185,35 @@ function SiteShell({ children }) {
             )}
           </div>
 
-          {/* Hamburger Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
-            aria-expanded={isMobileMenuOpen}
-            className="md:hidden flex h-10 w-10 items-center justify-center rounded-lg border bg-white shadow"
-          >
-            {isMobileMenuOpen ? (
-              <CloseIcon className="h-5 w-5" />
-            ) : (
-              <MenuIcon className="h-5 w-5" />
-            )}
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <NavLink
+              to="/shorts"
+              aria-label="Open Shorts"
+              className={({ isActive }) =>
+                `flex h-10 items-center gap-2 rounded-lg border px-3 transition ${
+                  isActive
+                    ? 'border-rose-200 bg-rose-50 text-rose-600'
+                    : 'border-stone-200 bg-white text-stone-700 shadow-sm hover:bg-stone-50'
+                }`
+              }
+            >
+              <ShortsIcon className="h-4 w-4" />
+              <span className="text-xs font-semibold uppercase tracking-[0.2em]">Shorts</span>
+            </NavLink>
+
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-stone-200 bg-white shadow-sm"
+            >
+              {isMobileMenuOpen ? (
+                <CloseIcon className="h-5 w-5" />
+              ) : (
+                <MenuIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -206,7 +240,7 @@ function SiteShell({ children }) {
         </div>
 
         <nav className="p-4 space-y-2">
-          {navLinks.map((link) => (
+          {mobileMenuLinks.map((link) => (
             <NavItem
               key={link.label}
               {...link}
