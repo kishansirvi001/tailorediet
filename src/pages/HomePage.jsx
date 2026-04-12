@@ -43,10 +43,10 @@ function HomePage() {
       {/* ================= HERO SECTION ================= */}
       <section className="relative overflow-hidden">
         {/* Background Gradients */}
-        <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-amber-300/30 blur-3xl" />
-        <div className="absolute top-20 right-0 h-80 w-80 rounded-full bg-emerald-300/20 blur-3xl" />
+        <div className="pointer-events-none absolute -top-20 -left-20 h-72 w-72 rounded-full bg-amber-300/30 blur-3xl" />
+        <div className="pointer-events-none absolute top-20 right-0 h-80 w-80 rounded-full bg-emerald-300/20 blur-3xl" />
 
-        <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-10 lg:py-12">
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-6 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-10 lg:py-12">
           {/* Left Content */}
           <div>
             <div className="inline-flex items-center gap-3 rounded-full border border-stone-900/10 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-700 shadow-sm backdrop-blur">
@@ -64,24 +64,24 @@ function HomePage() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <div className="relative z-10 mt-4 flex flex-col gap-3 sm:flex-row">
               <Link
                 to="/signup"
-                className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-2 text-center text-sm font-bold uppercase tracking-[0.15em] text-stone-950 shadow-md transition hover:from-amber-300 hover:to-amber-400"
+                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-2 text-center text-sm font-bold uppercase tracking-[0.15em] text-stone-950 shadow-md transition hover:from-amber-300 hover:to-amber-400"
               >
                 Start Free
               </Link>
 
               <Link
                 to="/calculators"
-                className="rounded-full border border-stone-300 px-8 py-4 text-center text-sm font-bold uppercase tracking-[0.15em] text-stone-900 transition hover:bg-stone-100"
+                className="inline-flex items-center justify-center rounded-full border border-stone-300 px-8 py-4 text-center text-sm font-bold uppercase tracking-[0.15em] text-stone-900 transition hover:bg-stone-100"
               >
                 Explore Calculators
               </Link>
 
               <Link
                 to="/workout-planner"
-                className="rounded-full border border-stone-300 px-8 py-4 text-center text-sm font-bold uppercase tracking-[0.15em] text-stone-900 transition hover:bg-stone-100"
+                className="inline-flex items-center justify-center rounded-full border border-stone-300 px-8 py-4 text-center text-sm font-bold uppercase tracking-[0.15em] text-stone-900 transition hover:bg-stone-100"
               >
                 Workout Planner
               </Link>
