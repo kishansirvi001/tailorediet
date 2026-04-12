@@ -53,12 +53,17 @@ function ShortsIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
       <path
-        d="M9.4 3.75c1.28-.74 2.88-.74 4.16 0l3.43 1.98c1.28.74 2.08 2.11 2.08 3.59v3.36c0 1.48-.8 2.85-2.08 3.59l-3.43 1.98c-1.28.74-2.88.74-4.16 0l-3.43-1.98a4.14 4.14 0 0 1-2.08-3.59V9.32c0-1.48.8-2.85 2.08-3.59l3.43-1.98Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        d="M9.1 4.1c1.44-.84 3.24-.84 4.68 0l2.48 1.43c1.44.83 2.34 2.36 2.34 4.02v.9c0 1.66-.9 3.19-2.34 4.02l-2.48 1.43c-1.44.84-3.24.84-4.68 0l-2.48-1.43A4.64 4.64 0 0 1 4.28 10.45v-.9c0-1.66.9-3.19 2.34-4.02L9.1 4.1Z"
+        fill="currentColor"
+        opacity="0.18"
       />
       <path
-        d="m10.4 9.2 4.55 2.8-4.55 2.8V9.2Z"
+        d="M8.9 2.95c1.55-.9 3.48-.9 5.03 0l2.67 1.54c1.55.9 2.51 2.55 2.51 4.34v1.33c0 1.79-.96 3.44-2.51 4.34l-2.67 1.54c-1.55.9-3.48.9-5.03 0l-2.67-1.54c-1.55-.9-2.51-2.55-2.51-4.34V8.83c0-1.79.96-3.44 2.51-4.34L8.9 2.95Z"
+        stroke="currentColor"
+        strokeWidth="1.45"
+      />
+      <path
+        d="m10.2 8.65 4.4 2.68-4.4 2.68V8.65Z"
         fill="currentColor"
       />
     </svg>
@@ -190,15 +195,18 @@ function SiteShell({ children }) {
               to="/shorts"
               aria-label="Open Shorts"
               className={({ isActive }) =>
-                `flex h-10 items-center gap-2 rounded-lg border px-3 transition ${
+                `group relative flex h-11 items-center gap-2.5 overflow-hidden rounded-full border px-2.5 pr-3.5 transition-all duration-200 ${
                   isActive
-                    ? 'border-rose-200 bg-rose-50 text-rose-600'
-                    : 'border-stone-200 bg-white text-stone-700 shadow-sm hover:bg-stone-50'
+                    ? 'border-rose-200 bg-gradient-to-r from-rose-50 via-orange-50 to-amber-50 text-rose-700 shadow-[0_8px_24px_rgba(244,63,94,0.18)]'
+                    : 'border-stone-200 bg-white/95 text-stone-700 shadow-sm hover:-translate-y-0.5 hover:border-rose-200 hover:bg-gradient-to-r hover:from-rose-50/70 hover:to-amber-50/70 hover:text-rose-600 hover:shadow-[0_10px_28px_rgba(244,63,94,0.14)]'
                 }`
               }
             >
-              <ShortsIcon className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-[0.2em]">Shorts</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 via-orange-500 to-amber-400 text-white shadow-[0_6px_18px_rgba(249,115,22,0.35)]">
+                <ShortsIcon className="h-4 w-4" />
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.24em]">Shorts</span>
+              <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-rose-400 opacity-80 transition group-hover:scale-125" />
             </NavLink>
 
             <button
