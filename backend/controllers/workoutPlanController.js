@@ -309,11 +309,6 @@ function normalizeCategory(value) {
   return aliases[normalized.replace(/-/g, "")] || null;
 }
 
-function buildGifUrl(req, exerciseName) {
-  const origin = `${req.protocol}://${req.get("host")}`;
-  return `${origin}/api/exercise/gif/${encodeURIComponent(exerciseName)}`;
-}
-
 function validateRequest(input) {
   const fitnessLevel = normalizeInput(input?.fitnessLevel);
   const goal = normalizeGoal(input?.goal);
@@ -349,6 +344,12 @@ function validateRequest(input) {
 async function buildExercise(goal, fitnessLevel, req, exercise) {
   const rules = SLOT_RULES[goal][fitnessLevel][exercise.slot];
   const media = await findExerciseByName(exercise.lookupName);
+  const demoFrames =
+    Array.isArray(media?.frameUrls) && media.frameUrls.length > 0
+      ? media.frameUrls
+      : media?.gifUrl
+        ? [media.gifUrl]
+        : [];
 
   return {
     name: exercise.name,
@@ -356,13 +357,8 @@ async function buildExercise(goal, fitnessLevel, req, exercise) {
     sets: rules.sets,
     reps: rules.reps,
     rest: rules.rest,
-    gifUrl: media?.gifUrl || buildGifUrl(req, exercise.lookupName),
-    demoFrames:
-      Array.isArray(media?.frameUrls) && media.frameUrls.length > 0
-        ? media.frameUrls
-        : media?.gifUrl
-          ? [media.gifUrl]
-          : [buildGifUrl(req, exercise.lookupName)],
+    gifUrl: media?.gifUrl || null,
+    demoFrames,
   };
 }
 
