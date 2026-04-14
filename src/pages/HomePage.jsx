@@ -175,6 +175,84 @@ function HomePage() {
         </div>
       </section>
       {/* ================= END FEATURES SECTION ================= */}
+
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-10 lg:py-20">
+        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+          <article className="rounded-[2rem] border border-stone-900/10 bg-white/80 p-7 shadow-sm">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-stone-500">
+              Why TailorDiet works
+            </p>
+            <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
+              One platform for calorie tracking, diet planning, and workout structure.
+            </h2>
+            <div className="mt-6 space-y-4 text-sm leading-7 text-stone-700 sm:text-base">
+              <p>
+                TailorDiet brings together the tools people usually search for separately:
+                a calorie calculator, BMI calculator, macro calculator, water intake
+                calculator, personalized diet planner, and workout planner.
+              </p>
+              <p>
+                Instead of stopping at a single number, the platform helps users move
+                from calculation to action with guided next steps for nutrition,
+                hydration, meal planning, and training.
+              </p>
+            </div>
+          </article>
+
+          <article className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-7 text-stone-100 shadow-[0_24px_60px_rgba(28,25,23,0.18)]">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-200/70">
+              Popular use cases
+            </p>
+            <div className="mt-6 grid gap-4">
+              {[
+                'Calculate calories for weight loss, maintenance, or muscle gain.',
+                'Estimate BMI, body fat, ideal weight, and hydration needs.',
+                'Create Indian diet plans based on food preference, budget, and region.',
+                'Choose a workout split and follow guided exercise cards with demos.',
+              ].map((item) => (
+                <div key={item} className="rounded-[1.25rem] bg-white/5 p-4 text-sm leading-6 text-stone-200">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="border-t border-stone-900/10 bg-white/75 py-16 backdrop-blur sm:py-20">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-stone-500">
+            FAQ
+          </p>
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
+            Common questions about TailorDiet
+          </h2>
+          <div className="mt-10 grid gap-4">
+            {[
+              {
+                question: 'What can I calculate on TailorDiet?',
+                answer:
+                  'You can calculate daily calories, calorie deficit and surplus targets, BMI, macro splits, water intake, body fat estimates, and ideal weight references.',
+              },
+              {
+                question: 'Does TailorDiet help with meal planning?',
+                answer:
+                  'Yes. TailorDiet includes a personalized diet planner that uses your goal, diet preference, activity level, region, allergies, budget, and routine to generate a practical plan.',
+              },
+              {
+                question: 'Can I use TailorDiet for workout planning too?',
+                answer:
+                  'Yes. The workout planner lets you choose your fitness level, training goal, and muscle-group split to get guided exercise cards with sets, reps, rest, and demo visuals.',
+              },
+            ].map((item) => (
+              <article key={item.question} className="rounded-[1.5rem] border border-stone-900/10 bg-white p-5 shadow-sm">
+                <h3 className="text-lg font-semibold text-stone-950">{item.question}</h3>
+                <p className="mt-3 text-sm leading-7 text-stone-700 sm:text-base">{item.answer}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
     </SiteShell>
   )
 }

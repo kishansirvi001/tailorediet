@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import ChatWidget from './ChatWidget.jsx'
+import Seo from './Seo.jsx'
 
 // -------------------- Icons -------------------- //
 function InstagramIcon(props) {
@@ -137,6 +138,7 @@ function SiteShell({ children }) {
 
   return (
     <div className="min-h-screen bg-[#fffaf1] text-stone-800">
+      <Seo />
       {/* -------------------- Header -------------------- */}
       <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/90 shadow-sm backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">

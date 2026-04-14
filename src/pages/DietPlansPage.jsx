@@ -560,6 +560,29 @@ function DietPlansPage() {
           </div>
         </div>
       </section>
+
+      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-10 lg:py-20">
+        <div className="rounded-[2rem] border border-stone-900/10 bg-white/80 p-7 shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-stone-500">
+            Personalized planning
+          </p>
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
+            A better Indian diet plan starts with better intake details.
+          </h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {[
+              'TailorDiet asks about diet preference, region, meals per day, cooking time, budget, and routine so the final plan feels realistic for day-to-day life.',
+              'The planner is useful for weight loss, maintenance, muscle gain, or body recomposition because it connects food choices with your stated health and fitness goal.',
+              'Users can include allergies, disliked foods, and medical notes to make meal guidance safer and more practical.',
+              'The final output is designed to move beyond generic meal charts by giving calorie targets, food suggestions, timing ideas, weekly tips, and a shopping list.',
+            ].map((item) => (
+              <p key={item} className="rounded-[1.35rem] border border-stone-900/10 bg-stone-50 p-4 text-sm leading-7 text-stone-700">
+                {item}
+              </p>
+            ))}
+          </div>
+        </div>
+      </section>
     </SiteShell>
   )
 }

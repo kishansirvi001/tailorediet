@@ -571,6 +571,41 @@ function HealthCalculatorsPage() {
           </div>
         </div>
       </section>
+
+      <section className="border-t border-stone-900/10 bg-white/75 py-16 backdrop-blur sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
+            Calculator guide
+          </p>
+          <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl">
+            Use the right calculator for the goal you are trying to reach.
+          </h2>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {[
+              {
+                title: 'For weight loss',
+                body:
+                  'Start with the calorie calculator and calorie deficit calculator, then use the macro calculator to set protein, carbs, and fats.',
+              },
+              {
+                title: 'For muscle gain',
+                body:
+                  'Use the calorie calculator, calorie surplus calculator, and workout planner to align food intake with training volume.',
+              },
+              {
+                title: 'For general health',
+                body:
+                  'Check BMI, ideal weight, body fat estimate, and water intake to get a fast overview of your current health metrics.',
+              },
+            ].map((item) => (
+              <article key={item.title} className="rounded-[1.5rem] border border-stone-900/10 bg-white p-5 shadow-sm">
+                <h3 className="text-lg font-semibold text-stone-950">{item.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-stone-700">{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
     </SiteShell>
   )
 }
