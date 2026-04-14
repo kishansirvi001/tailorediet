@@ -11,6 +11,7 @@ import {
   loginRequest,
   logoutRequest,
   requestSignupOtp,
+  saveTrackerCheckInRequest,
   verifySignupOtpRequest,
 } from '../services/authApi.js'
 
@@ -122,6 +123,18 @@ export function AuthProvider({ children }) {
     }
   }, [token])
 
+  const saveTrackerCheckIn = useCallback(async (formData) => {
+    if (!token) {
+      throw new Error('You need to be logged in to save tracker data.')
+    }
+
+    const user = await saveTrackerCheckInRequest(token, formData)
+    const nextSession = { token, user }
+    setSession(nextSession)
+    persistSession(nextSession)
+    return user
+  }, [token])
+
   const value = useMemo(
     () => ({
       user: session?.user ?? null,
@@ -132,8 +145,9 @@ export function AuthProvider({ children }) {
       completeSignupVerification,
       login,
       logout,
+      saveTrackerCheckIn,
     }),
-    [beginSignupVerification, completeSignupVerification, isLoading, login, logout, session, token],
+    [beginSignupVerification, completeSignupVerification, isLoading, login, logout, saveTrackerCheckIn, session, token],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

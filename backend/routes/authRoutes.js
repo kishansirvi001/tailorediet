@@ -4,6 +4,7 @@ import {
   login,
   logout,
   requestSignupOtp,
+  saveTrackerCheckIn,
   verifySignupOtp,
 } from "../controllers/authController.js";
 
@@ -14,5 +15,6 @@ router.post("/signup/verify-otp", verifySignupOtp);
 router.post("/login", login);
 router.get("/me", getCurrentUser);
 router.post("/logout", logout);
+router.put("/tracker", saveTrackerCheckIn);
 
 export default router;

@@ -9,6 +9,15 @@ const OTP_PATTERN = /^\d{6}$/;
 const OTP_TTL_MS = 10 * 60 * 1000;
 
 function sanitizeUser(user) {
+  const history = Array.isArray(user.tracker?.history) ? user.tracker.history : [];
+  const lastCheckIn = user.tracker?.lastCheckIn || null;
+  const normalizedLastCheckIn = lastCheckIn
+    ? {
+        ...(typeof lastCheckIn.toObject === "function" ? lastCheckIn.toObject() : lastCheckIn),
+        recordedAt: lastCheckIn.recordedAt ? new Date(lastCheckIn.recordedAt).toISOString() : null,
+      }
+    : null;
+
   return {
     id: user._id.toString(),
     name: user.name,
@@ -18,6 +27,17 @@ function sanitizeUser(user) {
     goal: user.goal,
     dietStyle: user.dietStyle,
     createdAt: user.createdAt ? user.createdAt.toISOString() : null,
+    tracker: {
+      lastCheckIn: normalizedLastCheckIn,
+      history: history
+        .slice()
+        .sort((a, b) => new Date(b.recordedAt || 0).getTime() - new Date(a.recordedAt || 0).getTime())
+        .slice(0, 6)
+        .map((entry) => ({
+          ...(typeof entry.toObject === "function" ? entry.toObject() : entry),
+          recordedAt: entry.recordedAt ? new Date(entry.recordedAt).toISOString() : null,
+        })),
+    },
   };
 }
 
@@ -173,6 +193,68 @@ function validateLoginPayload({ email, mobileNumber, identifier, password }) {
   }
 
   return null;
+}
+
+function normalizeOptionalText(value, maxLength = 400) {
+  const normalized = String(value ?? "").trim();
+  return normalized.slice(0, maxLength);
+}
+
+function normalizeOptionalNumber(value, { min = 0, max = Number.MAX_SAFE_INTEGER } = {}) {
+  if (value === "" || value === null || value === undefined) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isFinite(parsed) || parsed < min || parsed > max) {
+    return null;
+  }
+
+  return Math.round(parsed * 10) / 10;
+}
+
+function validateTrackerPayload(body) {
+  if (!normalizeOptionalText(body.goalFocus, 120)) {
+    return "Goal focus is required.";
+  }
+
+  if (!normalizeOptionalText(body.mealsSummary, 600)) {
+    return "Food intake summary is required.";
+  }
+
+  if (!normalizeOptionalText(body.exerciseSummary, 400)) {
+    return "Exercise summary is required.";
+  }
+
+  const walkingMinutes = normalizeOptionalNumber(body.walkingMinutes, { min: 0, max: 1000 });
+  const joggingMinutes = normalizeOptionalNumber(body.joggingMinutes, { min: 0, max: 1000 });
+
+  if (walkingMinutes === null && joggingMinutes === null) {
+    return "Add walking or jogging time, even if it is 0.";
+  }
+
+  return null;
+}
+
+function buildTrackerEntry(body) {
+  return {
+    goalFocus: normalizeOptionalText(body.goalFocus, 120),
+    currentWeightKg: normalizeOptionalNumber(body.currentWeightKg, { min: 20, max: 400 }),
+    mealsSummary: normalizeOptionalText(body.mealsSummary, 600),
+    snacksSummary: normalizeOptionalText(body.snacksSummary, 400),
+    waterIntakeLiters: normalizeOptionalNumber(body.waterIntakeLiters, { min: 0, max: 20 }),
+    exerciseSummary: normalizeOptionalText(body.exerciseSummary, 400),
+    walkingMinutes: normalizeOptionalNumber(body.walkingMinutes, { min: 0, max: 1000 }) ?? 0,
+    joggingMinutes: normalizeOptionalNumber(body.joggingMinutes, { min: 0, max: 1000 }) ?? 0,
+    sleepHours: normalizeOptionalNumber(body.sleepHours, { min: 0, max: 24 }),
+    energyLevel: normalizeOptionalText(body.energyLevel, 80),
+    mood: normalizeOptionalText(body.mood, 80),
+    appetiteLevel: normalizeOptionalText(body.appetiteLevel, 80),
+    digestionNotes: normalizeOptionalText(body.digestionNotes, 240),
+    notes: normalizeOptionalText(body.notes, 600),
+    recordedAt: new Date(),
+  };
 }
 
 async function findExistingUser({ email, mobileNumber }) {
@@ -435,4 +517,45 @@ export async function logout(req, res) {
   await User.updateOne({ sessionToken: token }, { $set: { sessionToken: null } });
 
   return res.status(204).send();
+}
+
+export async function saveTrackerCheckIn(req, res) {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+
+  if (!token) {
+    return res.status(401).json({ message: "Missing authorization token." });
+  }
+
+  const error = validateTrackerPayload(req.body);
+
+  if (error) {
+    return res.status(400).json({ message: error });
+  }
+
+  const user = await User.findOne({ sessionToken: token });
+
+  if (!user) {
+    return res.status(401).json({ message: "Session expired. Please log in again." });
+  }
+
+  const nextEntry = buildTrackerEntry(req.body);
+  const previousHistory = Array.isArray(user.tracker?.history) ? user.tracker.history : [];
+  const nextHistory = [nextEntry, ...previousHistory].slice(0, 12);
+
+  user.tracker = {
+    lastCheckIn: nextEntry,
+    history: nextHistory,
+  };
+
+  if (nextEntry.goalFocus) {
+    user.goal = nextEntry.goalFocus;
+  }
+
+  await user.save();
+
+  return res.json({
+    message: "Tracker check-in saved successfully.",
+    user: sanitizeUser(user),
+  });
 }

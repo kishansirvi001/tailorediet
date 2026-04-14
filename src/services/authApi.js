@@ -87,3 +87,13 @@ export async function logoutRequest(token) {
     headers: createAuthHeaders(token),
   })
 }
+
+export async function saveTrackerCheckInRequest(token, formData) {
+  const payload = await apiRequest('/api/auth/tracker', {
+    method: 'PUT',
+    headers: createAuthHeaders(token),
+    body: JSON.stringify(formData),
+  })
+
+  return payload.user
+}
