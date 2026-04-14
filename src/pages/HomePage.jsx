@@ -80,10 +80,10 @@ function HomePage() {
               </Link>
 
               <Link
-                to="/workout-planner"
+                to="/diet-plans"
                 className="inline-flex items-center justify-center rounded-full border border-stone-300 px-8 py-4 text-center text-sm font-bold uppercase tracking-[0.15em] text-stone-900 transition hover:bg-stone-100"
               >
-                Workout Planner
+                Diet Planner
               </Link>
             </div>
 

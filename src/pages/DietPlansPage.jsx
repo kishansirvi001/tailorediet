@@ -112,10 +112,10 @@ function validateDietForm(form) {
 
 function FieldShell({ label, hint, children, className = '' }) {
   return (
-    <label className={`block rounded-[1.75rem] border border-stone-900/10 bg-white/80 p-5 shadow-sm ${className}`}>
+    <label className={`block rounded-[1.25rem] border border-stone-200 bg-white p-3.5 shadow-[0_12px_28px_rgba(28,25,23,0.05)] transition focus-within:-translate-y-0.5 focus-within:border-amber-300 focus-within:shadow-[0_16px_34px_rgba(245,158,11,0.1)] sm:p-4 ${className}`}>
       <span className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{label}</span>
-      {hint ? <p className="mt-2 text-sm leading-6 text-stone-600">{hint}</p> : null}
-      <div className="mt-3">{children}</div>
+      {hint ? <p className="mt-1.5 text-sm leading-6 text-stone-600">{hint}</p> : null}
+      <div className="mt-2.5">{children}</div>
     </label>
   )
 }
@@ -183,78 +183,76 @@ function DietPlansPage() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-7xl px-4 pb-8 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-12">
-        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
-          <div>
-            <div className="inline-flex items-center gap-3 rounded-full border border-stone-900/10 bg-white/85 px-4 py-2 shadow-sm backdrop-blur">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-700">
-                India-specific planner
-              </span>
-            </div>
-
-            <h1 className="mt-4 max-w-4xl font-['Georgia'] text-3xl font-bold leading-[1.0] tracking-tight text-stone-950 sm:text-4xl md:text-5xl">
-              A full diet-plan intake page that actually asks the right questions.
-            </h1>
-
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-700 sm:text-base md:text-lg md:leading-7">
-              Users can now enter personal details, activity, food preferences,
-              allergies, budget, and regional context, then get a detailed
-              AI-generated Indian diet plan instead of static cards.
-            </p>
-
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {summaryItems.map((item) => (
-                <div key={item.label} className="rounded-[1.5rem] border border-stone-900/10 bg-white/70 p-5 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{item.label}</p>
-                  <p className="mt-2 text-2xl font-semibold text-stone-950">{item.value}</p>
-                </div>
-              ))}
-            </div>
+        <div>
+          <div className="inline-flex items-center gap-3 rounded-full border border-stone-900/10 bg-white/85 px-4 py-2 shadow-sm backdrop-blur">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-stone-700">
+              India-specific planner
+            </span>
           </div>
 
-          <div className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-4 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.24)] sm:p-6">
-            <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-5 sm:p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200/70">
-                What this plan engine respects
-              </p>
-              <div className="mt-6 grid gap-4">
-                {[
-                  'India-specific foods and realistic home-style meals',
-                  'Goal-driven calorie and meal structure guidance',
-                  'Allergies, dislikes, medical notes, and daily routine',
-                  'Region, budget, and practical cooking-time constraints',
-                ].map((item) => (
-                  <div key={item} className="rounded-[1.25rem] bg-white/5 p-4 text-sm leading-6 text-stone-200">
-                    {item}
-                  </div>
-                ))}
+          <h1 className="mt-4 max-w-4xl font-['Georgia'] text-3xl font-bold leading-[1.0] tracking-tight text-stone-950 sm:text-4xl md:text-5xl">
+            A diet-plan generator that feels more like a guided nutrition intake.
+          </h1>
+
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-700 sm:text-base md:text-lg md:leading-7">
+            Enter your goal, routine, food preferences, allergies, and budget to generate a practical
+            Indian diet plan built around everyday life instead of generic meal charts.
+          </p>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {summaryItems.map((item) => (
+              <div key={item.label} className="rounded-[1.5rem] border border-stone-200 bg-white/75 p-5 shadow-[0_12px_32px_rgba(28,25,23,0.06)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{item.label}</p>
+                <p className="mt-2 text-2xl font-semibold text-stone-950">{item.value}</p>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="border-y border-stone-900/10 bg-white/70 py-14 backdrop-blur sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div className="grid gap-10 lg:grid-cols-[1.08fr_0.92fr]">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
-                  Diet intake form
-                </p>
-                <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-stone-950 sm:text-4xl md:text-5xl">
-                  Gather everything needed for a detailed Indian diet recommendation.
-                </h2>
+      <section className="border-y border-stone-900/10 bg-[linear-gradient(180deg,rgba(255,251,235,0.9),rgba(255,255,255,0.96))] py-14 backdrop-blur sm:py-16">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <div className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 rounded-[1.5rem] border border-stone-200/80 bg-white/92 p-3.5 shadow-[0_20px_48px_rgba(28,25,23,0.07)] backdrop-blur sm:p-4.5">
+              <div className="flex flex-col gap-3 rounded-[1.2rem] bg-[linear-gradient(135deg,rgba(245,158,11,0.14),rgba(16,185,129,0.08))] p-3.5 sm:p-4">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-500">
+                    Diet intake form
+                  </p>
+                  <h2 className="mt-1.5 font-['Georgia'] text-xl font-bold tracking-tight text-stone-950 sm:text-2xl">
+                    Build your plan in one clean step.
+                  </h2>
+                  <p className="mt-1.5 max-w-2xl text-sm leading-6 text-stone-700">
+                    Fill in the essentials first, then add food restrictions and routine details for a more realistic result.
+                  </p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    'Goal-aligned calorie targets',
+                    'Regional meal suggestions',
+                    'Practical meal timing and shopping cues',
+                  ].map((item) => (
+                    <div key={item} className="rounded-[1rem] border border-white/70 bg-white/70 px-3 py-2.5 text-xs font-medium text-stone-700 shadow-sm sm:text-sm">
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">Basics</p>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-2">
                 <FieldShell label="Full name">
                   <input
                     name="name"
                     value={form.name}
                     onChange={handleChange}
                     placeholder="Enter your name"
-                    className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none placeholder:text-stone-400"
+                    className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none placeholder:text-stone-400"
                   />
                 </FieldShell>
 
@@ -265,12 +263,12 @@ function DietPlansPage() {
                     value={form.age}
                     onChange={handleChange}
                     placeholder="25"
-                    className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none placeholder:text-stone-400"
+                    className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none placeholder:text-stone-400"
                   />
                 </FieldShell>
 
                 <FieldShell label="Gender">
-                  <select name="gender" value={form.gender} onChange={handleChange} className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none">
+                  <select name="gender" value={form.gender} onChange={handleChange} className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none">
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>
@@ -284,7 +282,7 @@ function DietPlansPage() {
                     value={form.weight}
                     onChange={handleChange}
                     placeholder="68"
-                    className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none placeholder:text-stone-400"
+                    className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none placeholder:text-stone-400"
                   />
                 </FieldShell>
 
@@ -295,12 +293,12 @@ function DietPlansPage() {
                     value={form.height}
                     onChange={handleChange}
                     placeholder="172"
-                    className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none placeholder:text-stone-400"
+                    className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none placeholder:text-stone-400"
                   />
                 </FieldShell>
 
                 <FieldShell label="Primary goal">
-                  <select name="goal" value={form.goal} onChange={handleChange} className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none">
+                  <select name="goal" value={form.goal} onChange={handleChange} className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none">
                     {goalOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -310,7 +308,7 @@ function DietPlansPage() {
                 </FieldShell>
 
                 <FieldShell label="Activity level">
-                  <select name="activityLevel" value={form.activityLevel} onChange={handleChange} className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none">
+                  <select name="activityLevel" value={form.activityLevel} onChange={handleChange} className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none">
                     {activityOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -320,7 +318,7 @@ function DietPlansPage() {
                 </FieldShell>
 
                 <FieldShell label="Diet preference">
-                  <select name="dietPreference" value={form.dietPreference} onChange={handleChange} className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none">
+                  <select name="dietPreference" value={form.dietPreference} onChange={handleChange} className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none">
                     {dietOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -330,7 +328,7 @@ function DietPlansPage() {
                 </FieldShell>
 
                 <FieldShell label="Region">
-                  <select name="region" value={form.region} onChange={handleChange} className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none">
+                  <select name="region" value={form.region} onChange={handleChange} className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none">
                     {regionOptions.map((region) => (
                       <option key={region} value={region}>
                         {region}
@@ -346,12 +344,12 @@ function DietPlansPage() {
                     value={form.mealsPerDay}
                     onChange={handleChange}
                     placeholder="4"
-                    className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none placeholder:text-stone-400"
+                    className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none placeholder:text-stone-400"
                   />
                 </FieldShell>
 
                 <FieldShell label="Budget">
-                  <select name="budget" value={form.budget} onChange={handleChange} className="w-full bg-transparent text-lg font-semibold capitalize text-stone-950 outline-none">
+                  <select name="budget" value={form.budget} onChange={handleChange} className="w-full bg-transparent text-base font-semibold capitalize text-stone-950 outline-none">
                     {budgetOptions.map((option) => (
                       <option key={option} value={option}>
                         {option}
@@ -361,7 +359,7 @@ function DietPlansPage() {
                 </FieldShell>
 
                 <FieldShell label="Cooking time">
-                  <select name="cookingTime" value={form.cookingTime} onChange={handleChange} className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none">
+                  <select name="cookingTime" value={form.cookingTime} onChange={handleChange} className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none">
                     {cookingTimeOptions.map((option) => (
                       <option key={option} value={option}>
                         {option}
@@ -369,6 +367,13 @@ function DietPlansPage() {
                     ))}
                   </select>
                 </FieldShell>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">Preferences and restrictions</p>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-2">
 
                 <FieldShell
                   label="Allergies"
@@ -380,7 +385,7 @@ function DietPlansPage() {
                     value={form.allergies}
                     onChange={handleChange}
                     placeholder="Peanuts, shellfish"
-                    className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none placeholder:text-stone-400"
+                    className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none placeholder:text-stone-400"
                   />
                 </FieldShell>
 
@@ -390,7 +395,7 @@ function DietPlansPage() {
                     value={form.dislikedFoods}
                     onChange={handleChange}
                     placeholder="Bitter gourd, mushrooms"
-                    className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none placeholder:text-stone-400"
+                    className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none placeholder:text-stone-400"
                   />
                 </FieldShell>
 
@@ -404,7 +409,7 @@ function DietPlansPage() {
                     value={form.medicalConditions}
                     onChange={handleChange}
                     placeholder="Type 2 diabetes"
-                    className="w-full bg-transparent text-lg font-semibold text-stone-950 outline-none placeholder:text-stone-400"
+                    className="w-full bg-transparent text-base font-semibold text-stone-950 outline-none placeholder:text-stone-400"
                   />
                 </FieldShell>
 
@@ -425,25 +430,30 @@ function DietPlansPage() {
               </div>
 
               {error ? (
-                <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 p-5 text-sm leading-6 text-rose-700">
+                <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 p-5 text-sm leading-6 text-rose-700 shadow-sm">
                   {error}
                 </div>
               ) : null}
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="inline-flex rounded-full bg-stone-900 px-7 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-amber-100 transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isLoading ? 'Generating your plan...' : 'Generate detailed diet plan'}
-              </button>
+              <div className="flex flex-col gap-3 border-t border-stone-200 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm leading-6 text-stone-600">
+                  The generated result includes calorie guidance, meal structure, shopping cues, and weekly tips.
+                </p>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="inline-flex items-center justify-center rounded-full bg-stone-900 px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-amber-100 transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isLoading ? 'Generating your plan...' : 'Generate detailed diet plan'}
+                </button>
+              </div>
             </form>
 
-            <div className="rounded-[2rem] border border-stone-900/10 bg-stone-950 p-4 text-stone-100 shadow-[0_35px_80px_rgba(28,25,23,0.18)] sm:p-6">
+            <div className="rounded-[1.85rem] border border-stone-900/10 bg-stone-950 p-4 text-stone-100 shadow-[0_30px_70px_rgba(28,25,23,0.18)] sm:p-5">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-200/70">
                 Detailed output
               </p>
-              <h2 className="mt-4 font-['Georgia'] text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              <h2 className="mt-3 font-['Georgia'] text-2xl font-bold tracking-tight text-white sm:text-3xl">
                 The generated plan will appear here with real meal guidance.
               </h2>
 
