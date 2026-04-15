@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import SiteShell from '../components/SiteShell.jsx'
+import { generateDietPlan } from '../services/dietPlanApi.js'
 
 const initialForm = {
   name: '',
@@ -53,8 +54,6 @@ const regionOptions = [
 
 const budgetOptions = ['budget', 'moderate', 'premium']
 const cookingTimeOptions = ['15-30 minutes', '30-45 minutes', '45-60 minutes', '60+ minutes']
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://tailorediet.onrender.com'
 
 function formatLabel(value) {
   return value
@@ -156,21 +155,7 @@ function DietPlansPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/diet-plans/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      })
-
-      const rawBody = await response.text()
-      const data = rawBody ? JSON.parse(rawBody) : {}
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Unable to generate the diet plan right now.')
-      }
-
+      const data = await generateDietPlan(form)
       setPlan(data.plan)
     } catch (submitError) {
       setPlan(null)
